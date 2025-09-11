@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Just Laundrette',
+                      'Just Launder',
                       style: Theme.of(
                         context,
                       ).textTheme.displayMedium?.copyWith(

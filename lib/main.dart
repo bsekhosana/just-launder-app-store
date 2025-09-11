@@ -32,7 +32,7 @@ class JustLaundretteApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
       child: MaterialApp(
-        title: 'Just Laundrette',
+        title: 'Just Launder',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         home: const AppWrapper(),

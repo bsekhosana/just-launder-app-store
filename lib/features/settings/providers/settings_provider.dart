@@ -362,3 +362,4 @@ class SettingsProvider extends ChangeNotifier {
     };
   }
 }
+
