@@ -11,7 +11,6 @@ import '../../../design_system/icons.dart';
 import '../../../design_system/elevations.dart';
 import '../../../ui/primitives/animated_button.dart';
 import '../../../ui/primitives/text_field_x.dart';
-import '../../../ui/primitives/card_x.dart';
 import '../../../ui/primitives/snack_x.dart';
 import '../../../ui/primitives/accordion_x.dart';
 import '../providers/auth_provider.dart';
@@ -336,9 +335,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (success) {
         if (mounted) {
+          print('Login successful, authentication state should be updated');
           SnackXUtils.showSuccess(context, message: 'Login successful!');
+          // Navigation will be handled by AppWrapper
         }
-        // Navigation will be handled by AppWrapper
       } else {
         if (mounted) {
           SnackXUtils.showError(context, message: 'Invalid email or password');

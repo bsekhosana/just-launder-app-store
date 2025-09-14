@@ -27,20 +27,29 @@ class AuthProvider extends ChangeNotifier {
 
       // Mock authentication - replace with real API call
       if (email == 'business@laundrette.com' && password == 'password') {
+        print('AuthProvider: Setting business user as authenticated');
         _isAuthenticated = true;
         _currentUserId = 'user_business_1';
         _currentLaundretteId = 'laundrette_business_1';
         _isLoading = false;
         notifyListeners();
+        print(
+          'AuthProvider: Authentication state updated, notifying listeners',
+        );
         return true;
       } else if (email == 'private@laundrette.com' && password == 'password') {
+        print('AuthProvider: Setting private user as authenticated');
         _isAuthenticated = true;
         _currentUserId = 'user_private_1';
         _currentLaundretteId = 'laundrette_private_1';
         _isLoading = false;
         notifyListeners();
+        print(
+          'AuthProvider: Authentication state updated, notifying listeners',
+        );
         return true;
       } else {
+        print('AuthProvider: Invalid credentials, authentication failed');
         _isLoading = false;
         notifyListeners();
         return false;

@@ -56,6 +56,10 @@ class AppWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
+        print(
+          'AppWrapper: isLoading=${authProvider.isLoading}, isAuthenticated=${authProvider.isAuthenticated}',
+        );
+
         if (authProvider.isLoading) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
@@ -63,9 +67,11 @@ class AppWrapper extends StatelessWidget {
         }
 
         if (authProvider.isAuthenticated) {
+          print('AppWrapper: Navigating to MainNavigationScreen');
           return const MainNavigationScreen();
         }
 
+        print('AppWrapper: Navigating to LoginScreen');
         return const LoginScreen();
       },
     );
