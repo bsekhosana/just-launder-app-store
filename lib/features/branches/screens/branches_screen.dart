@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/motion.dart';
+import '../../../design_system/icons.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/chip_x.dart';
 import '../providers/branch_provider.dart';
 import '../../../data/models/laundrette_branch.dart';
 import 'add_edit_branch_screen.dart';
@@ -29,17 +37,34 @@ class _BranchesScreenState extends State<BranchesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
-        title: const Text('Branches'),
+        backgroundColor: colorScheme.surface.withOpacity(0.9),
+        elevation: 0,
+        title: Text(
+          'Branches',
+          style: AppTypography.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         actions: [
-          IconButton(icon: const Icon(Icons.add), onPressed: _addBranch),
+          AnimatedButtons.icon(
+            onPressed: _addBranch,
+            child: Icon(AppIcons.add, color: AppColors.primary),
+            tooltip: 'Add Branch',
+          ),
         ],
       ),
       body: Consumer<BranchProvider>(
         builder: (context, branchProvider, child) {
           if (branchProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
           }
 
           if (branchProvider.branches.isEmpty) {
@@ -48,35 +73,60 @@ class _BranchesScreenState extends State<BranchesScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.business_outlined,
-                    size: 64,
-                    color: AppTheme.lightGrey,
-                  ),
-                  const SizedBox(height: 16),
+                        AppIcons.branches,
+                        size: 64,
+                        color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+                      )
+                      .animate()
+                      .scale(
+                        duration: AppMotion.slow,
+                        curve: AppCurves.emphasized,
+                      )
+                      .fadeIn(duration: AppMotion.normal),
+                  const Gap.vertical(AppSpacing.l),
                   Text(
-                    'No branches found',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyLarge?.copyWith(color: AppTheme.mediumGrey),
-                  ),
-                  const SizedBox(height: 8),
+                        'No branches found',
+                        style: AppTypography.textTheme.bodyLarge?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
+                      .slideY(
+                        begin: 0.3,
+                        end: 0.0,
+                        delay: AppMotion.fast,
+                        duration: AppMotion.normal,
+                      ),
+                  const Gap.vertical(AppSpacing.s),
                   Text(
-                    'Add your first branch to get started',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.mediumGrey,
-                    ),
-                  ),
+                        'Add your first branch to get started',
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(
+                        delay: AppMotion.normal,
+                        duration: AppMotion.normal,
+                      )
+                      .slideY(
+                        begin: 0.3,
+                        end: 0.0,
+                        delay: AppMotion.normal,
+                        duration: AppMotion.normal,
+                      ),
                 ],
               ),
             );
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: SpacingUtils.all(AppSpacing.l),
             itemCount: branchProvider.branches.length,
             itemBuilder: (context, index) {
               final branch = branchProvider.branches[index];
-              return _buildBranchCard(branch);
+              return _buildBranchCard(branch, index);
             },
           );
         },
@@ -84,168 +134,167 @@ class _BranchesScreenState extends State<BranchesScreen> {
     );
   }
 
-  Widget _buildBranchCard(LaundretteBranch branch) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () => _viewBranchDetails(branch),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      branch.name,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+  Widget _buildBranchCard(LaundretteBranch branch, int index) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
+          onTap: () => _viewBranchDetails(branch),
+          margin: const EdgeInsets.only(bottom: AppSpacing.m),
+          child: Padding(
+            padding: SpacingUtils.all(AppSpacing.l),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        branch.name,
+                        style: AppTypography.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
                       ),
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color:
+                    ChipsX.status(
+                      label: branch.isCurrentlyOpen ? 'Open' : 'Closed',
+                      status:
                           branch.isCurrentlyOpen
-                              ? AppTheme.successGreen.withOpacity(0.1)
-                              : AppTheme.errorRed.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color:
-                            branch.isCurrentlyOpen
-                                ? AppTheme.successGreen
-                                : AppTheme.errorRed,
-                      ),
-                    ),
-                    child: Text(
-                      branch.isCurrentlyOpen ? 'Open' : 'Closed',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color:
-                            branch.isCurrentlyOpen
-                                ? AppTheme.successGreen
-                                : AppTheme.errorRed,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                branch.fullAddress,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${branch.currentOrderCount}/${branch.maxConcurrentOrders} orders',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Icon(Icons.phone, size: 16, color: AppTheme.mediumGrey),
-                  const SizedBox(width: 4),
-                  Text(
-                    branch.phoneNumber ?? 'No phone',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
-                  ),
-                  const SizedBox(width: 16),
-                  Icon(Icons.email, size: 16, color: AppTheme.mediumGrey),
-                  const SizedBox(width: 4),
-                  Text(
-                    branch.email ?? 'No email',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  if (branch.autoAcceptOrders) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryBlue.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'Auto Accept',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppTheme.primaryBlue,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                  if (branch.supportsPriorityDelivery) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryGreen.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'Priority Delivery',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppTheme.primaryGreen,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                              ? ChipStatus.success
+                              : ChipStatus.error,
                     ),
                   ],
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: () => _editBranch(branch),
-                    icon: const Icon(Icons.edit, size: 16),
-                    label: const Text('Edit'),
+                ),
+                const Gap.vertical(AppSpacing.s),
+                Text(
+                  branch.fullAddress,
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
-                  const SizedBox(width: 8),
-                  TextButton.icon(
-                    onPressed: () => _deleteBranch(branch),
-                    icon: const Icon(
-                      Icons.delete,
+                ),
+                const Gap.vertical(AppSpacing.xs),
+                Text(
+                  '${branch.currentOrderCount}/${branch.maxConcurrentOrders} orders',
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const Gap.vertical(AppSpacing.m),
+                Row(
+                  children: [
+                    Icon(
+                      AppIcons.phone,
                       size: 16,
-                      color: AppTheme.errorRed,
+                      color: colorScheme.onSurfaceVariant,
                     ),
-                    label: const Text(
-                      'Delete',
-                      style: TextStyle(color: AppTheme.errorRed),
+                    const Gap.horizontal(AppSpacing.xs),
+                    Text(
+                      branch.phoneNumber ?? 'No phone',
+                      style: AppTypography.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    const Gap.horizontal(AppSpacing.m),
+                    Icon(
+                      AppIcons.email,
+                      size: 16,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    const Gap.horizontal(AppSpacing.xs),
+                    Text(
+                      branch.email ?? 'No email',
+                      style: AppTypography.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+                const Gap.vertical(AppSpacing.m),
+                Wrap(
+                  spacing: AppSpacing.s,
+                  runSpacing: AppSpacing.xs,
+                  children: [
+                    if (branch.autoAcceptOrders) ...[
+                      ChipsX.status(
+                        label: 'Auto Accept',
+                        status: ChipStatus.info,
+                      ),
+                    ],
+                    if (branch.supportsPriorityDelivery) ...[
+                      ChipsX.status(
+                        label: 'Priority Delivery',
+                        status: ChipStatus.success,
+                      ),
+                    ],
+                  ],
+                ),
+                const Gap.vertical(AppSpacing.m),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    AnimatedButtons.text(
+                      onPressed: () => _editBranch(branch),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            AppIcons.edit,
+                            size: 16,
+                            color: AppColors.primary,
+                          ),
+                          const Gap.horizontal(AppSpacing.xs),
+                          Text(
+                            'Edit',
+                            style: AppTypography.textTheme.labelMedium
+                                ?.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Gap.horizontal(AppSpacing.s),
+                    AnimatedButtons.text(
+                      onPressed: () => _deleteBranch(branch),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            AppIcons.delete,
+                            size: 16,
+                            color: AppColors.error,
+                          ),
+                          const Gap.horizontal(AppSpacing.xs),
+                          Text(
+                            'Delete',
+                            style: AppTypography.textTheme.labelMedium
+                                ?.copyWith(
+                                  color: AppColors.error,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
-    );
+        )
+        .animate()
+        .fadeIn(
+          delay: Duration(milliseconds: index * 100),
+          duration: AppMotion.normal,
+        )
+        .slideY(
+          begin: 0.3,
+          end: 0.0,
+          delay: Duration(milliseconds: index * 100),
+          duration: AppMotion.normal,
+        );
   }
 
   void _addBranch() {
@@ -293,22 +342,22 @@ class _BranchesScreenState extends State<BranchesScreen> {
 
                   if (success && mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Branch deleted successfully'),
-                        backgroundColor: AppTheme.successGreen,
+                      SnackBar(
+                        content: const Text('Branch deleted successfully'),
+                        backgroundColor: AppColors.success,
                       ),
                     );
                   } else if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Failed to delete branch'),
-                        backgroundColor: AppTheme.errorRed,
+                      SnackBar(
+                        content: const Text('Failed to delete branch'),
+                        backgroundColor: AppColors.error,
                       ),
                     );
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.errorRed,
+                  backgroundColor: AppColors.error,
                 ),
                 child: const Text('Delete'),
               ),

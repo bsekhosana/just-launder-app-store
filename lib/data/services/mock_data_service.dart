@@ -13,33 +13,39 @@ class MockDataService {
     return [
       LaundretteProfile(
         id: 'laundrette_business_1',
+        ownerId: 'owner_1',
         businessName: 'Clean & Fresh Laundrette',
         type: LaundretteType.business,
         email: 'business@cleanfresh.com',
         phoneNumber: '+1-555-0123',
         address: '123 Business St, New York, NY 10001',
         city: 'New York',
-        state: 'NY',
-        zipCode: '10001',
+        postcode: '10001',
         country: 'USA',
+        latitude: 40.7128,
+        longitude: -74.0060,
         isActive: true,
         isVerified: true,
+        settings: {},
         createdAt: DateTime.now().subtract(const Duration(days: 365)),
         updatedAt: DateTime.now().subtract(const Duration(days: 30)),
       ),
       LaundretteProfile(
         id: 'laundrette_private_1',
+        ownerId: 'owner_2',
         businessName: 'Family Laundry Service',
         type: LaundretteType.private,
         email: 'family@laundry.com',
         phoneNumber: '+1-555-0456',
         address: '456 Private Ave, Los Angeles, CA 90210',
         city: 'Los Angeles',
-        state: 'CA',
-        zipCode: '90210',
+        postcode: '90210',
         country: 'USA',
+        latitude: 34.0522,
+        longitude: -118.2437,
         isActive: true,
         isVerified: true,
+        settings: {},
         createdAt: DateTime.now().subtract(const Duration(days: 180)),
         updatedAt: DateTime.now().subtract(const Duration(days: 7)),
       ),
@@ -54,8 +60,10 @@ class MockDataService {
         laundretteId: 'laundrette_business_1',
         name: 'Professional Plan',
         type: SubscriptionType.business,
-        currentTier: 'professional',
+        businessTier: BusinessTier.professional,
+        description: 'Professional plan for growing laundrette businesses',
         monthlyPrice: 79.99,
+        currency: 'USD',
         isActive: true,
         startDate: DateTime.now().subtract(const Duration(days: 365)),
         endDate: DateTime.now().add(const Duration(days: 30)),
@@ -70,14 +78,18 @@ class MockDataService {
           SubscriptionFeatures.orderAutoAccept: true,
           SubscriptionFeatures.priorityDelivery: true,
         },
+        createdAt: DateTime.now().subtract(const Duration(days: 365)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 30)),
       ),
       Subscription(
         id: 'sub_private_1',
         laundretteId: 'laundrette_private_1',
         name: 'Starter Plan',
         type: SubscriptionType.private,
-        currentTier: 'starter',
+        privateTier: PrivateTier.basic,
+        description: 'Basic plan for private laundrette services',
         monthlyPrice: 29.99,
+        currency: 'USD',
         isActive: true,
         startDate: DateTime.now().subtract(const Duration(days: 180)),
         endDate: DateTime.now().add(const Duration(days: 15)),
@@ -92,6 +104,8 @@ class MockDataService {
           SubscriptionFeatures.orderAutoAccept: false,
           SubscriptionFeatures.priorityDelivery: false,
         },
+        createdAt: DateTime.now().subtract(const Duration(days: 180)),
+        updatedAt: DateTime.now().subtract(const Duration(days: 7)),
       ),
     ];
   }
@@ -105,30 +119,36 @@ class MockDataService {
         name: 'Downtown Branch',
         address: '123 Business St, New York, NY 10001',
         city: 'New York',
-        state: 'NY',
-        zipCode: '10001',
-        phoneNumber: '+1-555-0123',
-        email: 'downtown@cleanfresh.com',
-        status: BranchStatus.open,
-        isAutoAcceptOrders: true,
-        supportsPriorityDelivery: true,
+        postcode: '10001',
+        country: 'USA',
+        latitude: 40.7128,
+        longitude: -74.0060,
+        status: BranchStatus.active,
+        isOpen: true,
         operatingHours: {
-          'monday': {'open': '08:00', 'close': '20:00'},
-          'tuesday': {'open': '08:00', 'close': '20:00'},
-          'wednesday': {'open': '08:00', 'close': '20:00'},
-          'thursday': {'open': '08:00', 'close': '20:00'},
-          'friday': {'open': '08:00', 'close': '20:00'},
-          'saturday': {'open': '09:00', 'close': '18:00'},
-          'sunday': {'open': '10:00', 'close': '16:00'},
+          'monday': '08:00-20:00',
+          'tuesday': '08:00-20:00',
+          'wednesday': '08:00-20:00',
+          'thursday': '08:00-20:00',
+          'friday': '08:00-20:00',
+          'saturday': '09:00-18:00',
+          'sunday': '10:00-16:00',
         },
-        services: {
+        bagPricing: {'small': 5.00, 'medium': 8.00, 'large': 12.00},
+        servicePricing: {
           'wash': 15.00,
           'dry': 10.00,
           'iron': 8.00,
           'dry_clean': 25.00,
           'express': 30.00,
         },
-        imageUrl: 'https://example.com/branch1.jpg',
+        autoAcceptOrders: true,
+        supportsPriorityDelivery: true,
+        phoneNumber: '+1-555-0123',
+        email: 'downtown@cleanfresh.com',
+        maxConcurrentOrders: 50,
+        currentOrderCount: 12,
+        settings: {},
         createdAt: DateTime.now().subtract(const Duration(days: 300)),
         updatedAt: DateTime.now().subtract(const Duration(days: 5)),
       ),
@@ -138,30 +158,36 @@ class MockDataService {
         name: 'Uptown Branch',
         address: '789 Uptown Ave, New York, NY 10025',
         city: 'New York',
-        state: 'NY',
-        zipCode: '10025',
-        phoneNumber: '+1-555-0124',
-        email: 'uptown@cleanfresh.com',
-        status: BranchStatus.open,
-        isAutoAcceptOrders: false,
-        supportsPriorityDelivery: true,
+        postcode: '10025',
+        country: 'USA',
+        latitude: 40.7589,
+        longitude: -73.9851,
+        status: BranchStatus.active,
+        isOpen: true,
         operatingHours: {
-          'monday': {'open': '07:00', 'close': '21:00'},
-          'tuesday': {'open': '07:00', 'close': '21:00'},
-          'wednesday': {'open': '07:00', 'close': '21:00'},
-          'thursday': {'open': '07:00', 'close': '21:00'},
-          'friday': {'open': '07:00', 'close': '21:00'},
-          'saturday': {'open': '08:00', 'close': '19:00'},
-          'sunday': {'open': '09:00', 'close': '17:00'},
+          'monday': '07:00-21:00',
+          'tuesday': '07:00-21:00',
+          'wednesday': '07:00-21:00',
+          'thursday': '07:00-21:00',
+          'friday': '07:00-21:00',
+          'saturday': '08:00-19:00',
+          'sunday': '09:00-17:00',
         },
-        services: {
+        bagPricing: {'small': 6.00, 'medium': 9.00, 'large': 14.00},
+        servicePricing: {
           'wash': 18.00,
           'dry': 12.00,
           'iron': 10.00,
           'dry_clean': 28.00,
           'express': 35.00,
         },
-        imageUrl: 'https://example.com/branch2.jpg',
+        autoAcceptOrders: false,
+        supportsPriorityDelivery: true,
+        phoneNumber: '+1-555-0124',
+        email: 'uptown@cleanfresh.com',
+        maxConcurrentOrders: 40,
+        currentOrderCount: 8,
+        settings: {},
         createdAt: DateTime.now().subtract(const Duration(days: 200)),
         updatedAt: DateTime.now().subtract(const Duration(days: 2)),
       ),
@@ -171,29 +197,35 @@ class MockDataService {
         name: 'Family Laundry',
         address: '456 Private Ave, Los Angeles, CA 90210',
         city: 'Los Angeles',
-        state: 'CA',
-        zipCode: '90210',
-        phoneNumber: '+1-555-0456',
-        email: 'family@laundry.com',
-        status: BranchStatus.open,
-        isAutoAcceptOrders: false,
-        supportsPriorityDelivery: false,
+        postcode: '90210',
+        country: 'USA',
+        latitude: 34.0522,
+        longitude: -118.2437,
+        status: BranchStatus.active,
+        isOpen: true,
         operatingHours: {
-          'monday': {'open': '09:00', 'close': '18:00'},
-          'tuesday': {'open': '09:00', 'close': '18:00'},
-          'wednesday': {'open': '09:00', 'close': '18:00'},
-          'thursday': {'open': '09:00', 'close': '18:00'},
-          'friday': {'open': '09:00', 'close': '18:00'},
-          'saturday': {'open': '10:00', 'close': '16:00'},
-          'sunday': {'closed': 'closed'},
+          'monday': '09:00-18:00',
+          'tuesday': '09:00-18:00',
+          'wednesday': '09:00-18:00',
+          'thursday': '09:00-18:00',
+          'friday': '09:00-18:00',
+          'saturday': '10:00-16:00',
+          'sunday': 'closed',
         },
-        services: {
+        bagPricing: {'small': 4.00, 'medium': 6.00, 'large': 9.00},
+        servicePricing: {
           'wash': 12.00,
           'dry': 8.00,
           'iron': 6.00,
           'dry_clean': 20.00,
         },
-        imageUrl: 'https://example.com/branch3.jpg',
+        autoAcceptOrders: false,
+        supportsPriorityDelivery: false,
+        phoneNumber: '+1-555-0456',
+        email: 'family@laundry.com',
+        maxConcurrentOrders: 20,
+        currentOrderCount: 3,
+        settings: {},
         createdAt: DateTime.now().subtract(const Duration(days: 150)),
         updatedAt: DateTime.now().subtract(const Duration(days: 1)),
       ),
@@ -206,25 +238,28 @@ class MockDataService {
       StaffMember(
         id: 'staff_1',
         laundretteId: 'laundrette_business_1',
-        name: 'John Smith',
+        userId: 'user_1',
+        firstName: 'John',
+        lastName: 'Smith',
         email: 'john@cleanfresh.com',
         phoneNumber: '+1-555-1001',
         role: StaffRole.manager,
         status: StaffStatus.active,
-        branchId: 'branch_1',
+        branchIds: ['branch_1'],
         workingHours: {
-          'monday': {'start': '08:00', 'end': '17:00'},
-          'tuesday': {'start': '08:00', 'end': '17:00'},
-          'wednesday': {'start': '08:00', 'end': '17:00'},
-          'thursday': {'start': '08:00', 'end': '17:00'},
-          'friday': {'start': '08:00', 'end': '17:00'},
+          'monday': '08:00-17:00',
+          'tuesday': '08:00-17:00',
+          'wednesday': '08:00-17:00',
+          'thursday': '08:00-17:00',
+          'friday': '08:00-17:00',
         },
-        permissions: [
-          StaffPermission.manageOrders,
-          StaffPermission.manageStaff,
-          StaffPermission.viewAnalytics,
-          StaffPermission.manageBranches,
-        ],
+        permissions: {
+          'manageOrders': true,
+          'manageStaff': true,
+          'viewAnalytics': true,
+          'manageBranches': true,
+        },
+        metadata: {},
         hireDate: DateTime.now().subtract(const Duration(days: 300)),
         createdAt: DateTime.now().subtract(const Duration(days: 300)),
         updatedAt: DateTime.now().subtract(const Duration(days: 5)),
@@ -232,20 +267,23 @@ class MockDataService {
       StaffMember(
         id: 'staff_2',
         laundretteId: 'laundrette_business_1',
-        name: 'Sarah Johnson',
+        userId: 'user_2',
+        firstName: 'Sarah',
+        lastName: 'Johnson',
         email: 'sarah@cleanfresh.com',
         phoneNumber: '+1-555-1002',
         role: StaffRole.driver,
         status: StaffStatus.active,
-        branchId: 'branch_1',
+        branchIds: ['branch_1'],
         workingHours: {
-          'monday': {'start': '09:00', 'end': '18:00'},
-          'tuesday': {'start': '09:00', 'end': '18:00'},
-          'wednesday': {'start': '09:00', 'end': '18:00'},
-          'thursday': {'start': '09:00', 'end': '18:00'},
-          'friday': {'start': '09:00', 'end': '18:00'},
+          'monday': '09:00-18:00',
+          'tuesday': '09:00-18:00',
+          'wednesday': '09:00-18:00',
+          'thursday': '09:00-18:00',
+          'friday': '09:00-18:00',
         },
-        permissions: [StaffPermission.manageOrders, StaffPermission.viewOrders],
+        permissions: {'manageOrders': true, 'viewOrders': true},
+        metadata: {},
         hireDate: DateTime.now().subtract(const Duration(days: 200)),
         createdAt: DateTime.now().subtract(const Duration(days: 200)),
         updatedAt: DateTime.now().subtract(const Duration(days: 3)),
@@ -253,20 +291,23 @@ class MockDataService {
       StaffMember(
         id: 'staff_3',
         laundretteId: 'laundrette_business_1',
-        name: 'Mike Wilson',
+        userId: 'user_3',
+        firstName: 'Mike',
+        lastName: 'Wilson',
         email: 'mike@cleanfresh.com',
         phoneNumber: '+1-555-1003',
         role: StaffRole.driver,
-        status: StaffStatus.available,
-        branchId: 'branch_2',
+        status: StaffStatus.active,
+        branchIds: ['branch_2'],
         workingHours: {
-          'monday': {'start': '10:00', 'end': '19:00'},
-          'tuesday': {'start': '10:00', 'end': '19:00'},
-          'wednesday': {'start': '10:00', 'end': '19:00'},
-          'thursday': {'start': '10:00', 'end': '19:00'},
-          'friday': {'start': '10:00', 'end': '19:00'},
+          'monday': '10:00-19:00',
+          'tuesday': '10:00-19:00',
+          'wednesday': '10:00-19:00',
+          'thursday': '10:00-19:00',
+          'friday': '10:00-19:00',
         },
-        permissions: [StaffPermission.manageOrders, StaffPermission.viewOrders],
+        permissions: {'manageOrders': true, 'viewOrders': true},
+        metadata: {},
         hireDate: DateTime.now().subtract(const Duration(days: 100)),
         createdAt: DateTime.now().subtract(const Duration(days: 100)),
         updatedAt: DateTime.now().subtract(const Duration(days: 1)),
@@ -274,20 +315,23 @@ class MockDataService {
       StaffMember(
         id: 'staff_4',
         laundretteId: 'laundrette_private_1',
-        name: 'Lisa Brown',
+        userId: 'user_4',
+        firstName: 'Lisa',
+        lastName: 'Brown',
         email: 'lisa@laundry.com',
         phoneNumber: '+1-555-2001',
         role: StaffRole.manager,
         status: StaffStatus.active,
-        branchId: 'branch_3',
+        branchIds: ['branch_3'],
         workingHours: {
-          'monday': {'start': '09:00', 'end': '18:00'},
-          'tuesday': {'start': '09:00', 'end': '18:00'},
-          'wednesday': {'start': '09:00', 'end': '18:00'},
-          'thursday': {'start': '09:00', 'end': '18:00'},
-          'friday': {'start': '09:00', 'end': '18:00'},
+          'monday': '09:00-18:00',
+          'tuesday': '09:00-18:00',
+          'wednesday': '09:00-18:00',
+          'thursday': '09:00-18:00',
+          'friday': '09:00-18:00',
         },
-        permissions: [StaffPermission.manageOrders, StaffPermission.viewOrders],
+        permissions: {'manageOrders': true, 'viewOrders': true},
+        metadata: {},
         hireDate: DateTime.now().subtract(const Duration(days: 150)),
         createdAt: DateTime.now().subtract(const Duration(days: 150)),
         updatedAt: DateTime.now().subtract(const Duration(days: 2)),
@@ -323,47 +367,64 @@ class MockDataService {
       orders.add(
         LaundretteOrder(
           id: 'order_${i + 1}',
-          laundretteId: branch.laundretteId,
-          branchId: branch.id,
           customerId: 'customer_${_random.nextInt(20) + 1}',
           customerName: _getRandomCustomerName(),
           customerPhone: '+1-555-${_random.nextInt(9000) + 1000}',
-          customerEmail: 'customer${_random.nextInt(20) + 1}@example.com',
-          orderItems: orderItems,
-          subtotal: subtotal,
-          tax: tax,
-          total: total,
+          branchId: branch.id,
+          branchName: branch.name,
           status: status,
           priority:
-              _random.nextBool()
-                  ? OrderPriority.standard
-                  : OrderPriority.priority,
-          paymentMethod: _getRandomPaymentMethod(),
+              _random.nextBool() ? OrderPriority.normal : OrderPriority.high,
           paymentStatus: _getRandomPaymentStatus(),
-          specialInstructions:
-              _random.nextBool() ? _getRandomInstructions() : null,
-          estimatedPickupTime: createdAt.add(
+          subtotal: subtotal,
+          deliveryFee: 5.0,
+          total: total + 5.0,
+          notes: _random.nextBool() ? _getRandomInstructions() : null,
+          driverId:
+              status.index >= 3 ? 'staff_${_random.nextInt(3) + 2}' : null,
+          driverName: status.index >= 3 ? _getRandomDriverName() : null,
+          driverPhone:
+              status.index >= 3
+                  ? '+1-555-${_random.nextInt(9000) + 1000}'
+                  : null,
+          createdAt: createdAt,
+          scheduledPickupTime: createdAt.add(
             Duration(hours: _random.nextInt(24) + 1),
-          ),
-          estimatedDeliveryTime: createdAt.add(
-            Duration(hours: _random.nextInt(48) + 24),
           ),
           actualPickupTime:
               status.index >= 2
                   ? createdAt.add(Duration(hours: _random.nextInt(24) + 1))
                   : null,
+          estimatedDeliveryTime: createdAt.add(
+            Duration(hours: _random.nextInt(48) + 24),
+          ),
           actualDeliveryTime:
               status == LaundretteOrderStatus.delivered
                   ? createdAt.add(Duration(hours: _random.nextInt(48) + 24))
                   : null,
-          driverId:
-              status.index >= 3 ? 'staff_${_random.nextInt(3) + 2}' : null,
-          driverName: status.index >= 3 ? _getRandomDriverName() : null,
-          rejectionReason:
-              status == LaundretteOrderStatus.declined
-                  ? _getRandomRejectionReason()
-                  : null,
-          createdAt: createdAt,
+          pickupAddress: '123 Customer St, City, State 12345',
+          deliveryAddress: '123 Customer St, City, State 12345',
+          orderItems: {
+            'bags': orderItems,
+            'services':
+                orderItems
+                    .map(
+                      (item) => {
+                        'service': item['service'],
+                        'quantity': item['quantity'],
+                        'price': item['price'],
+                      },
+                    )
+                    .toList(),
+          },
+          metadata: {
+            'specialInstructions':
+                _random.nextBool() ? _getRandomInstructions() : null,
+            'declineReason':
+                status == LaundretteOrderStatus.declined
+                    ? _getRandomRejectionReason()
+                    : null,
+          },
           updatedAt: createdAt.add(Duration(minutes: _random.nextInt(60))),
         ),
       );
@@ -465,11 +526,6 @@ class MockDataService {
       'Chris Davis',
     ];
     return names[_random.nextInt(names.length)];
-  }
-
-  static String _getRandomPaymentMethod() {
-    final methods = ['credit_card', 'debit_card', 'cash', 'paypal'];
-    return methods[_random.nextInt(methods.length)];
   }
 
   static PaymentStatus _getRandomPaymentStatus() {
@@ -587,7 +643,8 @@ class MockDataService {
     // Top services
     final serviceCount = <String, int>{};
     for (final order in orders) {
-      for (final item in order.orderItems) {
+      final services = order.orderItems['services'] as List<dynamic>? ?? [];
+      for (final item in services) {
         final service = item['service'] as String;
         serviceCount[service] =
             (serviceCount[service] ?? 0) + (item['quantity'] as int);
@@ -638,7 +695,7 @@ class MockDataService {
 
         staffPerformance.add({
           'staffId': member.id,
-          'name': member.name,
+          'name': member.fullName,
           'totalOrders': driverOrders.length,
           'completedOrders': completedOrders,
           'completionRate':
@@ -679,4 +736,3 @@ class MockDataService {
     };
   }
 }
-

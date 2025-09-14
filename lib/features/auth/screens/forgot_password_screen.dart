@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/radii.dart';
+import '../../../design_system/elevations.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/text_field_x.dart';
 import '../../../core/theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 import 'otp_verification_screen.dart';
@@ -33,11 +40,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       await authProvider.sendPasswordResetEmail(_emailController.text.trim());
 
       if (mounted) {
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).push(
           MaterialPageRoute(
             builder:
-                (context) => const OTPVerificationScreen(
-                  email: '', // Will be set by auth provider
+                (context) => OTPVerificationScreen(
+                  email: _emailController.text.trim(),
                   isPasswordReset: true,
                 ),
           ),
@@ -66,105 +73,88 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.primaryBlue),
+        leading: AnimatedButton(
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.transparent,
           onPressed: () => Navigator.of(context).pop(),
+          child: Icon(Icons.arrow_back_ios, color: AppColors.primary),
         ),
+        centerTitle: true,
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
+                Center(
+                  child: Hero(
+                    tag: 'app_icon',
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: Radii.l,
+                        boxShadow: Shadows.low,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: Radii.l,
+                        child: Image.asset(
+                          'assets/images/app_icon.png',
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const Gap.vertical(AppSpacing.xxl),
                 Text(
                   'Forgot Password?',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryBlue,
+                    color: AppColors.primary,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const Gap.vertical(AppSpacing.s),
                 Text(
                   'Enter your email address and we\'ll send you a verification code to reset your password.',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: 40),
-                TextFormField(
+                TextFieldsX.email(
                   controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Email Address',
-                    hintText: 'Enter your email address',
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryBlue),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email address';
-                    }
-                    if (!RegExp(
-                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                    ).hasMatch(value)) {
-                      return 'Please enter a valid email address';
-                    }
-                    return null;
-                  },
+                  labelText: 'Email Address',
+                  hintText: 'Enter your email address',
                 ),
                 const SizedBox(height: 32),
-                SizedBox(
+                AnimatedButtons.primary(
+                  onPressed: _isLoading ? null : _sendResetEmail,
+                  isLoading: _isLoading,
                   width: double.infinity,
                   height: 50,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _sendResetEmail,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryBlue,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
+                  child: Text(
+                    'Send Reset Code',
+                    style: AppTypography.textTheme.labelLarge?.copyWith(
+                      color: AppColors.onPrimary,
+                      fontWeight: FontWeight.w600,
                     ),
-                    child:
-                        _isLoading
-                            ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
-                                ),
-                              ),
-                            )
-                            : const Text(
-                              'Send Reset Code',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
                   ),
                 ),
                 const SizedBox(height: 24),
                 Center(
-                  child: TextButton(
+                  child: AnimatedButtons.text(
                     onPressed: () => Navigator.of(context).pop(),
                     child: Text(
                       'Back to Login',
-                      style: TextStyle(
-                        color: AppTheme.primaryBlue,
+                      style: AppTypography.textTheme.labelMedium?.copyWith(
+                        color: AppColors.primary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

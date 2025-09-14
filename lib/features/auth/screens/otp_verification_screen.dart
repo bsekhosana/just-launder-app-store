@@ -1,7 +1,13 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/motion.dart';
+import '../../../ui/primitives/animated_button.dart';
 import '../providers/auth_provider.dart';
 import 'reset_password_screen.dart';
 
@@ -28,6 +34,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   bool _isLoading = false;
   bool _isResending = false;
   int _resendCountdown = 60;
+  Timer? _countdownTimer;
 
   @override
   void initState() {
@@ -37,6 +44,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     for (final controller in _otpControllers) {
       controller.dispose();
     }
@@ -47,14 +55,21 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   }
 
   void _startResendCountdown() {
+    _countdownTimer?.cancel();
     setState(() => _resendCountdown = 60);
-    Future.delayed(const Duration(seconds: 1), () {
+
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
-        if (_resendCountdown > 0) {
-          _startResendCountdown();
-        } else {
-          setState(() => _resendCountdown = 0);
-        }
+        setState(() {
+          if (_resendCountdown > 0) {
+            _resendCountdown--;
+          } else {
+            _resendCountdown = 0;
+            timer.cancel();
+          }
+        });
+      } else {
+        timer.cancel();
       }
     });
   }
@@ -83,7 +98,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
 
       if (mounted) {
         if (widget.isPasswordReset) {
-          Navigator.of(context).pushReplacement(
+          Navigator.of(context).push(
             MaterialPageRoute(
               builder:
                   (context) =>
@@ -163,9 +178,19 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.primaryBlue),
-          onPressed: () => Navigator.of(context).pop(),
+        leading: AnimatedButton(
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.transparent,
+          onPressed: () {
+            if (widget.isPasswordReset) {
+              // For password reset flow, go back to forgot password screen
+              Navigator.of(context).pop();
+            } else {
+              // For registration flow, go back to previous screen
+              Navigator.of(context).pop();
+            }
+          },
+          child: Icon(Icons.arrow_back_ios, color: AppColors.primary),
         ),
       ),
       body: SafeArea(
@@ -179,15 +204,15 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                 'Verify Your Email',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryBlue,
+                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 'We\'ve sent a 6-digit verification code to\n${widget.email}',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 40),
               Row(
@@ -211,21 +236,24 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(
-                            color: AppTheme.lightGrey,
+                            color: AppColors.outline,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(
-                            color: AppTheme.primaryBlue,
+                            color: AppColors.primary,
+                            width: 2,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: const BorderSide(
-                            color: AppTheme.lightGrey,
+                            color: AppColors.outline,
                           ),
                         ),
+                        filled: true,
+                        fillColor: AppColors.surface,
                       ),
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       onChanged: (value) => _onOTPChanged(index, value),
@@ -234,73 +262,111 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                 }),
               ),
               const SizedBox(height: 32),
-              SizedBox(
+              AnimatedButtons.primary(
+                onPressed: _isLoading ? null : _verifyOTP,
+                isLoading: _isLoading,
                 width: double.infinity,
                 height: 50,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _verifyOTP,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
+                child: Text(
+                  'Verify Code',
+                  style: AppTypography.textTheme.labelLarge?.copyWith(
+                    color: AppColors.onPrimary,
+                    fontWeight: FontWeight.w600,
                   ),
-                  child:
-                      _isLoading
-                          ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            ),
-                          )
-                          : const Text(
-                            'Verify Code',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
                 ),
               ),
               const SizedBox(height: 24),
               Center(
-                child:
-                    _resendCountdown > 0
-                        ? Text(
-                          'Resend code in ${_resendCountdown}s',
-                          style: TextStyle(
-                            color: AppTheme.mediumGrey,
-                            fontSize: 14,
-                          ),
-                        )
-                        : TextButton(
-                          onPressed: _isResending ? null : _resendOTP,
-                          child:
-                              _isResending
-                                  ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        AppTheme.primaryBlue,
+                child: AnimatedSwitcher(
+                  duration: AppMotion.normal,
+                  transitionBuilder: (child, animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: ScaleTransition(scale: animation, child: child),
+                    );
+                  },
+                  child:
+                      _resendCountdown > 0
+                          ? Container(
+                            key: const ValueKey('countdown'),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryContainer,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: AppColors.primary.withOpacity(0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Resend code in',
+                                  style: AppTypography.textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: AppColors.onPrimaryContainer,
+                                        fontWeight: FontWeight.w500,
                                       ),
-                                    ),
-                                  )
-                                  : Text(
-                                    'Resend Code',
-                                    style: TextStyle(
-                                      color: AppTheme.primaryBlue,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                ),
+                                const SizedBox(width: 12),
+                                SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: Stack(
+                                    children: [
+                                      CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        value: (60 - _resendCountdown) / 60,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              AppColors.primary,
+                                            ),
+                                        backgroundColor: AppColors.primary
+                                            .withOpacity(0.2),
+                                      ),
+                                      Center(
+                                        child: Text(
+                                          '${_resendCountdown}',
+                                          style: AppTypography
+                                              .textTheme
+                                              .bodySmall
+                                              ?.copyWith(
+                                                color: AppColors.primary,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 10,
+                                              ),
+                                        ).animate().scale(
+                                          duration: AppMotion.fast,
+                                          curve: AppCurves.emphasized,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                        ),
+                                ),
+                              ],
+                            ),
+                          )
+                          : Container(
+                            key: const ValueKey('resend'),
+                            child:
+                                AnimatedButtons.text(
+                                  onPressed: _isResending ? null : _resendOTP,
+                                  isLoading: _isResending,
+                                  child: Text(
+                                    'Resend Code',
+                                    style: AppTypography.textTheme.labelMedium
+                                        ?.copyWith(
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                  ),
+                                ).animate().fadeIn().scale(),
+                          ),
+                ),
               ),
             ],
           ),
@@ -309,4 +375,3 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     );
   }
 }
-

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'core/theme/app_theme.dart';
+import 'design_system/theme.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/profile/providers/laundrette_profile_provider.dart';
 import 'features/branches/providers/branch_provider.dart';
@@ -31,15 +31,19 @@ class JustLaundretteApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
-      child: MaterialApp(
-        title: 'Just Launder',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: const AppWrapper(),
-        routes: {
-          '/login': (context) => const LoginScreen(),
-          '/onboarding': (context) => const OnboardingScreen(),
-        },
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: MaterialApp(
+          title: 'Just Launder',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          home: const AppWrapper(),
+          routes: {
+            '/login': (context) => const LoginScreen(),
+            '/onboarding': (context) => const OnboardingScreen(),
+          },
+        ),
       ),
     );
   }

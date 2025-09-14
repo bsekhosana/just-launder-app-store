@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/motion.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/text_field_x.dart';
+import '../../../ui/primitives/snack_x.dart';
 import '../providers/auth_provider.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -22,8 +29,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
@@ -39,33 +44,29 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.resetPassword(
+
+      // Reset password
+      final resetSuccess = await authProvider.resetPassword(
         widget.email,
         widget.otp,
         _passwordController.text.trim(),
       );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Password reset successfully! Please login with your new password.',
-            ),
-            backgroundColor: AppTheme.successGreen,
-          ),
-        );
+      if (resetSuccess && mounted) {
+        // Navigate to login screen as fallback
         Navigator.of(
           context,
         ).pushNamedAndRemoveUntil('/login', (route) => false);
+
+        SnackXUtils.showSuccess(
+          context,
+          message:
+              'Password reset successfully! Please login with your new password.',
+        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: AppTheme.errorRed,
-          ),
-        );
+        SnackXUtils.showError(context, message: 'Error: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -81,10 +82,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.primaryBlue),
+        leading: AnimatedButton(
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.transparent,
           onPressed: () => Navigator.of(context).pop(),
+          child: Icon(Icons.arrow_back_ios, color: AppColors.primary),
         ),
+        centerTitle: true,
       ),
       body: SafeArea(
         child: Padding(
@@ -94,152 +98,128 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
+                const Gap.vertical(AppSpacing.l),
                 Text(
-                  'Reset Password',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryBlue,
-                  ),
-                ),
-                const SizedBox(height: 8),
+                      'Reset Password',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    )
+                    .animate()
+                    .fadeIn(duration: AppMotion.normal)
+                    .slideY(begin: 0.3, end: 0.0, duration: AppMotion.normal),
+                const Gap.vertical(AppSpacing.s),
                 Text(
-                  'Enter your new password below',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
-                ),
-                const SizedBox(height: 40),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'New Password',
-                    hintText: 'Enter your new password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                      'Enter your new password below',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.onSurfaceVariant,
                       ),
-                      onPressed: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
+                    )
+                    .animate()
+                    .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
+                    .slideY(
+                      begin: 0.3,
+                      end: 0.0,
+                      delay: AppMotion.fast,
+                      duration: AppMotion.normal,
+                    ),
+                const Gap.vertical(AppSpacing.xxl),
+                TextFieldsX.password(
+                      controller: _passwordController,
+                      labelText: 'New Password',
+                      hintText: 'Enter your new password',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a password';
+                        }
+                        if (value.length < 8) {
+                          return 'Password must be at least 8 characters';
+                        }
+                        if (!RegExp(
+                          r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)',
+                        ).hasMatch(value)) {
+                          return 'Password must contain uppercase, lowercase, and number';
+                        }
+                        return null;
                       },
+                    )
+                    .animate()
+                    .fadeIn(delay: AppMotion.normal, duration: AppMotion.normal)
+                    .slideX(
+                      begin: -0.3,
+                      end: 0.0,
+                      delay: AppMotion.normal,
+                      duration: AppMotion.normal,
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryBlue),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
-                    }
-                    if (value.length < 8) {
-                      return 'Password must be at least 8 characters';
-                    }
-                    if (!RegExp(
-                      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)',
-                    ).hasMatch(value)) {
-                      return 'Password must contain uppercase, lowercase, and number';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: _obscureConfirmPassword,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm Password',
-                    hintText: 'Confirm your new password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(
-                          () =>
-                              _obscureConfirmPassword =
-                                  !_obscureConfirmPassword,
-                        );
+                const Gap.vertical(AppSpacing.l),
+                TextFieldsX.password(
+                      controller: _confirmPasswordController,
+                      labelText: 'Confirm Password',
+                      hintText: 'Confirm your new password',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password';
+                        }
+                        if (value != _passwordController.text) {
+                          return 'Passwords do not match';
+                        }
+                        return null;
                       },
+                    )
+                    .animate()
+                    .fadeIn(
+                      delay: AppMotion.normal + AppMotion.fast,
+                      duration: AppMotion.normal,
+                    )
+                    .slideX(
+                      begin: -0.3,
+                      end: 0.0,
+                      delay: AppMotion.normal + AppMotion.fast,
+                      duration: AppMotion.normal,
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryBlue),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
-                    }
-                    if (value != _passwordController.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _resetPassword,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryBlue,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                const Gap.vertical(AppSpacing.xl),
+                AnimatedButtons.primary(
+                      onPressed: _isLoading ? null : _resetPassword,
+                      isLoading: _isLoading,
+                      width: double.infinity,
+                      height: 50,
+                      child: Text(
+                        'Reset Password',
+                        style: AppTypography.textTheme.labelLarge?.copyWith(
+                          color: AppColors.onPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      elevation: 0,
+                    )
+                    .animate()
+                    .fadeIn(delay: AppMotion.slow, duration: AppMotion.normal)
+                    .slideY(
+                      begin: 0.3,
+                      end: 0.0,
+                      delay: AppMotion.slow,
+                      duration: AppMotion.normal,
                     ),
-                    child:
-                        _isLoading
-                            ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
-                                ),
-                              ),
-                            )
-                            : const Text(
-                              'Reset Password',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                  ),
-                ),
-                const SizedBox(height: 24),
+                const Gap.vertical(AppSpacing.l),
                 Center(
-                  child: TextButton(
+                  child: AnimatedButtons.text(
                     onPressed:
                         () => Navigator.of(
                           context,
                         ).pushNamedAndRemoveUntil('/login', (route) => false),
                     child: Text(
                       'Back to Login',
-                      style: TextStyle(
-                        color: AppTheme.primaryBlue,
+                      style: AppTypography.textTheme.labelMedium?.copyWith(
+                        color: AppColors.primary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
+                ).animate().fadeIn(
+                  delay: AppMotion.slow + AppMotion.fast,
+                  duration: AppMotion.normal,
                 ),
               ],
             ),
@@ -249,4 +229,3 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 }
-

@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/motion.dart';
+import '../../../design_system/icons.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/chip_x.dart';
 import '../providers/order_provider.dart';
 import '../../../data/models/laundrette_order.dart';
 import 'order_details_screen.dart';
@@ -24,7 +32,10 @@ class _OrdersScreenState extends State<OrdersScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
-    _loadOrders();
+    // Load orders after the first frame is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadOrders();
+    });
   }
 
   @override
@@ -43,35 +54,75 @@ class _OrdersScreenState extends State<OrdersScreen>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
-        title: const Text('Orders'),
+        backgroundColor: colorScheme.surface.withOpacity(0.9),
+        elevation: 0,
+        title: Text(
+          'Orders',
+          style: AppTypography.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         actions: [
-          IconButton(
-            icon: Icon(
-              _showFilters ? Icons.filter_list : Icons.filter_list_outlined,
-            ),
+          AnimatedButtons.icon(
             onPressed: () {
               setState(() {
                 _showFilters = !_showFilters;
               });
             },
+            child: Icon(
+              _showFilters ? AppIcons.filter : AppIcons.filter,
+              color:
+                  _showFilters
+                      ? AppColors.primary
+                      : colorScheme.onSurfaceVariant,
+            ),
+            tooltip: _showFilters ? 'Hide Filters' : 'Show Filters',
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Pending'),
-            Tab(text: 'Approved'),
-            Tab(text: 'In Progress'),
-            Tab(text: 'Completed'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surface.withOpacity(0.9),
+              border: Border(
+                bottom: BorderSide(
+                  color: colorScheme.outline.withOpacity(0.1),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicatorColor: AppColors.primary,
+              indicatorWeight: 3,
+              labelColor: AppColors.primary,
+              unselectedLabelColor: colorScheme.onSurfaceVariant,
+              labelStyle: AppTypography.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              unselectedLabelStyle: AppTypography.textTheme.labelMedium,
+              tabs: const [
+                Tab(text: 'Pending'),
+                Tab(text: 'Approved'),
+                Tab(text: 'In Progress'),
+                Tab(text: 'Completed'),
+              ],
+            ),
+          ),
         ),
       ),
       body: Consumer<OrderProvider>(
         builder: (context, orderProvider, child) {
           if (orderProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
           }
 
           final filteredOrders = _getFilteredOrders(orderProvider.orders);
@@ -79,17 +130,36 @@ class _OrdersScreenState extends State<OrdersScreen>
           return Column(
             children: [
               if (_showFilters) ...[
-                OrderFiltersWidget(
-                  currentFilters: _filters,
-                  onFiltersChanged: (filters) {
-                    setState(() {
-                      _filters = filters;
-                    });
-                  },
-                ),
-                const SizedBox(height: 8),
-                OrderStatsWidget(orders: filteredOrders),
-                const SizedBox(height: 8),
+                AnimatedContainer(
+                      duration: AppMotion.normal,
+                      curve: AppCurves.standard,
+                      child: OrderFiltersWidget(
+                        currentFilters: _filters,
+                        onFiltersChanged: (filters) {
+                          setState(() {
+                            _filters = filters;
+                          });
+                        },
+                      ),
+                    )
+                    .animate()
+                    .fadeIn(duration: AppMotion.normal)
+                    .slideY(begin: -0.3, end: 0.0, duration: AppMotion.normal),
+                const Gap.vertical(AppSpacing.s),
+                AnimatedContainer(
+                      duration: AppMotion.normal,
+                      curve: AppCurves.standard,
+                      child: OrderStatsWidget(orders: filteredOrders),
+                    )
+                    .animate()
+                    .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
+                    .slideY(
+                      begin: -0.3,
+                      end: 0.0,
+                      delay: AppMotion.fast,
+                      duration: AppMotion.normal,
+                    ),
+                const Gap.vertical(AppSpacing.s),
               ],
               Expanded(
                 child: TabBarView(
@@ -134,149 +204,173 @@ class _OrdersScreenState extends State<OrdersScreen>
   }
 
   Widget _buildOrdersList(List<LaundretteOrder> orders, String emptyMessage) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     if (orders.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.shopping_bag_outlined,
-              size: 64,
-              color: AppTheme.lightGrey,
-            ),
-            const SizedBox(height: 16),
+                  AppIcons.orders,
+                  size: 64,
+                  color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+                )
+                .animate()
+                .scale(duration: AppMotion.slow, curve: AppCurves.emphasized)
+                .fadeIn(duration: AppMotion.normal),
+            const Gap.vertical(AppSpacing.l),
             Text(
-              emptyMessage,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyLarge?.copyWith(color: AppTheme.mediumGrey),
-            ),
+                  emptyMessage,
+                  style: AppTypography.textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                )
+                .animate()
+                .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
+                .slideY(
+                  begin: 0.3,
+                  end: 0.0,
+                  delay: AppMotion.fast,
+                  duration: AppMotion.normal,
+                ),
           ],
         ),
       );
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: SpacingUtils.all(AppSpacing.l),
       itemCount: orders.length,
       itemBuilder: (context, index) {
         final order = orders[index];
-        return _buildOrderCard(order);
+        return _buildOrderCard(order, index);
       },
     );
   }
 
-  Widget _buildOrderCard(LaundretteOrder order) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () => _viewOrderDetails(order),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    order.customerName,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getStatusColor(order.status).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: _getStatusColor(order.status)),
-                    ),
-                    child: Text(
-                      order.statusDisplayText,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: _getStatusColor(order.status),
-                        fontWeight: FontWeight.w600,
+  Widget _buildOrderCard(LaundretteOrder order, int index) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
+          onTap: () => _viewOrderDetails(order),
+          margin: const EdgeInsets.only(bottom: AppSpacing.m),
+          child: Padding(
+            padding: SpacingUtils.all(AppSpacing.l),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      order.customerName,
+                      style: AppTypography.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                order.branchName,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Order #${order.id}',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '\$${order.total.toStringAsFixed(2)}',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: AppTheme.primaryBlue,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (order.isPendingApproval) ...[
-                    Row(
-                      children: [
-                        TextButton(
-                          onPressed: () => _approveOrder(order.id),
-                          child: const Text('Approve'),
-                        ),
-                        const SizedBox(width: 8),
-                        TextButton(
-                          onPressed: () => _declineOrder(order.id),
-                          child: const Text('Decline'),
-                        ),
-                      ],
+                    ChipsX.status(
+                      label: order.statusDisplayText,
+                      status: _getChipStatus(order.status),
                     ),
                   ],
-                ],
-              ),
-            ],
+                ),
+                const Gap.vertical(AppSpacing.s),
+                Text(
+                  order.branchName,
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const Gap.vertical(AppSpacing.xs),
+                Text(
+                  'Order #${order.id}',
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const Gap.vertical(AppSpacing.m),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '\$${order.total.toStringAsFixed(2)}',
+                      style: AppTypography.textTheme.titleLarge?.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (order.isPendingApproval) ...[
+                      Row(
+                        children: [
+                          AnimatedButtons.secondary(
+                            onPressed: () => _approveOrder(order.id),
+                            child: Text(
+                              'Approve',
+                              style: AppTypography.textTheme.labelMedium
+                                  ?.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ),
+                          const Gap.horizontal(AppSpacing.s),
+                          AnimatedButtons.secondary(
+                            onPressed: () => _declineOrder(order.id),
+                            child: Text(
+                              'Decline',
+                              style: AppTypography.textTheme.labelMedium
+                                  ?.copyWith(
+                                    color: AppColors.error,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
-    );
+        )
+        .animate()
+        .fadeIn(
+          delay: Duration(milliseconds: index * 100),
+          duration: AppMotion.normal,
+        )
+        .slideY(
+          begin: 0.3,
+          end: 0.0,
+          delay: Duration(milliseconds: index * 100),
+          duration: AppMotion.normal,
+        );
   }
 
-  Color _getStatusColor(LaundretteOrderStatus status) {
+  ChipStatus _getChipStatus(LaundretteOrderStatus status) {
     switch (status) {
       case LaundretteOrderStatus.pending:
-        return AppTheme.warningOrange;
+        return ChipStatus.warning;
       case LaundretteOrderStatus.approved:
-        return AppTheme.infoBlue;
+        return ChipStatus.info;
       case LaundretteOrderStatus.declined:
-        return AppTheme.errorRed;
+        return ChipStatus.error;
       case LaundretteOrderStatus.confirmed:
-        return AppTheme.primaryBlue;
+        return ChipStatus.info;
       case LaundretteOrderStatus.pickedUp:
-        return AppTheme.primaryTeal;
+        return ChipStatus.info;
       case LaundretteOrderStatus.inProgress:
-        return AppTheme.primaryGreen;
+        return ChipStatus.info;
       case LaundretteOrderStatus.ready:
-        return AppTheme.secondaryOrange;
+        return ChipStatus.warning;
       case LaundretteOrderStatus.outForDelivery:
-        return AppTheme.secondaryPurple;
+        return ChipStatus.info;
       case LaundretteOrderStatus.delivered:
-        return AppTheme.successGreen;
+        return ChipStatus.success;
       case LaundretteOrderStatus.cancelled:
-        return AppTheme.mediumGrey;
+        return ChipStatus.neutral;
     }
   }
 
@@ -286,9 +380,9 @@ class _OrdersScreenState extends State<OrdersScreen>
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Order approved successfully'),
-          backgroundColor: AppTheme.successGreen,
+        SnackBar(
+          content: const Text('Order approved successfully'),
+          backgroundColor: AppColors.success,
         ),
       );
     }
@@ -330,9 +424,9 @@ class _OrdersScreenState extends State<OrdersScreen>
 
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Order declined'),
-            backgroundColor: AppTheme.errorRed,
+          SnackBar(
+            content: const Text('Order declined'),
+            backgroundColor: AppColors.error,
           ),
         );
       }

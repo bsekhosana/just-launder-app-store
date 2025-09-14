@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/motion.dart';
+import '../../../design_system/icons.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/chip_x.dart';
 import '../providers/staff_provider.dart';
 import '../../../data/models/staff_member.dart';
 import 'add_edit_staff_screen.dart';
@@ -30,18 +38,29 @@ class _StaffScreenState extends State<StaffScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
-        title: const Text('Staff'),
+        backgroundColor: colorScheme.surface.withOpacity(0.9),
+        elevation: 0,
+        title: Text(
+          'Staff',
+          style: AppTypography.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.directions_car),
+          AnimatedButtons.icon(
             onPressed: _openDriverManagement,
+            child: Icon(AppIcons.delivery, color: AppColors.primary),
             tooltip: 'Driver Management',
           ),
-          IconButton(
-            icon: const Icon(Icons.person_add),
+          AnimatedButtons.icon(
             onPressed: _addStaffMember,
+            child: Icon(AppIcons.add, color: AppColors.primary),
             tooltip: 'Add Staff',
           ),
         ],
@@ -49,7 +68,9 @@ class _StaffScreenState extends State<StaffScreen> {
       body: Consumer<StaffProvider>(
         builder: (context, staffProvider, child) {
           if (staffProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
           }
 
           if (staffProvider.staff.isEmpty) {
@@ -58,35 +79,60 @@ class _StaffScreenState extends State<StaffScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.people_outlined,
-                    size: 64,
-                    color: AppTheme.lightGrey,
-                  ),
-                  const SizedBox(height: 16),
+                        AppIcons.staff,
+                        size: 64,
+                        color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+                      )
+                      .animate()
+                      .scale(
+                        duration: AppMotion.slow,
+                        curve: AppCurves.emphasized,
+                      )
+                      .fadeIn(duration: AppMotion.normal),
+                  const Gap.vertical(AppSpacing.l),
                   Text(
-                    'No staff members found',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyLarge?.copyWith(color: AppTheme.mediumGrey),
-                  ),
-                  const SizedBox(height: 8),
+                        'No staff members found',
+                        style: AppTypography.textTheme.bodyLarge?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
+                      .slideY(
+                        begin: 0.3,
+                        end: 0.0,
+                        delay: AppMotion.fast,
+                        duration: AppMotion.normal,
+                      ),
+                  const Gap.vertical(AppSpacing.s),
                   Text(
-                    'Add your first staff member to get started',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.mediumGrey,
-                    ),
-                  ),
+                        'Add your first staff member to get started',
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(
+                        delay: AppMotion.normal,
+                        duration: AppMotion.normal,
+                      )
+                      .slideY(
+                        begin: 0.3,
+                        end: 0.0,
+                        delay: AppMotion.normal,
+                        duration: AppMotion.normal,
+                      ),
                 ],
               ),
             );
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: SpacingUtils.all(AppSpacing.l),
             itemCount: staffProvider.staff.length,
             itemBuilder: (context, index) {
               final staffMember = staffProvider.staff[index];
-              return _buildStaffCard(staffMember);
+              return _buildStaffCard(staffMember, index);
             },
           );
         },
@@ -94,118 +140,107 @@ class _StaffScreenState extends State<StaffScreen> {
     );
   }
 
-  Widget _buildStaffCard(StaffMember staffMember) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () => _viewStaffDetails(staffMember),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
-                child:
-                    staffMember.profileImageUrl != null
-                        ? ClipOval(
-                          child: Image.network(
-                            staffMember.profileImageUrl!,
-                            width: 48,
-                            height: 48,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Icon(
-                                Icons.person,
-                                color: AppTheme.primaryBlue,
-                                size: 24,
-                              );
-                            },
+  Widget _buildStaffCard(StaffMember staffMember, int index) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
+          onTap: () => _viewStaffDetails(staffMember),
+          margin: const EdgeInsets.only(bottom: AppSpacing.m),
+          child: Padding(
+            padding: SpacingUtils.all(AppSpacing.l),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: AppColors.primary.withOpacity(0.1),
+                  child:
+                      staffMember.profileImageUrl != null
+                          ? ClipOval(
+                            child: Image.network(
+                              staffMember.profileImageUrl!,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(
+                                  AppIcons.staff,
+                                  color: AppColors.primary,
+                                  size: 24,
+                                );
+                              },
+                            ),
+                          )
+                          : Icon(
+                            AppIcons.staff,
+                            color: AppColors.primary,
+                            size: 24,
                           ),
-                        )
-                        : Icon(
-                          Icons.person,
-                          color: AppTheme.primaryBlue,
-                          size: 24,
+                ),
+                const Gap.horizontal(AppSpacing.m),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        staffMember.fullName,
+                        style: AppTypography.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
                         ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                      const Gap.vertical(AppSpacing.xs),
+                      Text(
+                        staffMember.roleDisplayText,
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const Gap.vertical(AppSpacing.xs),
+                      Text(
+                        staffMember.email,
+                        style: AppTypography.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      staffMember.fullName,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    ChipsX.status(
+                      label: staffMember.statusDisplayText,
+                      status:
+                          staffMember.isActive
+                              ? ChipStatus.success
+                              : ChipStatus.error,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      staffMember.roleDisplayText,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.mediumGrey,
+                    const Gap.vertical(AppSpacing.s),
+                    if (staffMember.hourlyRate != null &&
+                        staffMember.hourlyRate! > 0)
+                      Text(
+                        '\$${staffMember.hourlyRate!.toStringAsFixed(2)}/hr',
+                        style: AppTypography.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      staffMember.email,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.mediumGrey,
-                      ),
-                    ),
                   ],
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color:
-                          staffMember.isActive
-                              ? AppTheme.successGreen.withOpacity(0.1)
-                              : AppTheme.errorRed.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color:
-                            staffMember.isActive
-                                ? AppTheme.successGreen
-                                : AppTheme.errorRed,
-                      ),
-                    ),
-                    child: Text(
-                      staffMember.statusDisplayText,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color:
-                            staffMember.isActive
-                                ? AppTheme.successGreen
-                                : AppTheme.errorRed,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (staffMember.hourlyRate != null &&
-                      staffMember.hourlyRate! > 0)
-                    Text(
-                      '\$${staffMember.hourlyRate!.toStringAsFixed(2)}/hr',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.mediumGrey,
-                      ),
-                    ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ),
-    );
+        )
+        .animate()
+        .fadeIn(
+          delay: Duration(milliseconds: index * 100),
+          duration: AppMotion.normal,
+        )
+        .slideY(
+          begin: 0.3,
+          end: 0.0,
+          delay: Duration(milliseconds: index * 100),
+          duration: AppMotion.normal,
+        );
   }
 
   void _addStaffMember() {
@@ -230,9 +265,9 @@ class _StaffScreenState extends State<StaffScreen> {
     } else {
       // TODO: Implement staff details screen for non-drivers
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Staff details coming soon'),
-          backgroundColor: AppTheme.infoBlue,
+        SnackBar(
+          content: const Text('Staff details coming soon'),
+          backgroundColor: AppColors.info,
         ),
       );
     }

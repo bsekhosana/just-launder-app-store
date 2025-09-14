@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../ui/primitives/card_x.dart';
 import '../../../data/models/laundrette_order.dart';
 
 class OrderStatsWidget extends StatelessWidget {
@@ -9,21 +12,23 @@ class OrderStatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final stats = _calculateStats();
 
-    return Card(
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Order Statistics',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.l),
             Row(
               children: [
                 Expanded(
@@ -32,7 +37,7 @@ class OrderStatsWidget extends StatelessWidget {
                     'Total Orders',
                     stats.totalOrders.toString(),
                     Icons.shopping_bag,
-                    AppTheme.primaryBlue,
+                    AppColors.primary,
                   ),
                 ),
                 Expanded(
@@ -41,7 +46,7 @@ class OrderStatsWidget extends StatelessWidget {
                     'Pending',
                     stats.pendingOrders.toString(),
                     Icons.pending,
-                    AppTheme.warningOrange,
+                    AppColors.accent,
                   ),
                 ),
               ],
@@ -55,7 +60,7 @@ class OrderStatsWidget extends StatelessWidget {
                     'Completed',
                     stats.completedOrders.toString(),
                     Icons.check_circle,
-                    AppTheme.successGreen,
+                    AppColors.success,
                   ),
                 ),
                 Expanded(
@@ -64,7 +69,7 @@ class OrderStatsWidget extends StatelessWidget {
                     'Revenue',
                     '\$${stats.totalRevenue.toStringAsFixed(2)}',
                     Icons.attach_money,
-                    AppTheme.primaryGreen,
+                    AppColors.secondary,
                   ),
                 ),
               ],
@@ -84,6 +89,8 @@ class OrderStatsWidget extends StatelessWidget {
     IconData icon,
     Color color,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       children: [
         Container(
@@ -97,16 +104,16 @@ class OrderStatsWidget extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          style: AppTypography.textTheme.titleLarge?.copyWith(
             color: color,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
           label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
+          style: AppTypography.textTheme.bodySmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -128,31 +135,26 @@ class OrderStatsWidget extends StatelessWidget {
           context,
           'Approved',
           stats.approvedOrders,
-          AppTheme.infoBlue,
+          AppColors.primary,
         ),
         _buildStatusItem(
           context,
           'In Progress',
           stats.inProgressOrders,
-          AppTheme.primaryGreen,
+          AppColors.secondary,
         ),
-        _buildStatusItem(
-          context,
-          'Ready',
-          stats.readyOrders,
-          AppTheme.secondaryOrange,
-        ),
+        _buildStatusItem(context, 'Ready', stats.readyOrders, AppColors.accent),
         _buildStatusItem(
           context,
           'Delivered',
           stats.deliveredOrders,
-          AppTheme.successGreen,
+          AppColors.success,
         ),
         _buildStatusItem(
           context,
           'Declined',
           stats.declinedOrders,
-          AppTheme.errorRed,
+          AppColors.error,
         ),
       ],
     );

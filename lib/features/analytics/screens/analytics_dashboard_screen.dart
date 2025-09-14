@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/radii.dart';
+import '../../../design_system/motion.dart';
+import '../../../design_system/icons.dart';
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/chip_x.dart';
+import '../../../ui/primitives/animated_button.dart';
 import '../providers/analytics_provider.dart';
 import '../../orders/providers/order_provider.dart';
 import '../../branches/providers/branch_provider.dart';
@@ -52,30 +60,62 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
-        title: const Text('Analytics Dashboard'),
+        backgroundColor: colorScheme.surface.withOpacity(0.9),
+        elevation: 0,
+        title: Text(
+          'Analytics Dashboard',
+          style: AppTypography.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
+          AnimatedButtons.icon(
             onPressed: _loadAnalytics,
+            child: Icon(AppIcons.refresh, color: colorScheme.onSurfaceVariant),
             tooltip: 'Refresh Data',
           ),
-          IconButton(
-            icon: const Icon(Icons.filter_list),
+          AnimatedButtons.icon(
             onPressed: _showFilters,
+            child: Icon(AppIcons.filter, color: colorScheme.onSurfaceVariant),
             tooltip: 'Filter Data',
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          tabs: const [
-            Tab(text: 'Overview'),
-            Tab(text: 'Revenue'),
-            Tab(text: 'Orders'),
-            Tab(text: 'Performance'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surface.withOpacity(0.9),
+              border: Border(
+                bottom: BorderSide(
+                  color: colorScheme.outline.withOpacity(0.1),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              indicatorColor: AppColors.primary,
+              labelColor: AppColors.primary,
+              unselectedLabelColor: colorScheme.onSurfaceVariant,
+              labelStyle: AppTypography.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              unselectedLabelStyle: AppTypography.textTheme.labelMedium,
+              tabs: const [
+                Tab(text: 'Overview'),
+                Tab(text: 'Revenue'),
+                Tab(text: 'Orders'),
+                Tab(text: 'Performance'),
+              ],
+            ),
+          ),
         ),
       ),
       body: TabBarView(
@@ -94,20 +134,22 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
         if (analyticsProvider.isLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          );
         }
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: SpacingUtils.all(AppSpacing.l),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildPeriodSelector(),
-              const SizedBox(height: 16),
+              const Gap.vertical(AppSpacing.l),
               _buildKeyMetricsGrid(),
-              const SizedBox(height: 24),
+              const Gap.vertical(AppSpacing.xl),
               _buildQuickStatsRow(),
-              const SizedBox(height: 24),
+              const Gap.vertical(AppSpacing.xl),
               _buildRecentActivityCard(),
             ],
           ),
@@ -257,36 +299,36 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           childAspectRatio: 1.5,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
+          crossAxisSpacing: AppSpacing.l,
+          mainAxisSpacing: AppSpacing.l,
           children: [
             AnalyticsCardWidget(
               title: 'Total Revenue',
               value: '\$${analyticsProvider.totalRevenue.toStringAsFixed(2)}',
-              icon: Icons.attach_money,
-              color: AppTheme.successGreen,
+              icon: AppIcons.dollar,
+              color: AppColors.success,
               trend: '+12.5%',
             ),
             AnalyticsCardWidget(
               title: 'Total Orders',
               value: analyticsProvider.totalOrders.toString(),
-              icon: Icons.shopping_bag,
-              color: AppTheme.primaryBlue,
+              icon: AppIcons.orders,
+              color: AppColors.primary,
               trend: '+8.2%',
             ),
             AnalyticsCardWidget(
               title: 'Completion Rate',
               value: '${analyticsProvider.completionRate.toStringAsFixed(1)}%',
-              icon: Icons.check_circle,
-              color: AppTheme.primaryGreen,
+              icon: AppIcons.check,
+              color: AppColors.secondary,
               trend: '+2.1%',
             ),
             AnalyticsCardWidget(
               title: 'Avg Order Value',
               value:
                   '\$${analyticsProvider.averageOrderValue.toStringAsFixed(2)}',
-              icon: Icons.trending_up,
-              color: AppTheme.warningOrange,
+              icon: AppIcons.trendingUp,
+              color: AppColors.accent,
               trend: '+5.3%',
             ),
           ],
@@ -304,26 +346,26 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
               child: _buildQuickStatCard(
                 'Pending Orders',
                 analyticsProvider.pendingOrders.toString(),
-                Icons.pending,
-                AppTheme.warningOrange,
+                AppIcons.pending,
+                AppColors.accent,
               ),
             ),
-            const SizedBox(width: 16),
+            const Gap.horizontal(AppSpacing.l),
             Expanded(
               child: _buildQuickStatCard(
                 'New Customers',
                 analyticsProvider.newCustomers.toString(),
-                Icons.person_add,
-                AppTheme.infoBlue,
+                AppIcons.personAdd,
+                AppColors.primary,
               ),
             ),
-            const SizedBox(width: 16),
+            const Gap.horizontal(AppSpacing.l),
             Expanded(
               child: _buildQuickStatCard(
                 'Avg Delivery Time',
                 analyticsProvider.averageDeliveryTimeFormatted,
-                Icons.local_shipping,
-                AppTheme.primaryTeal,
+                AppIcons.delivery,
+                AppColors.secondary,
               ),
             ),
           ],
@@ -338,25 +380,27 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
     IconData icon,
     Color color,
   ) {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           children: [
             Icon(icon, color: color, size: 24),
-            const SizedBox(height: 8),
+            const Gap.vertical(AppSpacing.s),
             Text(
               value,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              style: AppTypography.textTheme.titleLarge?.copyWith(
                 color: color,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
               title,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
+              style: AppTypography.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -384,28 +428,28 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
               'Order #12345',
               '2 min ago',
               Icons.shopping_bag,
-              AppTheme.primaryBlue,
+              AppColors.primary,
             ),
             _buildActivityItem(
               'Order completed',
               'Order #12344',
               '15 min ago',
               Icons.check_circle,
-              AppTheme.successGreen,
+              AppColors.success,
             ),
             _buildActivityItem(
               'New customer registered',
               'John Doe',
               '1 hour ago',
               Icons.person_add,
-              AppTheme.infoBlue,
+              AppColors.primary,
             ),
             _buildActivityItem(
               'Driver assigned',
               'Order #12343',
               '2 hours ago',
               Icons.local_shipping,
-              AppTheme.primaryTeal,
+              AppColors.secondary,
             ),
           ],
         ),
@@ -420,6 +464,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
     IconData icon,
     Color color,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -445,18 +490,18 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                 ),
                 Text(
                   subtitle,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
           ),
           Text(
             time,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -485,14 +530,14 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                       child: _buildRevenueMetric(
                         'Total Revenue',
                         '\$${analyticsProvider.totalRevenue.toStringAsFixed(2)}',
-                        AppTheme.successGreen,
+                        AppColors.success,
                       ),
                     ),
                     Expanded(
                       child: _buildRevenueMetric(
                         'Avg Order Value',
                         '\$${analyticsProvider.averageOrderValue.toStringAsFixed(2)}',
-                        AppTheme.primaryBlue,
+                        AppColors.primary,
                       ),
                     ),
                   ],
@@ -506,6 +551,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   }
 
   Widget _buildRevenueMetric(String title, String value, Color color) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -513,7 +559,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
           title,
           style: Theme.of(
             context,
-          ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
+          ).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 4),
         Text(
@@ -609,28 +655,28 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                       child: _buildOrderMetric(
                         'Total Orders',
                         analyticsProvider.totalOrders.toString(),
-                        AppTheme.primaryBlue,
+                        AppColors.primary,
                       ),
                     ),
                     Expanded(
                       child: _buildOrderMetric(
                         'Completed',
                         analyticsProvider.completedOrders.toString(),
-                        AppTheme.successGreen,
+                        AppColors.success,
                       ),
                     ),
                     Expanded(
                       child: _buildOrderMetric(
                         'Pending',
                         analyticsProvider.pendingOrders.toString(),
-                        AppTheme.warningOrange,
+                        AppColors.accent,
                       ),
                     ),
                     Expanded(
                       child: _buildOrderMetric(
                         'Cancelled',
                         analyticsProvider.cancelledOrders.toString(),
-                        AppTheme.errorRed,
+                        AppColors.error,
                       ),
                     ),
                   ],
@@ -644,6 +690,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   }
 
   Widget _buildOrderMetric(String title, String value, Color color) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       children: [
         Text(
@@ -657,7 +704,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
           title,
           style: Theme.of(
             context,
-          ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
+          ).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
           textAlign: TextAlign.center,
         ),
       ],
@@ -746,14 +793,14 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                       child: _buildPerformanceMetric(
                         'Customer Satisfaction',
                         '${analyticsProvider.customerSatisfaction.toStringAsFixed(1)}/5.0',
-                        AppTheme.successGreen,
+                        AppColors.success,
                       ),
                     ),
                     Expanded(
                       child: _buildPerformanceMetric(
                         'Driver Efficiency',
                         '${analyticsProvider.driverEfficiency.toStringAsFixed(1)}%',
-                        AppTheme.primaryTeal,
+                        AppColors.secondary,
                       ),
                     ),
                   ],
@@ -765,14 +812,14 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                       child: _buildPerformanceMetric(
                         'Avg Delivery Time',
                         analyticsProvider.averageDeliveryTimeFormatted,
-                        AppTheme.primaryBlue,
+                        AppColors.primary,
                       ),
                     ),
                     Expanded(
                       child: _buildPerformanceMetric(
                         'Total Deliveries',
                         analyticsProvider.totalDeliveries.toString(),
-                        AppTheme.warningOrange,
+                        AppColors.accent,
                       ),
                     ),
                   ],
@@ -786,6 +833,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   }
 
   Widget _buildPerformanceMetric(String title, String value, Color color) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -793,7 +841,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
           title,
           style: Theme.of(
             context,
-          ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
+          ).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 4),
         Text(
@@ -810,6 +858,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   Widget _buildStaffPerformance() {
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
+        final colorScheme = Theme.of(context).colorScheme;
         return Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -830,16 +879,14 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          backgroundColor: AppTheme.primaryBlue.withOpacity(
-                            0.1,
-                          ),
+                          backgroundColor: AppColors.primary.withOpacity(0.1),
                           child: Text(
                             staff['name']
                                 .toString()
                                 .substring(0, 1)
                                 .toUpperCase(),
                             style: const TextStyle(
-                              color: AppTheme.primaryBlue,
+                              color: AppColors.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -857,8 +904,11 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                               ),
                               Text(
                                 '${staff['completionRate'].toStringAsFixed(1)}% completion rate',
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(color: AppTheme.mediumGrey),
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
                               ),
                             ],
                           ),
@@ -921,6 +971,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   Widget _buildTopCustomers() {
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
+        final colorScheme = Theme.of(context).colorScheme;
         return Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -941,16 +992,14 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          backgroundColor: AppTheme.successGreen.withOpacity(
-                            0.1,
-                          ),
+                          backgroundColor: AppColors.success.withOpacity(0.1),
                           child: Text(
                             customer['customerName']
                                 .toString()
                                 .substring(0, 1)
                                 .toUpperCase(),
                             style: const TextStyle(
-                              color: AppTheme.successGreen,
+                              color: AppColors.success,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -968,8 +1017,11 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                               ),
                               Text(
                                 '${customer['orderCount']} orders',
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(color: AppTheme.mediumGrey),
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
                               ),
                             ],
                           ),

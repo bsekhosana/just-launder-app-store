@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/radii.dart';
+import '../../../design_system/motion.dart';
+import '../../../design_system/icons.dart';
+import '../../../design_system/elevations.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/text_field_x.dart';
+import '../../../ui/primitives/snack_x.dart';
 import '../providers/auth_provider.dart';
 import 'otp_verification_screen.dart';
 
@@ -19,8 +29,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
   bool _agreeToTerms = false;
 
   @override
@@ -36,11 +44,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_agreeToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please agree to the terms and conditions'),
-          backgroundColor: AppTheme.errorRed,
-        ),
+      SnackXUtils.showError(
+        context,
+        message: 'Please agree to the terms and conditions',
       );
       return;
     }
@@ -69,11 +75,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Registration failed: ${e.toString()}'),
-            backgroundColor: AppTheme.errorRed,
-          ),
+        SnackXUtils.showError(
+          context,
+          message: 'Registration failed: ${e.toString()}',
         );
       }
     } finally {
@@ -85,284 +89,308 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.primaryBlue),
+        leading: AnimatedButton(
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.transparent,
           onPressed: () => Navigator.of(context).pop(),
+          child: Icon(Icons.arrow_back_ios, color: AppColors.primary),
         ),
+        centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: SpacingUtils.all(AppSpacing.xl),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
-                Text(
-                  'Create Account',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryBlue,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Join Just Laundrette and start managing your laundry business',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
-                ),
-                const SizedBox(height: 40),
-                TextFormField(
-                  controller: _businessNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Business Name',
-                    hintText: 'Enter your business name',
-                    prefixIcon: const Icon(Icons.business_outlined),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryBlue),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your business name';
-                    }
-                    if (value.length < 2) {
-                      return 'Business name must be at least 2 characters';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Email Address',
-                    hintText: 'Enter your email address',
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryBlue),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email address';
-                    }
-                    if (!RegExp(
-                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                    ).hasMatch(value)) {
-                      return 'Please enter a valid email address';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    labelText: 'Phone Number',
-                    hintText: 'Enter your phone number',
-                    prefixIcon: const Icon(Icons.phone_outlined),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryBlue),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your phone number';
-                    }
-                    if (value.length < 10) {
-                      return 'Please enter a valid phone number';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Enter your password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                Center(
+                  child: Hero(
+                    tag: 'app_icon',
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: Radii.l,
+                        boxShadow: Shadows.low,
                       ),
-                      onPressed: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryBlue),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
-                    }
-                    if (value.length < 8) {
-                      return 'Password must be at least 8 characters';
-                    }
-                    if (!RegExp(
-                      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)',
-                    ).hasMatch(value)) {
-                      return 'Password must contain uppercase, lowercase, and number';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: _obscureConfirmPassword,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm Password',
-                    hintText: 'Confirm your password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(
-                          () =>
-                              _obscureConfirmPassword =
-                                  !_obscureConfirmPassword,
-                        );
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryBlue),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
-                    }
-                    if (value != _passwordController.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _agreeToTerms,
-                      onChanged: (value) {
-                        setState(() => _agreeToTerms = value ?? false);
-                      },
-                      activeColor: AppTheme.primaryBlue,
-                    ),
-                    Expanded(
-                      child: Text.rich(
-                        TextSpan(
-                          text: 'I agree to the ',
-                          style: const TextStyle(color: AppTheme.mediumGrey),
-                          children: [
-                            TextSpan(
-                              text: 'Terms and Conditions',
-                              style: const TextStyle(
-                                color: AppTheme.primaryBlue,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const TextSpan(text: ' and '),
-                            TextSpan(
-                              text: 'Privacy Policy',
-                              style: const TextStyle(
-                                color: AppTheme.primaryBlue,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                      child: ClipRRect(
+                        borderRadius: Radii.l,
+                        child: Image.asset(
+                          'assets/images/app_icon.png',
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _register,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryBlue,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child:
-                        _isLoading
-                            ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
-                                ),
-                              ),
-                            )
-                            : const Text(
-                              'Create Account',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const Gap.vertical(AppSpacing.xxl),
+
+                // Header
+                Text(
+                      'Create Account',
+                      style: AppTypography.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    )
+                    .animate()
+                    .fadeIn(duration: AppMotion.normal)
+                    .slideY(begin: 0.3, end: 0.0, duration: AppMotion.normal),
+                const Gap.vertical(AppSpacing.s),
+                Text(
+                      'Join Just Laundrette and start managing your laundry business',
+                      style: AppTypography.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    )
+                    .animate()
+                    .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
+                    .slideY(
+                      begin: 0.3,
+                      end: 0.0,
+                      delay: AppMotion.fast,
+                      duration: AppMotion.normal,
+                    ),
+                const Gap.vertical(AppSpacing.xxxl),
+
+                // Business Name Field
+                TextFieldsX.standard(
+                      controller: _businessNameController,
+                      labelText: 'Business Name',
+                      hintText: 'Enter your business name',
+                      prefixIcon: AppIcons.branch,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your business name';
+                        }
+                        if (value.length < 2) {
+                          return 'Business name must be at least 2 characters';
+                        }
+                        return null;
+                      },
+                    )
+                    .animate()
+                    .fadeIn(delay: AppMotion.normal, duration: AppMotion.normal)
+                    .slideX(
+                      begin: -0.3,
+                      end: 0.0,
+                      delay: AppMotion.normal,
+                      duration: AppMotion.normal,
+                    ),
+                const Gap.vertical(AppSpacing.l),
+
+                // Email Field
+                TextFieldsX.email(
+                      controller: _emailController,
+                      labelText: 'Email Address',
+                      hintText: 'Enter your email address',
+                    )
+                    .animate()
+                    .fadeIn(
+                      delay: AppMotion.normal + AppMotion.fast,
+                      duration: AppMotion.normal,
+                    )
+                    .slideX(
+                      begin: -0.3,
+                      end: 0.0,
+                      delay: AppMotion.normal + AppMotion.fast,
+                      duration: AppMotion.normal,
+                    ),
+                const Gap.vertical(AppSpacing.l),
+
+                // Phone Field
+                TextFieldsX.standard(
+                      controller: _phoneController,
+                      labelText: 'Phone Number',
+                      hintText: 'Enter your phone number',
+                      prefixIcon: AppIcons.phone,
+                      keyboardType: TextInputType.phone,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your phone number';
+                        }
+                        if (value.length < 10) {
+                          return 'Please enter a valid phone number';
+                        }
+                        return null;
+                      },
+                    )
+                    .animate()
+                    .fadeIn(delay: AppMotion.slow, duration: AppMotion.normal)
+                    .slideX(
+                      begin: -0.3,
+                      end: 0.0,
+                      delay: AppMotion.slow,
+                      duration: AppMotion.normal,
+                    ),
+                const Gap.vertical(AppSpacing.l),
+
+                // Password Field
+                TextFieldsX.password(
+                      controller: _passwordController,
+                      labelText: 'Password',
+                      hintText: 'Enter your password',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a password';
+                        }
+                        if (value.length < 8) {
+                          return 'Password must be at least 8 characters';
+                        }
+                        if (!RegExp(
+                          r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)',
+                        ).hasMatch(value)) {
+                          return 'Password must contain uppercase, lowercase, and number';
+                        }
+                        return null;
+                      },
+                    )
+                    .animate()
+                    .fadeIn(
+                      delay: AppMotion.slow + AppMotion.fast,
+                      duration: AppMotion.normal,
+                    )
+                    .slideX(
+                      begin: -0.3,
+                      end: 0.0,
+                      delay: AppMotion.slow + AppMotion.fast,
+                      duration: AppMotion.normal,
+                    ),
+                const Gap.vertical(AppSpacing.l),
+
+                // Confirm Password Field
+                TextFieldsX.password(
+                      controller: _confirmPasswordController,
+                      labelText: 'Confirm Password',
+                      hintText: 'Confirm your password',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password';
+                        }
+                        if (value != _passwordController.text) {
+                          return 'Passwords do not match';
+                        }
+                        return null;
+                      },
+                    )
+                    .animate()
+                    .fadeIn(delay: AppMotion.slower, duration: AppMotion.normal)
+                    .slideX(
+                      begin: -0.3,
+                      end: 0.0,
+                      delay: AppMotion.slower,
+                      duration: AppMotion.normal,
+                    ),
+                const Gap.vertical(AppSpacing.xl),
+
+                // Terms and Conditions
+                Row(
+                      children: [
+                        Checkbox(
+                          value: _agreeToTerms,
+                          onChanged: (value) {
+                            setState(() => _agreeToTerms = value ?? false);
+                          },
+                          activeColor: AppColors.primary,
+                          shape: RoundedRectangleBorder(borderRadius: Radii.s),
+                        ),
+                        Expanded(
+                          child: Text.rich(
+                            TextSpan(
+                              text: 'I agree to the ',
+                              style: AppTypography.textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                              children: [
+                                TextSpan(
+                                  text: 'Terms and Conditions',
+                                  style: AppTypography.textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                                const TextSpan(text: ' and '),
+                                TextSpan(
+                                  text: 'Privacy Policy',
+                                  style: AppTypography.textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                    .animate()
+                    .fadeIn(
+                      delay: AppMotion.slower + AppMotion.fast,
+                      duration: AppMotion.normal,
+                    )
+                    .slideY(
+                      begin: 0.3,
+                      end: 0.0,
+                      delay: AppMotion.slower + AppMotion.fast,
+                      duration: AppMotion.normal,
+                    ),
+                const Gap.vertical(AppSpacing.xl),
+
+                // Create Account Button
+                AnimatedButtons.primary(
+                      onPressed: _isLoading ? null : _register,
+                      isLoading: _isLoading,
+                      child: Text(
+                        'Create Account',
+                        style: AppTypography.textTheme.labelLarge?.copyWith(
+                          color: AppColors.onPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    )
+                    .animate()
+                    .fadeIn(
+                      delay: AppMotion.slower + AppMotion.normal,
+                      duration: AppMotion.normal,
+                    )
+                    .slideY(
+                      begin: 0.3,
+                      end: 0.0,
+                      delay: AppMotion.slower + AppMotion.normal,
+                      duration: AppMotion.normal,
+                    ),
+                const Gap.vertical(AppSpacing.xl),
+
+                // Sign In Link
                 Center(
-                  child: TextButton(
+                  child: AnimatedButtons.text(
                     onPressed: () => Navigator.of(context).pop(),
                     child: Text.rich(
                       TextSpan(
                         text: 'Already have an account? ',
-                        style: const TextStyle(color: AppTheme.mediumGrey),
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                         children: [
                           TextSpan(
                             text: 'Sign In',
-                            style: const TextStyle(
-                              color: AppTheme.primaryBlue,
+                            style: AppTypography.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -370,6 +398,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       ),
                     ),
                   ),
+                ).animate().fadeIn(
+                  delay: AppMotion.slower + AppMotion.normal + AppMotion.fast,
+                  duration: AppMotion.normal,
                 ),
               ],
             ),
@@ -379,4 +410,3 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 }
-

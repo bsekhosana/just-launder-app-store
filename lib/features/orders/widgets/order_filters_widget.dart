@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/radii.dart';
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/chip_x.dart';
 import '../../../data/models/laundrette_order.dart';
 
 class OrderFiltersWidget extends StatefulWidget {
@@ -27,9 +32,11 @@ class _OrderFiltersWidgetState extends State<OrderFiltersWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -38,13 +45,20 @@ class _OrderFiltersWidgetState extends State<OrderFiltersWidget> {
               children: [
                 Text(
                   'Filters',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: AppTypography.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
                 TextButton(
                   onPressed: _clearFilters,
-                  child: const Text('Clear All'),
+                  child: Text(
+                    'Clear All',
+                    style: AppTypography.textTheme.labelMedium?.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -359,49 +373,49 @@ class _OrderFiltersWidgetState extends State<OrderFiltersWidget> {
   Color _getStatusColor(LaundretteOrderStatus status) {
     switch (status) {
       case LaundretteOrderStatus.pending:
-        return AppTheme.warningOrange;
+        return AppColors.accent;
       case LaundretteOrderStatus.approved:
-        return AppTheme.infoBlue;
+        return AppColors.primary;
       case LaundretteOrderStatus.declined:
-        return AppTheme.errorRed;
+        return AppColors.error;
       case LaundretteOrderStatus.confirmed:
-        return AppTheme.primaryBlue;
+        return AppColors.primary;
       case LaundretteOrderStatus.pickedUp:
-        return AppTheme.primaryTeal;
+        return AppColors.secondary;
       case LaundretteOrderStatus.inProgress:
-        return AppTheme.primaryGreen;
+        return AppColors.secondary;
       case LaundretteOrderStatus.ready:
-        return AppTheme.secondaryOrange;
+        return AppColors.accent;
       case LaundretteOrderStatus.outForDelivery:
-        return AppTheme.secondaryPurple;
+        return AppColors.primary;
       case LaundretteOrderStatus.delivered:
-        return AppTheme.successGreen;
+        return AppColors.success;
       case LaundretteOrderStatus.cancelled:
-        return AppTheme.mediumGrey;
+        return AppColors.onSurfaceVariant;
     }
   }
 
   Color _getPriorityColor(OrderPriority priority) {
     switch (priority) {
       case OrderPriority.normal:
-        return AppTheme.mediumGrey;
+        return AppColors.onSurfaceVariant;
       case OrderPriority.high:
-        return AppTheme.warningOrange;
+        return AppColors.accent;
       case OrderPriority.urgent:
-        return AppTheme.errorRed;
+        return AppColors.error;
     }
   }
 
   Color _getPaymentStatusColor(PaymentStatus status) {
     switch (status) {
       case PaymentStatus.pending:
-        return AppTheme.warningOrange;
+        return AppColors.accent;
       case PaymentStatus.paid:
-        return AppTheme.successGreen;
+        return AppColors.success;
       case PaymentStatus.failed:
-        return AppTheme.errorRed;
+        return AppColors.error;
       case PaymentStatus.refunded:
-        return AppTheme.mediumGrey;
+        return AppColors.onSurfaceVariant;
     }
   }
 

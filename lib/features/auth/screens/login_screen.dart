@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/radii.dart';
+import '../../../design_system/motion.dart';
+import '../../../design_system/icons.dart';
+import '../../../design_system/elevations.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/text_field_x.dart';
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/snack_x.dart';
+import '../../../ui/primitives/accordion_x.dart';
 import '../providers/auth_provider.dart';
 import 'forgot_password_screen.dart';
 import 'registration_screen.dart';
@@ -17,7 +29,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -28,11 +39,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: AppTheme.backgroundGrey,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: SpacingUtils.all(AppSpacing.xl),
           child: Form(
             key: _formKey,
             child: Column(
@@ -42,153 +55,215 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Logo and Title
                 Column(
                   children: [
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryBlue,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Icon(
-                        Icons.local_laundry_service,
-                        color: Colors.white,
-                        size: 60,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
+                    Hero(
+                          tag: 'app_icon',
+                          child: Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: Radii.xl,
+                              boxShadow: Shadows.medium,
+                            ),
+                            child: ClipRRect(
+                              borderRadius: Radii.xl,
+                              child: Image.asset(
+                                'assets/images/app_icon.png',
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        )
+                        .animate()
+                        .scale(
+                          duration: AppMotion.slow,
+                          curve: AppCurves.emphasized,
+                        )
+                        .fadeIn(duration: AppMotion.normal),
+                    const Gap.vertical(AppSpacing.xl),
                     Text(
-                      'Just Launder',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.displayMedium?.copyWith(
-                        color: AppTheme.primaryBlue,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
+                          'Just Launder',
+                          style: AppTypography.textTheme.displayMedium
+                              ?.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        )
+                        .animate()
+                        .fadeIn(
+                          delay: AppMotion.fast,
+                          duration: AppMotion.normal,
+                        )
+                        .slideY(
+                          begin: 0.3,
+                          end: 0.0,
+                          delay: AppMotion.fast,
+                          duration: AppMotion.normal,
+                        ),
+                    const Gap.vertical(AppSpacing.s),
                     Text(
-                      'Manage Your Laundry Business',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppTheme.mediumGrey,
-                      ),
-                    ),
+                          'Manage Your Laundry Business',
+                          style: AppTypography.textTheme.bodyLarge?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        )
+                        .animate()
+                        .fadeIn(
+                          delay: AppMotion.normal,
+                          duration: AppMotion.normal,
+                        )
+                        .slideY(
+                          begin: 0.3,
+                          end: 0.0,
+                          delay: AppMotion.normal,
+                          duration: AppMotion.normal,
+                        ),
                   ],
                 ),
-                const SizedBox(height: 48),
+                const Gap.vertical(AppSpacing.xxxl),
 
                 // Email Field
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Enter your email address',
-                    prefixIcon: Icon(Icons.email_outlined),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
+                TextFieldsX.email(
+                      controller: _emailController,
+                      labelText: 'Email',
+                      hintText: 'Enter your email address',
+                    )
+                    .animate()
+                    .fadeIn(delay: AppMotion.slow, duration: AppMotion.normal)
+                    .slideX(
+                      begin: -0.3,
+                      end: 0.0,
+                      delay: AppMotion.slow,
+                      duration: AppMotion.normal,
+                    ),
+                const Gap.vertical(AppSpacing.l),
 
                 // Password Field
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Enter your password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
+                TextFieldsX.password(
+                      controller: _passwordController,
+                      labelText: 'Password',
+                      hintText: 'Enter your password',
+                    )
+                    .animate()
+                    .fadeIn(
+                      delay: AppMotion.slow + AppMotion.fast,
+                      duration: AppMotion.normal,
+                    )
+                    .slideX(
+                      begin: -0.3,
+                      end: 0.0,
+                      delay: AppMotion.slow + AppMotion.fast,
+                      duration: AppMotion.normal,
                     ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
+                const Gap.vertical(AppSpacing.xl),
 
                 // Login Button
                 Consumer<AuthProvider>(
                   builder: (context, authProvider, child) {
-                    return ElevatedButton(
-                      onPressed: authProvider.isLoading ? null : _handleLogin,
-                      child:
-                          authProvider.isLoading
-                              ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
-                                  ),
-                                ),
-                              )
-                              : const Text('Login'),
-                    );
+                    return AnimatedButtons.primary(
+                          onPressed:
+                              authProvider.isLoading ? null : _handleLogin,
+                          isLoading: authProvider.isLoading,
+                          child: Text(
+                            'Login',
+                            style: AppTypography.textTheme.labelLarge?.copyWith(
+                              color: AppColors.onPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        )
+                        .animate()
+                        .fadeIn(
+                          delay: AppMotion.slower,
+                          duration: AppMotion.normal,
+                        )
+                        .slideY(
+                          begin: 0.3,
+                          end: 0.0,
+                          delay: AppMotion.slower,
+                          duration: AppMotion.normal,
+                        );
                   },
                 ),
-                const SizedBox(height: 16),
+                const Gap.vertical(AppSpacing.l),
 
-                // Demo Accounts Info
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.lightGrey.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.lightGrey),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Demo Accounts:',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                // Demo Accounts Accordion
+                AccordionX(
+                      title: 'Demo Accounts',
+                      icon: AppIcons.staff,
+                      content: Column(
+                        children: [
+                          DemoAccountItem(
+                            accountType: 'Business Account',
+                            email: 'business@laundrette.com',
+                            password: 'password',
+                            onEmailCopy: () {
+                              Clipboard.setData(
+                                const ClipboardData(
+                                  text: 'business@laundrette.com',
+                                ),
+                              );
+                              SnackXUtils.showSuccess(
+                                context,
+                                message: 'Email copied to clipboard',
+                              );
+                            },
+                            onPasswordCopy: () {
+                              Clipboard.setData(
+                                const ClipboardData(text: 'password'),
+                              );
+                              SnackXUtils.showSuccess(
+                                context,
+                                message: 'Password copied to clipboard',
+                              );
+                            },
+                          ),
+                          DemoAccountItem(
+                            accountType: 'Private Account',
+                            email: 'private@laundrette.com',
+                            password: 'password',
+                            onEmailCopy: () {
+                              Clipboard.setData(
+                                const ClipboardData(
+                                  text: 'private@laundrette.com',
+                                ),
+                              );
+                              SnackXUtils.showSuccess(
+                                context,
+                                message: 'Email copied to clipboard',
+                              );
+                            },
+                            onPasswordCopy: () {
+                              Clipboard.setData(
+                                const ClipboardData(text: 'password'),
+                              );
+                              SnackXUtils.showSuccess(
+                                context,
+                                message: 'Password copied to clipboard',
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      _buildDemoAccountRow(
-                        'Business: business@laundrette.com / password',
-                        'business@laundrette.com',
-                        'password',
-                      ),
-                      const SizedBox(height: 4),
-                      _buildDemoAccountRow(
-                        'Private: private@laundrette.com / password',
-                        'private@laundrette.com',
-                        'password',
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
+                    )
+                    .animate()
+                    .fadeIn(
+                      delay: AppMotion.slower + AppMotion.fast,
+                      duration: AppMotion.normal,
+                    )
+                    .slideY(
+                      begin: 0.3,
+                      end: 0.0,
+                      delay: AppMotion.slower + AppMotion.fast,
+                      duration: AppMotion.normal,
+                    ),
+                const Gap.vertical(AppSpacing.xl),
 
                 // Forgot Password Link
                 Center(
-                  child: TextButton(
+                  child: AnimatedButtons.text(
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -198,18 +273,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     child: Text(
                       'Forgot Password?',
-                      style: TextStyle(
-                        color: AppTheme.primaryBlue,
+                      style: AppTypography.textTheme.labelMedium?.copyWith(
+                        color: AppColors.primary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
+                ).animate().fadeIn(
+                  delay: AppMotion.slower + AppMotion.normal,
+                  duration: AppMotion.normal,
                 ),
-                const SizedBox(height: 16),
+                const Gap.vertical(AppSpacing.l),
 
                 // Register Link
                 Center(
-                  child: TextButton(
+                  child: AnimatedButtons.text(
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -220,12 +298,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text.rich(
                       TextSpan(
                         text: 'Don\'t have an account? ',
-                        style: const TextStyle(color: AppTheme.mediumGrey),
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                         children: [
                           TextSpan(
                             text: 'Sign Up',
-                            style: const TextStyle(
-                              color: AppTheme.primaryBlue,
+                            style: AppTypography.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -233,6 +313,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
+                ).animate().fadeIn(
+                  delay: AppMotion.slower + AppMotion.normal + AppMotion.fast,
+                  duration: AppMotion.normal,
                 ),
               ],
             ),
@@ -242,75 +325,23 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildDemoAccountRow(String label, String email, String password) {
-    return InkWell(
-      onTap: () {
-        _emailController.text = email;
-        _passwordController.text = password;
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppTheme.lightGrey),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(label, style: Theme.of(context).textTheme.bodySmall),
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: email));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Email copied to clipboard'),
-                    backgroundColor: AppTheme.successGreen,
-                  ),
-                );
-              },
-              icon: const Icon(Icons.copy, size: 16),
-              tooltip: 'Copy email',
-            ),
-            IconButton(
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: password));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Password copied to clipboard'),
-                    backgroundColor: AppTheme.successGreen,
-                  ),
-                );
-              },
-              icon: const Icon(Icons.copy, size: 16),
-              tooltip: 'Copy password',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
       final success = await authProvider.login(
         _emailController.text.trim(),
         _passwordController.text,
       );
 
       if (success) {
+        if (mounted) {
+          SnackXUtils.showSuccess(context, message: 'Login successful!');
+        }
         // Navigation will be handled by AppWrapper
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid email or password'),
-              backgroundColor: AppTheme.errorRed,
-            ),
-          );
+          SnackXUtils.showError(context, message: 'Invalid email or password');
         }
       }
     }

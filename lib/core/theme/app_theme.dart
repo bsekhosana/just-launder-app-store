@@ -4,26 +4,27 @@ import 'package:google_fonts/google_fonts.dart';
 /// App theme configuration for Just Laundrette management app
 class AppTheme {
   // Primary colors - Management focused (slightly different from customer app)
-  static const Color primaryBlue = Color(0xFF2E5BBA);
+  static const Color primaryBlue = Color(0xFFfb6406); // Orange primary
   static const Color primaryTeal = Color(0xFF20B2AA);
   static const Color primaryGreen = Color(0xFF4CAF50);
-  
+
   // Secondary colors
   static const Color secondaryOrange = Color(0xFFFF9800);
   static const Color secondaryPurple = Color(0xFF9C27B0);
-  
+  static const Color secondaryWhite = Colors.white; // White secondary
+
   // Neutral colors
   static const Color darkGrey = Color(0xFF2C2C2C);
   static const Color mediumGrey = Color(0xFF666666);
   static const Color lightGrey = Color(0xFFE0E0E0);
   static const Color backgroundGrey = Color(0xFFF5F5F5);
-  
+
   // Status colors
   static const Color successGreen = Color(0xFF4CAF50);
   static const Color warningOrange = Color(0xFFFF9800);
   static const Color errorRed = Color(0xFFF44336);
   static const Color infoBlue = Color(0xFF2196F3);
-  
+
   // Business vs Private colors
   static const Color businessGold = Color(0xFFFFD700);
   static const Color privateSilver = Color(0xFFC0C0C0);
@@ -129,10 +130,7 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           color: darkGrey,
         ),
-        iconTheme: const IconThemeData(
-          color: darkGrey,
-          size: 24,
-        ),
+        iconTheme: const IconThemeData(color: darkGrey, size: 24),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -140,9 +138,7 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 2,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -154,9 +150,7 @@ class AppTheme {
           foregroundColor: primaryBlue,
           side: const BorderSide(color: primaryBlue, width: 1.5),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -196,22 +190,17 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: errorRed, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        labelStyle: GoogleFonts.inter(
-          color: mediumGrey,
-          fontSize: 14,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
         ),
-        hintStyle: GoogleFonts.inter(
-          color: mediumGrey,
-          fontSize: 14,
-        ),
+        labelStyle: GoogleFonts.inter(color: mediumGrey, fontSize: 14),
+        hintStyle: GoogleFonts.inter(color: mediumGrey, fontSize: 14),
       ),
       cardTheme: CardTheme(
         color: Colors.white,
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(8),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
