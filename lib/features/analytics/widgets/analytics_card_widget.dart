@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../ui/primitives/card_x.dart';
 
 class AnalyticsCardWidget extends StatelessWidget {
   final String title;
@@ -21,64 +24,70 @@ class AnalyticsCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(icon, color: color, size: 20),
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
+      onTap: onTap,
+      child: Container(
+        height: 200,
+        padding: SpacingUtils.all(AppSpacing.s),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: SpacingUtils.all(AppSpacing.xs),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  if (trend != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getTrendColor(trend!).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        trend!,
-                        style: TextStyle(
-                          color: _getTrendColor(trend!),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
+                  child: Icon(icon, color: color, size: 18),
+                ),
+                if (trend != null)
+                  Container(
+                    padding: SpacingUtils.symmetric(
+                      horizontal: AppSpacing.s,
+                      vertical: AppSpacing.xs,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getTrendColor(trend!).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      trend!,
+                      style: AppTypography.textTheme.labelSmall?.copyWith(
+                        color: _getTrendColor(trend!),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10,
                       ),
                     ),
-                ],
+                  ),
+              ],
+            ),
+            const Spacer(),
+            Text(
+              value,
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
               ),
-              const SizedBox(height: 12),
-              Text(
-                value,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.bold,
-                ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              title,
+              style: AppTypography.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
-              const SizedBox(height: 4),
-              Text(
-                title,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
-              ),
-            ],
-          ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ),
     );
@@ -86,11 +95,11 @@ class AnalyticsCardWidget extends StatelessWidget {
 
   Color _getTrendColor(String trend) {
     if (trend.startsWith('+')) {
-      return AppTheme.successGreen;
+      return AppColors.success;
     } else if (trend.startsWith('-')) {
-      return AppTheme.errorRed;
+      return AppColors.error;
     } else {
-      return AppTheme.mediumGrey;
+      return AppColors.onSurfaceVariant;
     }
   }
 }

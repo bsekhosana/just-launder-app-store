@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/motion.dart';
+import '../../../design_system/icons.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/snack_x.dart';
 import '../providers/staff_provider.dart';
 import '../../../data/models/staff_member.dart';
 import '../../branches/providers/branch_provider.dart';
@@ -118,17 +126,20 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
   }
 
   Widget _buildBasicInfoSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Basic Information',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -210,7 +221,7 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
                     decoration: const InputDecoration(
                       labelText: 'Hourly Rate',
                       hintText: '0.00',
-                      prefixText: '\$',
+                      prefixText: '£',
                     ),
                     keyboardType: TextInputType.number,
                   ),
@@ -224,17 +235,20 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
   }
 
   Widget _buildRoleAndStatusSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Role & Status',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<StaffRole>(
@@ -277,17 +291,20 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
   }
 
   Widget _buildBranchAssignmentSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Branch Assignment',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             Consumer<BranchProvider>(
@@ -327,17 +344,20 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
   }
 
   Widget _buildWorkingHoursSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Working Hours',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             ..._workingHours.entries.map((entry) {
@@ -376,17 +396,20 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
   }
 
   Widget _buildPermissionsSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Permissions',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             ..._permissions.entries.map((entry) {
@@ -415,8 +438,7 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
         return 'Manager';
       case StaffRole.staff:
         return 'Staff';
-      case StaffRole.driver:
-        return 'Driver';
+      // Driver role removed - handled by standalone app
       case StaffRole.cleaner:
         return 'Cleaner';
     }
@@ -527,14 +549,14 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
                 ? 'Staff member updated successfully'
                 : 'Staff member added successfully',
           ),
-          backgroundColor: AppTheme.successGreen,
+          backgroundColor: AppColors.successGreen,
         ),
       );
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Failed to save staff member'),
-          backgroundColor: AppTheme.errorRed,
+          backgroundColor: AppColors.errorRed,
         ),
       );
     }

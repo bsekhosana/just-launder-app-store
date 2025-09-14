@@ -335,7 +335,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (success) {
         if (mounted) {
-          print('Login successful, authentication state should be updated');
           SnackXUtils.showSuccess(context, message: 'Login successful!');
           // Navigation will be handled by AppWrapper
         }

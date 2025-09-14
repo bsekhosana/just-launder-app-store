@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/motion.dart';
+// Removed unused imports
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/snack_x.dart';
 import '../../../data/models/subscription.dart';
 import '../../profile/providers/laundrette_profile_provider.dart';
 
@@ -16,32 +23,56 @@ class _SubscriptionManagementScreenState
     extends State<SubscriptionManagementScreen> {
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Subscription Management'),
-        backgroundColor: AppTheme.primaryBlue,
-        foregroundColor: Colors.white,
+        title: Text(
+          'Subscription Management',
+          style: AppTypography.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: colorScheme.onSurface,
       ),
       body: Consumer<LaundretteProfileProvider>(
         builder: (context, profileProvider, child) {
           final profile = profileProvider.currentProfile;
           final subscription = profileProvider.currentSubscription;
           if (profile == null || subscription == null) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: SpacingUtils.all(AppSpacing.l),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildCurrentPlanCard(subscription),
-                const SizedBox(height: 24),
-                _buildPlanComparison(),
-                const SizedBox(height: 24),
-                _buildBillingHistory(),
-                const SizedBox(height: 24),
-                _buildUpgradeOptions(subscription),
+                _buildCurrentPlanCard(subscription)
+                    .animate()
+                    .fadeIn(duration: AppMotion.normal)
+                    .slideY(begin: 0.1, end: 0.0),
+                const Gap.vertical(AppSpacing.l),
+                _buildPlanComparison()
+                    .animate()
+                    .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
+                    .slideY(begin: 0.1, end: 0.0),
+                const Gap.vertical(AppSpacing.l),
+                _buildBillingHistory()
+                    .animate()
+                    .fadeIn(delay: AppMotion.normal, duration: AppMotion.normal)
+                    .slideY(begin: 0.1, end: 0.0),
+                const Gap.vertical(AppSpacing.l),
+                _buildUpgradeOptions(subscription)
+                    .animate()
+                    .fadeIn(delay: AppMotion.slow, duration: AppMotion.normal)
+                    .slideY(begin: 0.1, end: 0.0),
               ],
             ),
           );
@@ -51,10 +82,11 @@ class _SubscriptionManagementScreenState
   }
 
   Widget _buildCurrentPlanCard(Subscription subscription) {
-    return Card(
-      elevation: 4,
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: SpacingUtils.all(AppSpacing.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -65,19 +97,19 @@ class _SubscriptionManagementScreenState
                   color: _getPlanColor(subscription.type),
                   size: 24,
                 ),
-                const SizedBox(width: 12),
+                const Gap.horizontal(AppSpacing.s),
                 Text(
                   'Current Plan: ${subscription.type.name.toUpperCase()}',
-                  style: const TextStyle(
-                    fontSize: 20,
+                  style: AppTypography.textTheme.titleLarge?.copyWith(
+                    color: colorScheme.onSurface,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildPlanDetails(subscription),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildUsageStats(subscription),
           ],
         ),
@@ -90,7 +122,7 @@ class _SubscriptionManagementScreenState
       children: [
         _buildDetailRow(
           'Monthly Cost',
-          '\$${subscription.monthlyPrice.toStringAsFixed(2)}',
+          '£${subscription.monthlyPrice.toStringAsFixed(2)}',
         ),
         _buildDetailRow('Plan Tier', subscription.currentTier),
         _buildDetailRow(
@@ -119,39 +151,57 @@ class _SubscriptionManagementScreenState
   }
 
   Widget _buildDetailRow(String label, String value) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: AppTheme.mediumGrey)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          Text(
+            value,
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildUsageStats(Subscription subscription) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: SpacingUtils.all(AppSpacing.m),
       decoration: BoxDecoration(
-        color: AppTheme.lightGrey.withOpacity(0.1),
+        color: AppColors.surfaceVariant.withOpacity(0.3),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Current Usage',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: AppTypography.textTheme.titleMedium?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          const SizedBox(height: 12),
+          const Gap.vertical(AppSpacing.s),
           _buildUsageBar(
             'Branches',
             2,
             subscription.getFeature(SubscriptionFeatures.maxBranches),
           ),
-          const SizedBox(height: 8),
+          const Gap.vertical(AppSpacing.xs),
           _buildUsageBar(
             'Staff',
             5,
@@ -163,20 +213,36 @@ class _SubscriptionManagementScreenState
   }
 
   Widget _buildUsageBar(String label, int current, int max) {
+    final colorScheme = Theme.of(context).colorScheme;
     final percentage = (current / max).clamp(0.0, 1.0);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text(label), Text('$current / $max')],
+          children: [
+            Text(
+              label,
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface,
+              ),
+            ),
+            Text(
+              '$current / $max',
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 4),
+        const Gap.vertical(AppSpacing.xs),
         LinearProgressIndicator(
           value: percentage,
-          backgroundColor: AppTheme.lightGrey.withOpacity(0.3),
+          backgroundColor: AppColors.surfaceVariant.withOpacity(0.3),
           valueColor: AlwaysStoppedAnimation<Color>(
-            percentage > 0.8 ? AppTheme.errorRed : AppTheme.primaryBlue,
+            percentage > 0.8 ? AppColors.error : AppColors.primary,
           ),
         ),
       ],
@@ -194,7 +260,7 @@ class _SubscriptionManagementScreenState
         const SizedBox(height: 16),
         _buildPlanCard(
           'Starter',
-          '\$29.99/month',
+          '£29.99/month',
           'Perfect for small laundrettes',
           ['1 Branch', 'Up to 3 Staff', 'Basic Analytics', 'Email Support'],
           SubscriptionType.private,
@@ -202,7 +268,7 @@ class _SubscriptionManagementScreenState
         const SizedBox(height: 12),
         _buildPlanCard(
           'Professional',
-          '\$79.99/month',
+          '£79.99/month',
           'Ideal for growing businesses',
           [
             'Up to 5 Branches',
@@ -216,7 +282,7 @@ class _SubscriptionManagementScreenState
         const SizedBox(height: 12),
         _buildPlanCard(
           'Enterprise',
-          '\$199.99/month',
+          '£199.99/month',
           'For large operations',
           [
             'Unlimited Branches',
@@ -240,6 +306,7 @@ class _SubscriptionManagementScreenState
     List<String> features,
     SubscriptionType type,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -269,7 +336,9 @@ class _SubscriptionManagementScreenState
             const SizedBox(height: 8),
             Text(
               description,
-              style: const TextStyle(color: AppTheme.mediumGrey),
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 12),
             ...features.map(
@@ -277,11 +346,7 @@ class _SubscriptionManagementScreenState
                 padding: const EdgeInsets.symmetric(vertical: 2),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.check,
-                      color: AppTheme.successGreen,
-                      size: 16,
-                    ),
+                    const Icon(Icons.check, color: AppColors.success, size: 16),
                     const SizedBox(width: 8),
                     Text(feature),
                   ],
@@ -320,22 +385,17 @@ class _SubscriptionManagementScreenState
             children: [
               _buildBillingItem(
                 'December 2024',
-                '\$79.99',
+                '£79.99',
                 'Professional Plan',
                 true,
               ),
               _buildBillingItem(
                 'November 2024',
-                '\$79.99',
+                '£79.99',
                 'Professional Plan',
                 true,
               ),
-              _buildBillingItem(
-                'October 2024',
-                '\$29.99',
-                'Starter Plan',
-                true,
-              ),
+              _buildBillingItem('October 2024', '£29.99', 'Starter Plan', true),
             ],
           ),
         ),
@@ -344,6 +404,7 @@ class _SubscriptionManagementScreenState
   }
 
   Widget _buildBillingItem(String date, String amount, String plan, bool paid) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -353,7 +414,12 @@ class _SubscriptionManagementScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(date, style: const TextStyle(fontWeight: FontWeight.w600)),
-              Text(plan, style: const TextStyle(color: AppTheme.mediumGrey)),
+              Text(
+                plan,
+                style: AppTypography.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
           Row(
@@ -368,7 +434,7 @@ class _SubscriptionManagementScreenState
               const SizedBox(width: 8),
               Icon(
                 paid ? Icons.check_circle : Icons.pending,
-                color: paid ? AppTheme.successGreen : AppTheme.warningOrange,
+                color: paid ? AppColors.success : AppColors.warning,
                 size: 20,
               ),
             ],
@@ -393,7 +459,7 @@ class _SubscriptionManagementScreenState
               child: _buildActionCard(
                 'Upgrade Plan',
                 Icons.trending_up,
-                AppTheme.successGreen,
+                AppColors.success,
                 () => _showUpgradeDialog(SubscriptionType.business),
               ),
             ),
@@ -402,7 +468,7 @@ class _SubscriptionManagementScreenState
               child: _buildActionCard(
                 'Download Invoice',
                 Icons.download,
-                AppTheme.primaryBlue,
+                AppColors.primary,
                 () => _downloadInvoice(),
               ),
             ),
@@ -415,7 +481,7 @@ class _SubscriptionManagementScreenState
               child: _buildActionCard(
                 'Payment Method',
                 Icons.payment,
-                AppTheme.warningOrange,
+                AppColors.warning,
                 () => _managePaymentMethod(),
               ),
             ),
@@ -424,7 +490,7 @@ class _SubscriptionManagementScreenState
               child: _buildActionCard(
                 'Cancel Subscription',
                 Icons.cancel,
-                AppTheme.errorRed,
+                AppColors.error,
                 () => _showCancelDialog(),
               ),
             ),
@@ -465,9 +531,9 @@ class _SubscriptionManagementScreenState
   Color _getPlanColor(SubscriptionType type) {
     switch (type) {
       case SubscriptionType.private:
-        return AppTheme.primaryBlue;
+        return AppColors.primary;
       case SubscriptionType.business:
-        return AppTheme.successGreen;
+        return AppColors.success;
     }
   }
 
@@ -503,33 +569,22 @@ class _SubscriptionManagementScreenState
 
   void _upgradePlan(SubscriptionType newType) {
     // TODO: Implement plan upgrade logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Plan upgrade initiated. You will be redirected to payment.',
-        ),
-        backgroundColor: AppTheme.successGreen,
-      ),
+    SnackXUtils.showSuccess(
+      context,
+      message: 'Plan upgrade initiated. You will be redirected to payment.',
     );
   }
 
   void _downloadInvoice() {
     // TODO: Implement invoice download
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Invoice download started...'),
-        backgroundColor: AppTheme.primaryBlue,
-      ),
-    );
+    SnackXUtils.showInfo(context, message: 'Invoice download started...');
   }
 
   void _managePaymentMethod() {
     // TODO: Implement payment method management
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Redirecting to payment management...'),
-        backgroundColor: AppTheme.warningOrange,
-      ),
+    SnackXUtils.showInfo(
+      context,
+      message: 'Redirecting to payment management...',
     );
   }
 
@@ -553,7 +608,7 @@ class _SubscriptionManagementScreenState
                   _cancelSubscription();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.errorRed,
+                  backgroundColor: AppColors.error,
                 ),
                 child: const Text('Cancel Subscription'),
               ),
@@ -564,11 +619,9 @@ class _SubscriptionManagementScreenState
 
   void _cancelSubscription() {
     // TODO: Implement subscription cancellation
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Subscription cancellation requested.'),
-        backgroundColor: AppTheme.errorRed,
-      ),
+    SnackXUtils.showError(
+      context,
+      message: 'Subscription cancellation requested.',
     );
   }
 }

@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/motion.dart';
+import '../../../design_system/icons.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/snack_x.dart';
 import '../../../data/models/laundrette_branch.dart';
 import 'add_edit_branch_screen.dart';
 import '../widgets/branch_stats_widget.dart';
@@ -11,31 +19,55 @@ class BranchDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(branch.name),
+        title: Text(
+          branch.name,
+          style: AppTypography.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: colorScheme.onSurface,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => _editBranch(context),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: AnimatedButton(
+              onPressed: () => _editBranch(context),
+              backgroundColor: Colors.white,
+              width: 48,
+              height: 48,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white, width: 1),
+              tooltip: 'Edit Branch',
+              child: Align(
+                alignment: Alignment.center,
+                child: Icon(Icons.edit, color: AppColors.primary, size: 20),
+              ),
+            ),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             BranchStatsWidget(branch: branch),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildStatusCard(context),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildBasicInfoCard(context),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildOperatingHoursCard(context),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildPricingCard(context),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildSettingsCard(context),
           ],
         ),
@@ -44,9 +76,11 @@ class BranchDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildStatusCard(BuildContext context) {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -55,9 +89,10 @@ class BranchDetailsScreen extends StatelessWidget {
               children: [
                 Text(
                   'Status',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: AppTypography.textTheme.titleLarge?.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -67,23 +102,23 @@ class BranchDetailsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color:
                         branch.isCurrentlyOpen
-                            ? AppTheme.successGreen.withOpacity(0.1)
-                            : AppTheme.errorRed.withOpacity(0.1),
+                            ? AppColors.successGreen.withOpacity(0.1)
+                            : AppColors.errorRed.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color:
                           branch.isCurrentlyOpen
-                              ? AppTheme.successGreen
-                              : AppTheme.errorRed,
+                              ? AppColors.successGreen
+                              : AppColors.errorRed,
                     ),
                   ),
                   child: Text(
                     branch.isCurrentlyOpen ? 'OPEN' : 'CLOSED',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    style: AppTypography.textTheme.bodySmall?.copyWith(
                       color:
                           branch.isCurrentlyOpen
-                              ? AppTheme.successGreen
-                              : AppTheme.errorRed,
+                              ? AppColors.successGreen
+                              : AppColors.errorRed,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -104,7 +139,7 @@ class BranchDetailsScreen extends StatelessWidget {
                   context,
                   'Orders',
                   '${branch.currentOrderCount}/${branch.maxConcurrentOrders}',
-                  AppTheme.primaryBlue,
+                  AppColors.primaryBlue,
                 ),
               ],
             ),
@@ -127,12 +162,12 @@ class BranchDetailsScreen extends StatelessWidget {
           label,
           style: Theme.of(
             context,
-          ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
+          ).textTheme.bodySmall?.copyWith(color: AppColors.mediumGrey),
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          style: AppTypography.textTheme.titleMedium?.copyWith(
             color: color,
             fontWeight: FontWeight.bold,
           ),
@@ -142,9 +177,9 @@ class BranchDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildBasicInfoCard(BuildContext context) {
-    return Card(
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -154,7 +189,7 @@ class BranchDetailsScreen extends StatelessWidget {
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildInfoRow(context, 'Name', branch.name),
             if (branch.description != null)
               _buildInfoRow(context, 'Description', branch.description!),
@@ -175,9 +210,9 @@ class BranchDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildOperatingHoursCard(BuildContext context) {
-    return Card(
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -187,7 +222,7 @@ class BranchDetailsScreen extends StatelessWidget {
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             ...branch.operatingHours.entries.map((entry) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -203,8 +238,8 @@ class BranchDetailsScreen extends StatelessWidget {
                       style: TextStyle(
                         color:
                             entry.value.toLowerCase() == 'closed'
-                                ? AppTheme.errorRed
-                                : AppTheme.darkGrey,
+                                ? AppColors.errorRed
+                                : AppColors.darkGrey,
                         fontWeight:
                             entry.value.toLowerCase() == 'closed'
                                 ? FontWeight.w600
@@ -222,9 +257,9 @@ class BranchDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildPricingCard(BuildContext context) {
-    return Card(
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -234,7 +269,7 @@ class BranchDetailsScreen extends StatelessWidget {
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             Text(
               'Bag Pricing',
               style: Theme.of(
@@ -250,14 +285,14 @@ class BranchDetailsScreen extends StatelessWidget {
                   children: [
                     Text(entry.key.replaceAll('_', ' ').toUpperCase()),
                     Text(
-                      '\$${entry.value.toStringAsFixed(2)}',
+                      '£${entry.value.toStringAsFixed(2)}',
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
               );
             }).toList(),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             Text(
               'Service Pricing',
               style: Theme.of(
@@ -273,7 +308,7 @@ class BranchDetailsScreen extends StatelessWidget {
                   children: [
                     Text(entry.key.replaceAll('_', ' ').toUpperCase()),
                     Text(
-                      '\$${entry.value.toStringAsFixed(2)}',
+                      '£${entry.value.toStringAsFixed(2)}',
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ],
@@ -287,9 +322,9 @@ class BranchDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildSettingsCard(BuildContext context) {
-    return Card(
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -299,7 +334,7 @@ class BranchDetailsScreen extends StatelessWidget {
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildSettingItem(
               context,
               'Auto Accept Orders',
@@ -330,7 +365,7 @@ class BranchDetailsScreen extends StatelessWidget {
         children: [
           Icon(
             value ? Icons.check_circle : Icons.cancel,
-            color: value ? AppTheme.successGreen : AppTheme.errorRed,
+            color: value ? AppColors.successGreen : AppColors.errorRed,
             size: 20,
           ),
           const SizedBox(width: 12),
@@ -346,7 +381,7 @@ class BranchDetailsScreen extends StatelessWidget {
                   subtitle,
                   style: Theme.of(
                     context,
-                  ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
+                  ).textTheme.bodySmall?.copyWith(color: AppColors.mediumGrey),
                 ),
               ],
             ),
@@ -368,14 +403,14 @@ class BranchDetailsScreen extends StatelessWidget {
               '$label:',
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
-                color: AppTheme.mediumGrey,
+                color: AppColors.mediumGrey,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(color: AppTheme.darkGrey),
+              style: const TextStyle(color: AppColors.darkGrey),
             ),
           ),
         ],
@@ -386,13 +421,13 @@ class BranchDetailsScreen extends StatelessWidget {
   Color _getStatusColor(BranchStatus status) {
     switch (status) {
       case BranchStatus.active:
-        return AppTheme.successGreen;
+        return AppColors.successGreen;
       case BranchStatus.inactive:
-        return AppTheme.mediumGrey;
+        return AppColors.mediumGrey;
       case BranchStatus.maintenance:
-        return AppTheme.warningOrange;
+        return AppColors.warningOrange;
       case BranchStatus.closed:
-        return AppTheme.errorRed;
+        return AppColors.errorRed;
     }
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design_system/color_schemes.dart';
 import '../providers/analytics_provider.dart';
 
 class OrdersChartWidget extends StatelessWidget {
@@ -16,13 +16,13 @@ class OrdersChartWidget extends StatelessWidget {
           return Container(
             height: 200,
             decoration: BoxDecoration(
-              color: AppTheme.lightGrey.withOpacity(0.1),
+              color: AppColors.lightGrey.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Center(
               child: Text(
                 'No orders data available',
-                style: TextStyle(color: AppTheme.mediumGrey, fontSize: 16),
+                style: TextStyle(color: AppColors.mediumGrey, fontSize: 16),
               ),
             ),
           );
@@ -32,7 +32,7 @@ class OrdersChartWidget extends StatelessWidget {
           height: 200,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppTheme.lightGrey.withOpacity(0.05),
+            color: AppColors.lightGrey.withOpacity(0.05),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
@@ -74,8 +74,8 @@ class OrdersChartWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildLegendItem('Orders', AppTheme.primaryBlue),
-        _buildLegendItem('Average', AppTheme.warningOrange),
+        _buildLegendItem('Orders', AppColors.primary),
+        _buildLegendItem('Average', AppColors.warning),
       ],
     );
   }
@@ -94,7 +94,7 @@ class OrdersChartWidget extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(color: AppTheme.mediumGrey, fontSize: 12),
+          style: const TextStyle(color: AppColors.mediumGrey, fontSize: 12),
         ),
       ],
     );
@@ -132,7 +132,7 @@ class OrdersChartPainter extends CustomPainter {
       // Bar background
       final backgroundPaint =
           Paint()
-            ..color = AppTheme.lightGrey.withOpacity(0.2)
+            ..color = AppColors.lightGrey.withOpacity(0.2)
             ..style = PaintingStyle.fill;
 
       canvas.drawRect(
@@ -143,7 +143,7 @@ class OrdersChartPainter extends CustomPainter {
       // Bar
       final barPaint =
           Paint()
-            ..color = AppTheme.primaryBlue
+            ..color = AppColors.primary
             ..style = PaintingStyle.fill;
 
       canvas.drawRect(Rect.fromLTWH(x, y, barWidth, barHeight), barPaint);
@@ -151,7 +151,7 @@ class OrdersChartPainter extends CustomPainter {
       // Bar border
       final borderPaint =
           Paint()
-            ..color = AppTheme.primaryBlue
+            ..color = AppColors.primary
             ..style = PaintingStyle.stroke
             ..strokeWidth = 1.0;
 
@@ -167,7 +167,7 @@ class OrdersChartPainter extends CustomPainter {
 
       final averagePaint =
           Paint()
-            ..color = AppTheme.warningOrange
+            ..color = AppColors.warning
             ..style = PaintingStyle.stroke
             ..strokeWidth = 2.0;
 

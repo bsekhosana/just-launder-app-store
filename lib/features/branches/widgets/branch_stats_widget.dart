@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design_system/color_schemes.dart';
 import '../../../data/models/laundrette_branch.dart';
 
 class BranchStatsWidget extends StatelessWidget {
@@ -30,16 +30,16 @@ class BranchStatsWidget extends StatelessWidget {
                     'Orders Today',
                     '12',
                     Icons.shopping_bag,
-                    AppTheme.primaryBlue,
+                    AppColors.primary,
                   ),
                 ),
                 Expanded(
                   child: _buildStatItem(
                     context,
                     'Revenue Today',
-                    '\$245.50',
+                    '£245.50',
                     Icons.attach_money,
-                    AppTheme.successGreen,
+                    AppColors.success,
                   ),
                 ),
               ],
@@ -53,7 +53,7 @@ class BranchStatsWidget extends StatelessWidget {
                     'Capacity',
                     '${branch.currentOrderCount}/${branch.maxConcurrentOrders}',
                     Icons.storage,
-                    AppTheme.warningOrange,
+                    AppColors.warning,
                   ),
                 ),
                 Expanded(
@@ -62,7 +62,7 @@ class BranchStatsWidget extends StatelessWidget {
                     'Efficiency',
                     '85%',
                     Icons.trending_up,
-                    AppTheme.primaryTeal,
+                    AppColors.info,
                   ),
                 ),
               ],
@@ -104,7 +104,7 @@ class BranchStatsWidget extends StatelessWidget {
           label,
           style: Theme.of(
             context,
-          ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
+          ).textTheme.bodySmall?.copyWith(color: AppColors.mediumGrey),
           textAlign: TextAlign.center,
         ),
       ],
@@ -113,7 +113,7 @@ class BranchStatsWidget extends StatelessWidget {
 
   Widget _buildStatusIndicator(BuildContext context) {
     final statusColor =
-        branch.isCurrentlyOpen ? AppTheme.successGreen : AppTheme.errorRed;
+        branch.isCurrentlyOpen ? AppColors.success : AppColors.error;
     final statusText = branch.isCurrentlyOpen ? 'Open' : 'Closed';
     final statusIcon =
         branch.isCurrentlyOpen ? Icons.check_circle : Icons.cancel;
@@ -141,13 +141,13 @@ class BranchStatsWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: AppTheme.primaryBlue.withOpacity(0.1),
+                color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 'AUTO ACCEPT',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.primaryBlue,
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w600,
                 ),
               ),

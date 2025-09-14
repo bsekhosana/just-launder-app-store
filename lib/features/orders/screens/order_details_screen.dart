@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/card_x.dart';
 import '../providers/order_provider.dart';
 import '../../../data/models/laundrette_order.dart';
 import '../../staff/providers/staff_provider.dart';
@@ -18,7 +22,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadStaff();
+    // Load staff after the first frame is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadStaff();
+    });
   }
 
   Future<void> _loadStaff() async {
@@ -28,24 +35,50 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Order #${widget.order.id}'),
+        title: Text(
+          'Order #${widget.order.id}',
+          style: AppTypography.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: colorScheme.onSurface,
         actions: [
           if (widget.order.isPendingApproval) ...[
-            TextButton(
+            AnimatedButtons.secondary(
               onPressed: () => _approveOrder(),
-              child: const Text('Approve'),
+              child: Text(
+                'Approve',
+                style: AppTypography.textTheme.labelMedium?.copyWith(
+                  color: AppColors.success,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
-            TextButton(
+            const Gap.horizontal(AppSpacing.xs),
+            AnimatedButtons.secondary(
               onPressed: () => _declineOrder(),
-              child: const Text('Decline'),
+              child: Text(
+                'Decline',
+                style: AppTypography.textTheme.labelMedium?.copyWith(
+                  color: AppColors.error,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
+            const Gap.horizontal(AppSpacing.s),
           ],
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -60,7 +93,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             _buildTimelineCard(),
             if (widget.order.driverId != null) ...[
               const SizedBox(height: 16),
-              _buildDriverInfoCard(),
+              _buildStaffInfoCard(),
             ],
             if (widget.order.isPendingApproval) ...[
               const SizedBox(height: 16),
@@ -73,9 +106,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   Widget _buildOrderStatusCard() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -84,14 +119,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               children: [
                 Text(
                   'Order Status',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: AppTypography.textTheme.titleLarge?.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                  padding: SpacingUtils.symmetric(
+                    horizontal: AppSpacing.s,
+                    vertical: AppSpacing.xs,
                   ),
                   decoration: BoxDecoration(
                     color: _getStatusColor(
@@ -104,7 +140,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   ),
                   child: Text(
                     widget.order.statusDisplayText,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    style: AppTypography.textTheme.bodySmall?.copyWith(
                       color: _getStatusColor(widget.order.status),
                       fontWeight: FontWeight.bold,
                     ),
@@ -112,7 +148,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const Gap.vertical(AppSpacing.s),
             Row(
               children: [
                 _buildStatusItem(
@@ -120,7 +156,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   widget.order.priorityDisplayText,
                   _getPriorityColor(widget.order.priority),
                 ),
-                const SizedBox(width: 24),
+                const Gap.horizontal(AppSpacing.l),
                 _buildStatusItem(
                   'Payment',
                   widget.order.paymentStatusDisplayText,
@@ -128,19 +164,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const Gap.vertical(AppSpacing.s),
             Row(
               children: [
                 _buildStatusItem(
                   'Total',
-                  '\$${widget.order.total.toStringAsFixed(2)}',
-                  AppTheme.primaryBlue,
+                  '£${widget.order.total.toStringAsFixed(2)}',
+                  AppColors.primary,
                 ),
-                const SizedBox(width: 24),
+                const Gap.horizontal(AppSpacing.l),
                 _buildStatusItem(
                   'Created',
                   _formatDateTime(widget.order.createdAt),
-                  AppTheme.mediumGrey,
+                  AppColors.onSurfaceVariant,
                 ),
               ],
             ),
@@ -151,19 +187,21 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   Widget _buildStatusItem(String label, String value, Color color) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
+          style: AppTypography.textTheme.bodySmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
         ),
-        const SizedBox(height: 4),
+        const Gap.vertical(AppSpacing.xs),
         Text(
           value,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          style: AppTypography.textTheme.titleMedium?.copyWith(
             color: color,
             fontWeight: FontWeight.bold,
           ),
@@ -173,19 +211,22 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   Widget _buildCustomerInfoCard() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Customer Information',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildInfoRow('Name', widget.order.customerName),
             _buildInfoRow('Phone', widget.order.customerPhone),
             if (widget.order.pickupAddress != null)
@@ -231,7 +272,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       Text(
                         '${bag['type'].toString().toUpperCase()} (${bag['weight']}kg)',
                       ),
-                      Text('\$${bag['price'].toStringAsFixed(2)}'),
+                      Text('£${bag['price'].toStringAsFixed(2)}'),
                     ],
                   ),
                 );
@@ -283,12 +324,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     : Theme.of(context).textTheme.bodyMedium,
           ),
           Text(
-            '\$${amount.toStringAsFixed(2)}',
+            '£${amount.toStringAsFixed(2)}',
             style:
                 isTotal
                     ? Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryBlue,
+                      color: AppColors.primaryBlue,
                     )
                     : Theme.of(context).textTheme.bodyMedium,
           ),
@@ -366,13 +407,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             decoration: BoxDecoration(
               color:
                   isCompleted
-                      ? AppTheme.successGreen.withOpacity(0.1)
-                      : AppTheme.mediumGrey.withOpacity(0.1),
+                      ? AppColors.successGreen.withOpacity(0.1)
+                      : AppColors.mediumGrey.withOpacity(0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(
               icon,
-              color: isCompleted ? AppTheme.successGreen : AppTheme.mediumGrey,
+              color:
+                  isCompleted ? AppColors.successGreen : AppColors.mediumGrey,
               size: 16,
             ),
           ),
@@ -386,14 +428,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color:
-                        isCompleted ? AppTheme.darkGrey : AppTheme.mediumGrey,
+                        isCompleted ? AppColors.darkGrey : AppColors.mediumGrey,
                   ),
                 ),
                 Text(
                   _formatDateTime(dateTime),
                   style: Theme.of(
                     context,
-                  ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGrey),
+                  ).textTheme.bodySmall?.copyWith(color: AppColors.mediumGrey),
                 ),
               ],
             ),
@@ -403,7 +445,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
   }
 
-  Widget _buildDriverInfoCard() {
+  Widget _buildStaffInfoCard() {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -411,7 +453,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Driver Information',
+              'Staff Information',
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -447,7 +489,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     icon: const Icon(Icons.check),
                     label: const Text('Approve Order'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.successGreen,
+                      backgroundColor: AppColors.successGreen,
                     ),
                   ),
                 ),
@@ -458,7 +500,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     icon: const Icon(Icons.close),
                     label: const Text('Decline Order'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.errorRed,
+                      backgroundColor: AppColors.errorRed,
                     ),
                   ),
                 ),
@@ -467,11 +509,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             const SizedBox(height: 12),
             if (widget.order.status == LaundretteOrderStatus.approved) ...[
               ElevatedButton.icon(
-                onPressed: _assignDriver,
+                onPressed: _assignStaff,
                 icon: const Icon(Icons.person_add),
-                label: const Text('Assign Driver'),
+                label: const Text('Assign Staff'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryBlue,
+                  backgroundColor: AppColors.primaryBlue,
                 ),
               ),
             ],
@@ -482,6 +524,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   Widget _buildInfoRow(String label, String value) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -491,16 +535,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             width: 120,
             child: Text(
               '$label:',
-              style: const TextStyle(
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppTheme.mediumGrey,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(color: AppTheme.darkGrey),
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface,
+              ),
             ),
           ),
         ],
@@ -511,49 +557,49 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Color _getStatusColor(LaundretteOrderStatus status) {
     switch (status) {
       case LaundretteOrderStatus.pending:
-        return AppTheme.warningOrange;
+        return AppColors.warning;
       case LaundretteOrderStatus.approved:
-        return AppTheme.infoBlue;
+        return AppColors.info;
       case LaundretteOrderStatus.declined:
-        return AppTheme.errorRed;
+        return AppColors.error;
       case LaundretteOrderStatus.confirmed:
-        return AppTheme.primaryBlue;
+        return AppColors.primary;
       case LaundretteOrderStatus.pickedUp:
-        return AppTheme.primaryTeal;
+        return AppColors.primary;
       case LaundretteOrderStatus.inProgress:
-        return AppTheme.primaryGreen;
+        return AppColors.success;
       case LaundretteOrderStatus.ready:
-        return AppTheme.secondaryOrange;
+        return AppColors.warning;
       case LaundretteOrderStatus.outForDelivery:
-        return AppTheme.secondaryPurple;
+        return AppColors.primary;
       case LaundretteOrderStatus.delivered:
-        return AppTheme.successGreen;
+        return AppColors.success;
       case LaundretteOrderStatus.cancelled:
-        return AppTheme.mediumGrey;
+        return AppColors.onSurfaceVariant;
     }
   }
 
   Color _getPriorityColor(OrderPriority priority) {
     switch (priority) {
       case OrderPriority.normal:
-        return AppTheme.mediumGrey;
+        return AppColors.onSurfaceVariant;
       case OrderPriority.high:
-        return AppTheme.warningOrange;
+        return AppColors.warning;
       case OrderPriority.urgent:
-        return AppTheme.errorRed;
+        return AppColors.error;
     }
   }
 
   Color _getPaymentStatusColor(PaymentStatus status) {
     switch (status) {
       case PaymentStatus.pending:
-        return AppTheme.warningOrange;
+        return AppColors.warning;
       case PaymentStatus.paid:
-        return AppTheme.successGreen;
+        return AppColors.success;
       case PaymentStatus.failed:
-        return AppTheme.errorRed;
+        return AppColors.error;
       case PaymentStatus.refunded:
-        return AppTheme.mediumGrey;
+        return AppColors.onSurfaceVariant;
     }
   }
 
@@ -570,7 +616,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Order approved successfully'),
-          backgroundColor: AppTheme.successGreen,
+          backgroundColor: AppColors.successGreen,
         ),
       );
     }
@@ -613,44 +659,44 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Order declined'),
-            backgroundColor: AppTheme.errorRed,
+            backgroundColor: AppColors.errorRed,
           ),
         );
       }
     }
   }
 
-  Future<void> _assignDriver() async {
+  Future<void> _assignStaff() async {
     final staffProvider = Provider.of<StaffProvider>(context, listen: false);
-    final drivers = staffProvider.drivers;
+    final staff = staffProvider.staff;
 
-    if (drivers.isEmpty) {
+    if (staff.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No drivers available'),
-          backgroundColor: AppTheme.warningOrange,
+          content: Text('No staff available'),
+          backgroundColor: AppColors.warning,
         ),
       );
       return;
     }
 
-    final selectedDriver = await showDialog<Map<String, String>>(
+    final selectedStaff = await showDialog<Map<String, String>>(
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Assign Driver'),
+            title: const Text('Assign Staff'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children:
-                  drivers.map((driver) {
+                  staff.map((staffMember) {
                     return ListTile(
-                      title: Text(driver.fullName),
-                      subtitle: Text(driver.phoneNumber ?? 'No phone'),
+                      title: Text(staffMember.fullName),
+                      subtitle: Text(staffMember.phoneNumber ?? 'No phone'),
                       onTap: () {
                         Navigator.of(context).pop({
-                          'id': driver.id,
-                          'name': driver.fullName,
-                          'phone': driver.phoneNumber ?? 'No phone',
+                          'id': staffMember.id,
+                          'name': staffMember.fullName,
+                          'phone': staffMember.phoneNumber ?? 'No phone',
                         });
                       },
                     );
@@ -665,21 +711,21 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           ),
     );
 
-    if (selectedDriver != null) {
+    if (selectedStaff != null) {
       final orderProvider = Provider.of<OrderProvider>(context, listen: false);
       final success = await orderProvider.assignDriver(
         widget.order.id,
-        selectedDriver['id']!,
-        selectedDriver['name']!,
-        selectedDriver['phone']!,
+        selectedStaff['id']!,
+        selectedStaff['name']!,
+        selectedStaff['phone']!,
       );
 
       if (success && mounted) {
         setState(() {});
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Driver assigned successfully'),
-            backgroundColor: AppTheme.successGreen,
+            content: Text('Staff assigned successfully'),
+            backgroundColor: AppColors.success,
           ),
         );
       }

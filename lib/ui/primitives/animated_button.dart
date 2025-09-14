@@ -26,6 +26,7 @@ class AnimatedButton extends StatefulWidget {
   final Color? disabledBackgroundColor;
   final Color? disabledForegroundColor;
   final List<BoxShadow>? shadows;
+  final Border? border;
   final String? tooltip;
 
   const AnimatedButton({
@@ -48,6 +49,7 @@ class AnimatedButton extends StatefulWidget {
     this.disabledBackgroundColor,
     this.disabledForegroundColor,
     this.shadows,
+    this.border,
     this.tooltip,
   });
 
@@ -137,6 +139,7 @@ class _AnimatedButtonState extends State<AnimatedButton>
               decoration: BoxDecoration(
                 color: effectiveBackgroundColor,
                 borderRadius: widget.borderRadius ?? Radii.button,
+                border: widget.border,
                 boxShadow: effectiveShadows,
               ),
               child: Center(

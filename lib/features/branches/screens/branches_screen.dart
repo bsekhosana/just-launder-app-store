@@ -40,7 +40,7 @@ class _BranchesScreenState extends State<BranchesScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: colorScheme.surface.withOpacity(0.9),
         elevation: 0,
@@ -52,10 +52,21 @@ class _BranchesScreenState extends State<BranchesScreen> {
           ),
         ),
         actions: [
-          AnimatedButtons.icon(
-            onPressed: _addBranch,
-            child: Icon(AppIcons.add, color: AppColors.primary),
-            tooltip: 'Add Branch',
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: AnimatedButton(
+              onPressed: _addBranch,
+              backgroundColor: Colors.white,
+              width: 48,
+              height: 48,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white, width: 1),
+              tooltip: 'Add Branch',
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Icon(AppIcons.add, color: AppColors.primary, size: 20),
+              ),
+            ),
           ),
         ],
       ),
@@ -189,10 +200,13 @@ class _BranchesScreenState extends State<BranchesScreen> {
                       color: colorScheme.onSurfaceVariant,
                     ),
                     const Gap.horizontal(AppSpacing.xs),
-                    Text(
-                      branch.phoneNumber ?? 'No phone',
-                      style: AppTypography.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
+                    Expanded(
+                      child: Text(
+                        branch.phoneNumber ?? 'No phone',
+                        style: AppTypography.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const Gap.horizontal(AppSpacing.m),
@@ -202,10 +216,13 @@ class _BranchesScreenState extends State<BranchesScreen> {
                       color: colorScheme.onSurfaceVariant,
                     ),
                     const Gap.horizontal(AppSpacing.xs),
-                    Text(
-                      branch.email ?? 'No email',
-                      style: AppTypography.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
+                    Expanded(
+                      child: Text(
+                        branch.email ?? 'No email',
+                        style: AppTypography.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],

@@ -84,7 +84,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter the complete 6-digit code'),
-          backgroundColor: AppTheme.errorRed,
+          backgroundColor: AppColors.errorRed,
         ),
       );
       return;
@@ -115,7 +115,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Invalid OTP: ${e.toString()}'),
-            backgroundColor: AppTheme.errorRed,
+            backgroundColor: AppColors.errorRed,
           ),
         );
       }
@@ -138,7 +138,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Verification code sent successfully'),
-            backgroundColor: AppTheme.successGreen,
+            backgroundColor: AppColors.successGreen,
           ),
         );
       }
@@ -147,7 +147,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: ${e.toString()}'),
-            backgroundColor: AppTheme.errorRed,
+            backgroundColor: AppColors.errorRed,
           ),
         );
       }

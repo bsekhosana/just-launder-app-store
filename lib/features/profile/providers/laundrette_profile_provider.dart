@@ -110,7 +110,7 @@ class LaundretteProfileProvider extends ChangeNotifier {
                   SubscriptionFeatures.prioritySupport: false,
                   SubscriptionFeatures.customBranding: false,
                   SubscriptionFeatures.apiAccess: false,
-                  SubscriptionFeatures.driverManagement: false,
+                  // Driver management removed - handled by standalone app
                   SubscriptionFeatures.orderAutoAccept: false,
                   SubscriptionFeatures.priorityDelivery: false,
                 }
@@ -121,7 +121,7 @@ class LaundretteProfileProvider extends ChangeNotifier {
                   SubscriptionFeatures.prioritySupport: true,
                   SubscriptionFeatures.customBranding: true,
                   SubscriptionFeatures.apiAccess: false,
-                  SubscriptionFeatures.driverManagement: true,
+                  // Driver management removed - handled by standalone app
                   SubscriptionFeatures.orderAutoAccept: true,
                   SubscriptionFeatures.priorityDelivery: true,
                 },
@@ -197,7 +197,7 @@ class LaundretteProfileProvider extends ChangeNotifier {
             SubscriptionFeatures.customBranding: true,
             SubscriptionFeatures.apiAccess: true,
             SubscriptionFeatures.multiLocationManagement: true,
-            SubscriptionFeatures.driverManagement: true,
+            // Driver management removed - handled by standalone app
             SubscriptionFeatures.orderAutoAccept: true,
             SubscriptionFeatures.priorityDelivery: true,
             SubscriptionFeatures.customPricing: true,
@@ -255,7 +255,7 @@ class LaundretteProfileProvider extends ChangeNotifier {
             SubscriptionFeatures.customBranding: false,
             SubscriptionFeatures.apiAccess: false,
             SubscriptionFeatures.multiLocationManagement: false,
-            SubscriptionFeatures.driverManagement: true,
+            // Driver management removed - handled by standalone app
             SubscriptionFeatures.orderAutoAccept: true,
             SubscriptionFeatures.priorityDelivery: false,
             SubscriptionFeatures.customPricing: true,

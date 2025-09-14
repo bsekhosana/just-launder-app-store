@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/motion.dart';
+import '../../../design_system/icons.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/snack_x.dart';
 import '../providers/branch_provider.dart';
 import '../../../data/models/laundrette_branch.dart';
 
@@ -121,28 +129,50 @@ class _AddEditBranchScreenState extends State<AddEditBranchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(widget.isEdit ? 'Edit Branch' : 'Add Branch'),
+        title: Text(
+          widget.isEdit ? 'Edit Branch' : 'Add Branch',
+          style: AppTypography.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: colorScheme.onSurface,
         actions: [
-          TextButton(onPressed: _saveBranch, child: const Text('Save')),
+          AnimatedButtons.secondary(
+            onPressed: _saveBranch,
+            child: Text(
+              'Save',
+              style: AppTypography.textTheme.labelMedium?.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const Gap.horizontal(AppSpacing.s),
         ],
       ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: SpacingUtils.all(AppSpacing.l),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildBasicInfoSection(),
-              const SizedBox(height: 24),
+              const Gap.vertical(AppSpacing.l),
               _buildStatusSection(),
-              const SizedBox(height: 24),
+              const Gap.vertical(AppSpacing.l),
               _buildOperatingHoursSection(),
-              const SizedBox(height: 24),
+              const Gap.vertical(AppSpacing.l),
               _buildPricingSection(),
-              const SizedBox(height: 24),
+              const Gap.vertical(AppSpacing.l),
               _buildSettingsSection(),
             ],
           ),
@@ -152,17 +182,20 @@ class _AddEditBranchScreenState extends State<AddEditBranchScreen> {
   }
 
   Widget _buildBasicInfoSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Basic Information',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -310,17 +343,20 @@ class _AddEditBranchScreenState extends State<AddEditBranchScreen> {
   }
 
   Widget _buildStatusSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Status & Availability',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<BranchStatus>(
@@ -357,17 +393,20 @@ class _AddEditBranchScreenState extends State<AddEditBranchScreen> {
   }
 
   Widget _buildOperatingHoursSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Operating Hours',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             ..._operatingHours.entries.map((entry) {
@@ -406,17 +445,20 @@ class _AddEditBranchScreenState extends State<AddEditBranchScreen> {
   }
 
   Widget _buildPricingSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Pricing',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             Text(
@@ -443,7 +485,7 @@ class _AddEditBranchScreenState extends State<AddEditBranchScreen> {
                       child: TextFormField(
                         controller: entry.value,
                         decoration: const InputDecoration(
-                          prefixText: '\$',
+                          prefixText: '£',
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
@@ -478,7 +520,7 @@ class _AddEditBranchScreenState extends State<AddEditBranchScreen> {
                       child: TextFormField(
                         controller: entry.value,
                         decoration: const InputDecoration(
-                          prefixText: '\$',
+                          prefixText: '£',
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
@@ -495,17 +537,20 @@ class _AddEditBranchScreenState extends State<AddEditBranchScreen> {
   }
 
   Widget _buildSettingsSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Branch Settings',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             SwitchListTile(
@@ -614,14 +659,14 @@ class _AddEditBranchScreenState extends State<AddEditBranchScreen> {
                 ? 'Branch updated successfully'
                 : 'Branch added successfully',
           ),
-          backgroundColor: AppTheme.successGreen,
+          backgroundColor: AppColors.successGreen,
         ),
       );
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Failed to save branch'),
-          backgroundColor: AppTheme.errorRed,
+          backgroundColor: AppColors.errorRed,
         ),
       );
     }

@@ -74,7 +74,7 @@ class MockDataService {
           SubscriptionFeatures.prioritySupport: true,
           SubscriptionFeatures.customBranding: true,
           SubscriptionFeatures.apiAccess: false,
-          SubscriptionFeatures.driverManagement: true,
+          // Driver management removed - handled by standalone app
           SubscriptionFeatures.orderAutoAccept: true,
           SubscriptionFeatures.priorityDelivery: true,
         },
@@ -100,7 +100,7 @@ class MockDataService {
           SubscriptionFeatures.prioritySupport: false,
           SubscriptionFeatures.customBranding: false,
           SubscriptionFeatures.apiAccess: false,
-          SubscriptionFeatures.driverManagement: false,
+          // Driver management removed - handled by standalone app
           SubscriptionFeatures.orderAutoAccept: false,
           SubscriptionFeatures.priorityDelivery: false,
         },
@@ -272,7 +272,7 @@ class MockDataService {
         lastName: 'Johnson',
         email: 'sarah@cleanfresh.com',
         phoneNumber: '+1-555-1002',
-        role: StaffRole.driver,
+        role: StaffRole.staff,
         status: StaffStatus.active,
         branchIds: ['branch_1'],
         workingHours: {
@@ -296,7 +296,7 @@ class MockDataService {
         lastName: 'Wilson',
         email: 'mike@cleanfresh.com',
         phoneNumber: '+1-555-1003',
-        role: StaffRole.driver,
+        role: StaffRole.staff,
         status: StaffStatus.active,
         branchIds: ['branch_2'],
         workingHours: {
@@ -685,7 +685,7 @@ class MockDataService {
     // Staff performance
     final staffPerformance = <Map<String, dynamic>>[];
     for (final member in staff) {
-      if (member.role == StaffRole.driver) {
+      if (member.role == StaffRole.staff) {
         final driverOrders =
             orders.where((o) => o.driverId == member.id).toList();
         final completedOrders =

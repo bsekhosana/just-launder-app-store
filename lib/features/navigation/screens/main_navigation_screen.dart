@@ -71,7 +71,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: Colors.white, //colorScheme.background,
       body: PageView(
         controller: _pageController,
         onPageChanged: (index) {
@@ -97,7 +97,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             bottom: MediaQuery.of(context).padding.bottom,
             left: AppSpacing.l,
             right: AppSpacing.l,
-            top: AppSpacing.s,
+            // top: AppSpacing.s,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -146,6 +146,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AnimatedContainer(
               duration: AppMotion.fast,
@@ -153,36 +154,62 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               padding: SpacingUtils.all(AppSpacing.s),
               decoration: BoxDecoration(
                 color:
-                    isSelected
-                        ? AppColors.primary.withOpacity(0.1)
-                        : Colors.transparent,
+                    isSelected ? Colors.white : Colors.white.withOpacity(0.8),
                 borderRadius: Radii.m,
-              ),
-              child: Icon(
-                item.icon,
-                color:
+                border: Border.all(
+                  color:
+                      isSelected
+                          ? AppColors.primary
+                          : AppColors.outline.withOpacity(0.3),
+                  width: 1,
+                ),
+                boxShadow:
                     isSelected
-                        ? AppColors.primary
-                        : colorScheme.onSurfaceVariant,
-                size: 24,
+                        ? [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                        : null,
+              ),
+              child: Align(
+                alignment: Alignment.center,
+                child: Icon(
+                  item.icon,
+                  color:
+                      isSelected
+                          ? AppColors.primary
+                          : colorScheme.onSurfaceVariant,
+                  size: 20,
+                ),
               ),
             ).animate().scale(
               duration: AppMotion.fast,
               curve: AppCurves.standard,
             ),
             const Gap.vertical(AppSpacing.xs),
-            AnimatedDefaultTextStyle(
-              duration: AppMotion.fast,
-              style:
-                  AppTypography.textTheme.labelSmall?.copyWith(
-                    color:
-                        isSelected
-                            ? AppColors.primary
-                            : colorScheme.onSurfaceVariant,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  ) ??
-                  const TextStyle(),
-              child: Text(item.label),
+            Flexible(
+              child: AnimatedDefaultTextStyle(
+                duration: AppMotion.fast,
+                style:
+                    AppTypography.textTheme.labelSmall?.copyWith(
+                      color:
+                          isSelected
+                              ? AppColors.primary
+                              : colorScheme.onSurfaceVariant,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w400,
+                    ) ??
+                    const TextStyle(),
+                child: Text(
+                  item.label,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ),
           ],
         ),

@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/motion.dart';
+import '../../../design_system/icons.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/snack_x.dart';
 
 class SystemPreferencesScreen extends StatefulWidget {
   const SystemPreferencesScreen({super.key});
@@ -39,26 +47,51 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('System Preferences'),
-        backgroundColor: AppTheme.primaryBlue,
-        foregroundColor: Colors.white,
+        title: Text(
+          'System Preferences',
+          style: AppTypography.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: colorScheme.onSurface,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildGeneralSettings(),
-            const SizedBox(height: 24),
-            _buildBusinessSettings(),
-            const SizedBox(height: 24),
-            _buildDataSettings(),
-            const SizedBox(height: 24),
-            _buildSecuritySettings(),
-            const SizedBox(height: 24),
-            _buildActionButtons(),
+            _buildGeneralSettings()
+                .animate()
+                .fadeIn(duration: AppMotion.normal)
+                .slideY(begin: 0.1, end: 0.0),
+            const Gap.vertical(AppSpacing.l),
+            _buildBusinessSettings()
+                .animate()
+                .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
+                .slideY(begin: 0.1, end: 0.0),
+            const Gap.vertical(AppSpacing.l),
+            _buildDataSettings()
+                .animate()
+                .fadeIn(delay: AppMotion.normal, duration: AppMotion.normal)
+                .slideY(begin: 0.1, end: 0.0),
+            const Gap.vertical(AppSpacing.l),
+            _buildSecuritySettings()
+                .animate()
+                .fadeIn(delay: AppMotion.slow, duration: AppMotion.normal)
+                .slideY(begin: 0.1, end: 0.0),
+            const Gap.vertical(AppSpacing.l),
+            _buildActionButtons()
+                .animate()
+                .fadeIn(delay: AppMotion.slower, duration: AppMotion.normal)
+                .slideY(begin: 0.1, end: 0.0),
           ],
         ),
       ),
@@ -66,17 +99,22 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
   }
 
   Widget _buildGeneralSettings() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'General Settings',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildLanguageSelector(),
             const SizedBox(height: 16),
             _buildCurrencySelector(),
@@ -111,17 +149,22 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
   }
 
   Widget _buildBusinessSettings() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Business Settings',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildBusinessHoursSelector(),
             const SizedBox(height: 16),
             _buildSwitchSetting(
@@ -154,17 +197,22 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
   }
 
   Widget _buildDataSettings() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Data & Privacy',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildSwitchSetting(
               'Data Backup',
               'Automatically backup your data',
@@ -198,17 +246,22 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
   }
 
   Widget _buildSecuritySettings() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Security Settings',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildSwitchSetting(
               'Two-Factor Authentication',
               'Add an extra layer of security to your account',
@@ -298,7 +351,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
           label: '$_orderTimeoutMinutes minutes',
           onChanged:
               (value) => setState(() => _orderTimeoutMinutes = value.round()),
-          activeColor: AppTheme.primaryBlue,
+          activeColor: AppColors.primary,
         ),
       ],
     );
@@ -331,7 +384,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
           label: '$_sessionTimeoutMinutes minutes',
           onChanged:
               (value) => setState(() => _sessionTimeoutMinutes = value.round()),
-          activeColor: AppTheme.primaryBlue,
+          activeColor: AppColors.primary,
         ),
       ],
     );
@@ -344,30 +397,57 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
     ValueChanged<String?> onChanged,
     IconData icon,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, color: AppTheme.primaryBlue, size: 20),
-            const SizedBox(width: 8),
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+            Icon(icon, color: AppColors.primary, size: 20),
+            const Gap.horizontal(AppSpacing.xs),
+            Text(
+              title,
+              style: AppTypography.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 8),
+        const Gap.vertical(AppSpacing.xs),
         DropdownButtonFormField<String>(
           value: value,
           onChanged: onChanged,
           decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 8,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.outline),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.outline),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.primary),
+            ),
+            contentPadding: SpacingUtils.symmetric(
+              horizontal: AppSpacing.s,
+              vertical: AppSpacing.xs,
             ),
           ),
           items:
               options.map((option) {
-                return DropdownMenuItem(value: option, child: Text(option));
+                return DropdownMenuItem(
+                  value: option,
+                  child: Text(
+                    option,
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                );
               }).toList(),
         ),
       ],
@@ -381,28 +461,29 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
     ValueChanged<bool> onChanged,
     IconData icon,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: AppTheme.primaryBlue, size: 20),
-          const SizedBox(width: 12),
+          Icon(icon, color: AppColors.primary, size: 20),
+          const Gap.horizontal(AppSpacing.s),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: AppTypography.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    fontSize: 16,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 Text(
                   description,
-                  style: const TextStyle(
-                    color: AppTheme.mediumGrey,
-                    fontSize: 14,
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -411,7 +492,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: AppTheme.primaryBlue,
+            activeColor: AppColors.primary,
           ),
         ],
       ),
@@ -419,54 +500,83 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
   }
 
   Widget _buildActionButtons() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Actions',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton.icon(
+                  child: AnimatedButtons.primary(
                     onPressed: _saveSettings,
-                    icon: const Icon(Icons.save),
-                    label: const Text('Save Settings'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryBlue,
-                      foregroundColor: Colors.white,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(AppIcons.save, color: AppColors.onPrimary),
+                        const Gap.horizontal(AppSpacing.xs),
+                        Text(
+                          'Save Settings',
+                          style: AppTypography.textTheme.labelMedium?.copyWith(
+                            color: AppColors.onPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const Gap.horizontal(AppSpacing.s),
                 Expanded(
-                  child: OutlinedButton.icon(
+                  child: AnimatedButtons.secondary(
                     onPressed: _resetToDefaults,
-                    icon: const Icon(Icons.restore),
-                    label: const Text('Reset to Defaults'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppTheme.warningOrange,
-                      side: const BorderSide(color: AppTheme.warningOrange),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.restore, color: AppColors.warning),
+                        const Gap.horizontal(AppSpacing.xs),
+                        Text(
+                          'Reset to Defaults',
+                          style: AppTypography.textTheme.labelMedium?.copyWith(
+                            color: AppColors.warning,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const Gap.vertical(AppSpacing.s),
             SizedBox(
               width: double.infinity,
-              child: OutlinedButton.icon(
+              child: AnimatedButtons.secondary(
                 onPressed: _exportSettings,
-                icon: const Icon(Icons.download),
-                label: const Text('Export Settings'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppTheme.primaryTeal,
-                  side: const BorderSide(color: AppTheme.primaryTeal),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(AppIcons.download, color: AppColors.primary),
+                    const Gap.horizontal(AppSpacing.xs),
+                    Text(
+                      'Export Settings',
+                      style: AppTypography.textTheme.labelMedium?.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -478,12 +588,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
 
   void _saveSettings() {
     // TODO: Implement settings save logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Settings saved successfully!'),
-        backgroundColor: AppTheme.successGreen,
-      ),
-    );
+    SnackXUtils.showSuccess(context, message: 'Settings saved successfully!');
   }
 
   void _resetToDefaults() {
@@ -506,7 +611,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
                   _performReset();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.warningOrange,
+                  backgroundColor: AppColors.warning,
                 ),
                 child: const Text('Reset'),
               ),
@@ -538,22 +643,11 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
       _loginNotifications = true;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Settings reset to defaults!'),
-        backgroundColor: AppTheme.successGreen,
-      ),
-    );
+    SnackXUtils.showSuccess(context, message: 'Settings reset to defaults!');
   }
 
   void _exportSettings() {
     // TODO: Implement settings export logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Settings exported successfully!'),
-        backgroundColor: AppTheme.primaryTeal,
-      ),
-    );
+    SnackXUtils.showInfo(context, message: 'Settings exported successfully!');
   }
 }
-

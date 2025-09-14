@@ -31,7 +31,7 @@ class _OrdersScreenState extends State<OrdersScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this, initialIndex: 0);
     // Load orders after the first frame is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadOrders();
@@ -57,7 +57,7 @@ class _OrdersScreenState extends State<OrdersScreen>
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: colorScheme.surface.withOpacity(0.9),
         elevation: 0,
@@ -69,20 +69,32 @@ class _OrdersScreenState extends State<OrdersScreen>
           ),
         ),
         actions: [
-          AnimatedButtons.icon(
-            onPressed: () {
-              setState(() {
-                _showFilters = !_showFilters;
-              });
-            },
-            child: Icon(
-              _showFilters ? AppIcons.filter : AppIcons.filter,
-              color:
-                  _showFilters
-                      ? AppColors.primary
-                      : colorScheme.onSurfaceVariant,
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: AnimatedButton(
+              onPressed: () {
+                setState(() {
+                  _showFilters = !_showFilters;
+                });
+              },
+              backgroundColor: Colors.white,
+              width: 48,
+              height: 48,
+              borderRadius: BorderRadius.circular(24),
+              tooltip: _showFilters ? 'Hide Filters' : 'Show Filters',
+              border: Border.all(color: Colors.white, width: 1),
+              child: Align(
+                alignment: Alignment.center,
+                child: Icon(
+                  AppIcons.filter,
+                  color:
+                      _showFilters
+                          ? AppColors.primary
+                          : AppColors.onSurfaceVariant,
+                  size: 20,
+                ),
+              ),
             ),
-            tooltip: _showFilters ? 'Hide Filters' : 'Show Filters',
           ),
         ],
         bottom: PreferredSize(
@@ -99,6 +111,9 @@ class _OrdersScreenState extends State<OrdersScreen>
             ),
             child: TabBar(
               controller: _tabController,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               indicatorColor: AppColors.primary,
               indicatorWeight: 3,
               labelColor: AppColors.primary,
@@ -108,6 +123,7 @@ class _OrdersScreenState extends State<OrdersScreen>
               ),
               unselectedLabelStyle: AppTypography.textTheme.labelMedium,
               tabs: const [
+                Tab(text: 'All'),
                 Tab(text: 'Pending'),
                 Tab(text: 'Approved'),
                 Tab(text: 'In Progress'),
@@ -130,41 +146,44 @@ class _OrdersScreenState extends State<OrdersScreen>
           return Column(
             children: [
               if (_showFilters) ...[
-                AnimatedContainer(
-                      duration: AppMotion.normal,
-                      curve: AppCurves.standard,
-                      child: OrderFiltersWidget(
-                        currentFilters: _filters,
-                        onFiltersChanged: (filters) {
-                          setState(() {
-                            _filters = filters;
-                          });
-                        },
+                Flexible(
+                  flex: 0,
+                  child: AnimatedContainer(
+                        duration: AppMotion.normal,
+                        curve: AppCurves.standard,
+                        constraints: const BoxConstraints(maxHeight: 300),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              OrderFiltersWidget(
+                                currentFilters: _filters,
+                                onFiltersChanged: (filters) {
+                                  setState(() {
+                                    _filters = filters;
+                                  });
+                                },
+                              ),
+                              const Gap.vertical(AppSpacing.s),
+                              OrderStatsWidget(orders: filteredOrders),
+                            ],
+                          ),
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(duration: AppMotion.normal)
+                      .slideY(
+                        begin: -0.3,
+                        end: 0.0,
+                        duration: AppMotion.normal,
                       ),
-                    )
-                    .animate()
-                    .fadeIn(duration: AppMotion.normal)
-                    .slideY(begin: -0.3, end: 0.0, duration: AppMotion.normal),
-                const Gap.vertical(AppSpacing.s),
-                AnimatedContainer(
-                      duration: AppMotion.normal,
-                      curve: AppCurves.standard,
-                      child: OrderStatsWidget(orders: filteredOrders),
-                    )
-                    .animate()
-                    .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
-                    .slideY(
-                      begin: -0.3,
-                      end: 0.0,
-                      delay: AppMotion.fast,
-                      duration: AppMotion.normal,
-                    ),
+                ),
                 const Gap.vertical(AppSpacing.s),
               ],
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
                   children: [
+                    _buildOrdersList(filteredOrders, 'No orders found'),
                     _buildOrdersList(
                       _getOrdersByStatus(
                         filteredOrders,
@@ -295,7 +314,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '\$${order.total.toStringAsFixed(2)}',
+                      '£${order.total.toStringAsFixed(2)}',
                       style: AppTypography.textTheme.titleLarge?.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.bold,

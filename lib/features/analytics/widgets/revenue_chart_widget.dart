@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design_system/color_schemes.dart';
 import '../providers/analytics_provider.dart';
 
 class RevenueChartWidget extends StatelessWidget {
@@ -16,13 +16,13 @@ class RevenueChartWidget extends StatelessWidget {
           return Container(
             height: 200,
             decoration: BoxDecoration(
-              color: AppTheme.lightGrey.withOpacity(0.1),
+              color: AppColors.lightGrey.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Center(
               child: Text(
                 'No revenue data available',
-                style: TextStyle(color: AppTheme.mediumGrey, fontSize: 16),
+                style: TextStyle(color: AppColors.mediumGrey, fontSize: 16),
               ),
             ),
           );
@@ -32,7 +32,7 @@ class RevenueChartWidget extends StatelessWidget {
           height: 200,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppTheme.lightGrey.withOpacity(0.05),
+            color: AppColors.lightGrey.withOpacity(0.05),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
@@ -74,8 +74,8 @@ class RevenueChartWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildLegendItem('Revenue', AppTheme.primaryBlue),
-        _buildLegendItem('Trend', AppTheme.successGreen),
+        _buildLegendItem('Revenue', AppColors.primary),
+        _buildLegendItem('Trend', AppColors.success),
       ],
     );
   }
@@ -94,7 +94,7 @@ class RevenueChartWidget extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(color: AppTheme.mediumGrey, fontSize: 12),
+          style: const TextStyle(color: AppColors.mediumGrey, fontSize: 12),
         ),
       ],
     );
@@ -136,7 +136,7 @@ class RevenueChartPainter extends CustomPainter {
     }
 
     // Draw line
-    paint.color = AppTheme.primaryBlue;
+    paint.color = AppColors.primary;
     for (int i = 0; i < points.length; i++) {
       if (i == 0) {
         path.moveTo(points[i].dx, points[i].dy);
@@ -148,7 +148,7 @@ class RevenueChartPainter extends CustomPainter {
 
     // Draw points
     paint.style = PaintingStyle.fill;
-    paint.color = AppTheme.primaryBlue;
+    paint.color = AppColors.primary;
     for (final point in points) {
       canvas.drawCircle(point, 4, paint);
     }
@@ -162,7 +162,7 @@ class RevenueChartPainter extends CustomPainter {
 
     final areaPaint =
         Paint()
-          ..color = AppTheme.primaryBlue.withOpacity(0.1)
+          ..color = AppColors.primary.withOpacity(0.1)
           ..style = PaintingStyle.fill;
 
     canvas.drawPath(areaPath, areaPaint);
@@ -171,7 +171,7 @@ class RevenueChartPainter extends CustomPainter {
     if (points.length > 1) {
       final trendPaint =
           Paint()
-            ..color = AppTheme.successGreen
+            ..color = AppColors.success
             ..style = PaintingStyle.stroke
             ..strokeWidth = 1.5;
 

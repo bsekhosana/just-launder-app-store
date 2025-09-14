@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/motion.dart';
+import '../../../ui/primitives/card_x.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../profile/providers/laundrette_profile_provider.dart';
 import '../../../data/models/subscription.dart';
@@ -8,351 +13,200 @@ import 'subscription_management_screen.dart';
 import 'notification_settings_screen.dart';
 import 'system_preferences_screen.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
   @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  // Mock settings data
+  bool _darkMode = false;
+  bool _biometricAuth = false;
+  bool _autoSync = true;
+  bool _locationServices = true;
+  String _language = 'English';
+  // Currency setting removed from local state - managed by provider
+
+  @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      backgroundColor: Colors.white,
       body: Consumer2<LaundretteProfileProvider, AuthProvider>(
         builder: (context, profileProvider, authProvider, child) {
           final profile = profileProvider.currentProfile;
           final subscription = profileProvider.currentSubscription;
 
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              // Profile Section
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Business Profile',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      if (profile != null) ...[
-                        _buildInfoRow('Business Name', profile.businessName),
-                        _buildInfoRow('Type', profile.type.name.toUpperCase()),
-                        _buildInfoRow('Email', profile.email ?? 'Not set'),
-                        _buildInfoRow(
-                          'Phone',
-                          profile.phoneNumber ?? 'Not set',
-                        ),
-                        _buildInfoRow('Address', profile.fullAddress),
-                        _buildInfoRow(
-                          'Status',
-                          profile.isActive ? 'Active' : 'Inactive',
-                        ),
-                        _buildInfoRow(
-                          'Verified',
-                          profile.isVerified ? 'Yes' : 'No',
-                        ),
-                      ],
-                    ],
+          return CustomScrollView(
+            slivers: [
+              // Custom App Bar
+              SliverAppBar(
+                expandedHeight: 120,
+                floating: false,
+                pinned: true,
+                backgroundColor: Colors.white,
+                elevation: 0,
+                flexibleSpace: FlexibleSpaceBar(
+                  title: Text(
+                    'Settings',
+                    style: AppTypography.textTheme.titleLarge?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
+                  centerTitle: true,
                 ),
               ),
-              const SizedBox(height: 16),
 
-              // Subscription Section
-              Card(
+              // Profile Card
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Subscription',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      if (subscription != null) ...[
-                        _buildInfoRow('Plan', subscription.name),
-                        _buildInfoRow(
-                          'Type',
-                          subscription.type.name.toUpperCase(),
-                        ),
-                        _buildInfoRow(
-                          'Tier',
-                          subscription.currentTier.toUpperCase(),
-                        ),
-                        _buildInfoRow(
-                          'Price',
-                          '\$${subscription.monthlyPrice.toStringAsFixed(2)}/month',
-                        ),
-                        _buildInfoRow(
-                          'Status',
-                          subscription.isActive ? 'Active' : 'Inactive',
-                        ),
-                        _buildInfoRow(
-                          'Expires',
-                          _formatDate(subscription.endDate),
-                        ),
-                        if (subscription.isExpiringSoon) ...[
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppTheme.warningOrange.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppTheme.warningOrange),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.warning,
-                                  color: AppTheme.warningOrange,
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Subscription expires soon',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.bodySmall?.copyWith(
-                                    color: AppTheme.warningOrange,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ],
-                    ],
-                  ),
+                  padding: SpacingUtils.all(AppSpacing.l),
+                  child: _buildProfileCard(profile, subscription),
                 ),
               ),
-              const SizedBox(height: 16),
 
-              // Features Section
-              Card(
+              // Settings Sections
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Features',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      if (subscription != null) ...[
-                        _buildFeatureRow(
-                          'Max Branches',
-                          subscription
-                              .getFeature(SubscriptionFeatures.maxBranches)
-                              .toString(),
-                        ),
-                        _buildFeatureRow(
-                          'Max Staff',
-                          subscription
-                              .getFeature(SubscriptionFeatures.maxStaff)
-                              .toString(),
-                        ),
-                        _buildFeatureRow(
-                          'Advanced Analytics',
-                          subscription.hasFeature(
-                                SubscriptionFeatures.advancedAnalytics,
-                              )
-                              ? 'Yes'
-                              : 'No',
-                        ),
-                        _buildFeatureRow(
-                          'Priority Support',
-                          subscription.hasFeature(
-                                SubscriptionFeatures.prioritySupport,
-                              )
-                              ? 'Yes'
-                              : 'No',
-                        ),
-                        _buildFeatureRow(
-                          'Custom Branding',
-                          subscription.hasFeature(
-                                SubscriptionFeatures.customBranding,
-                              )
-                              ? 'Yes'
-                              : 'No',
-                        ),
-                        _buildFeatureRow(
-                          'API Access',
-                          subscription.hasFeature(
-                                SubscriptionFeatures.apiAccess,
-                              )
-                              ? 'Yes'
-                              : 'No',
-                        ),
-                        _buildFeatureRow(
-                          'Driver Management',
-                          subscription.hasFeature(
-                                SubscriptionFeatures.driverManagement,
-                              )
-                              ? 'Yes'
-                              : 'No',
-                        ),
-                        _buildFeatureRow(
-                          'Auto Accept Orders',
-                          subscription.hasFeature(
-                                SubscriptionFeatures.orderAutoAccept,
-                              )
-                              ? 'Yes'
-                              : 'No',
-                        ),
-                        _buildFeatureRow(
-                          'Priority Delivery',
-                          subscription.hasFeature(
-                                SubscriptionFeatures.priorityDelivery,
-                              )
-                              ? 'Yes'
-                              : 'No',
-                        ),
-                      ],
-                    ],
+                  padding: SpacingUtils.symmetric(
+                    horizontal: AppSpacing.l,
+                    vertical: 0,
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Settings Options Section
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Settings & Configuration',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
+                      _buildSettingsSection('Account Settings', [
+                        _buildSettingsItem(
+                          'Edit Profile',
+                          'Update your business information',
+                          Icons.edit,
+                          () => _showEditProfileDialog(),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      ListTile(
-                        leading: const Icon(Icons.subscriptions),
-                        title: const Text('Subscription Management'),
-                        subtitle: const Text(
-                          'Manage your subscription plan and billing',
+                        _buildSettingsItem(
+                          'Change Password',
+                          'Update your account password',
+                          Icons.lock,
+                          () => _showChangePasswordDialog(),
                         ),
-                        trailing: const Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder:
-                                  (context) =>
-                                      const SubscriptionManagementScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.notifications),
-                        title: const Text('Notification Settings'),
-                        subtitle: const Text(
+                        _buildSettingsItem(
+                          'Language',
+                          _language,
+                          Icons.language,
+                          () => _showLanguageDialog(),
+                        ),
+                      ]),
+
+                      const Gap.vertical(AppSpacing.l),
+
+                      _buildSettingsSection('Security', [
+                        _buildToggleItem(
+                          'Biometric Authentication',
+                          'Use fingerprint or face recognition',
+                          Icons.fingerprint,
+                          _biometricAuth,
+                          (value) => setState(() => _biometricAuth = value),
+                        ),
+                        _buildToggleItem(
+                          'Auto Sync',
+                          'Automatically sync data when connected',
+                          Icons.sync,
+                          _autoSync,
+                          (value) => setState(() => _autoSync = value),
+                        ),
+                        _buildToggleItem(
+                          'Location Services',
+                          'Allow location access for branch services',
+                          Icons.location_on,
+                          _locationServices,
+                          (value) => setState(() => _locationServices = value),
+                        ),
+                      ]),
+
+                      const Gap.vertical(AppSpacing.l),
+
+                      _buildSettingsSection('App Settings', [
+                        _buildToggleItem(
+                          'Dark Mode',
+                          'Use dark theme throughout the app',
+                          Icons.dark_mode,
+                          _darkMode,
+                          (value) => setState(() => _darkMode = value),
+                        ),
+                        _buildSettingsItem(
+                          'Notification Settings',
                           'Configure notifications and alerts',
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          Navigator.of(context).push(
+                          Icons.notifications,
+                          () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder:
                                   (context) =>
                                       const NotificationSettingsScreen(),
                             ),
-                          );
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.settings),
-                        title: const Text('System Preferences'),
-                        subtitle: const Text(
-                          'App settings and system configuration',
+                          ),
                         ),
-                        trailing: const Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          Navigator.of(context).push(
+                        _buildSettingsItem(
+                          'System Preferences',
+                          'App settings and system configuration',
+                          Icons.settings,
+                          () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder:
                                   (context) => const SystemPreferencesScreen(),
                             ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
+                          ),
+                        ),
+                      ]),
 
-              // Actions Section
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Account Actions',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ListTile(
-                        leading: const Icon(Icons.edit),
-                        title: const Text('Edit Profile'),
-                        onTap: () {
-                          // TODO: Implement edit profile
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Edit profile functionality coming soon',
-                              ),
+                      const Gap.vertical(AppSpacing.l),
+
+                      _buildSettingsSection('Subscription', [
+                        _buildSettingsItem(
+                          'Subscription Management',
+                          'Manage your subscription plan and billing',
+                          Icons.subscriptions,
+                          () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      const SubscriptionManagementScreen(),
                             ),
-                          );
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.help),
-                        title: const Text('Help & Support'),
-                        onTap: () {
-                          // TODO: Implement help & support
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Help & support functionality coming soon',
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(
-                          Icons.logout,
-                          color: AppTheme.errorRed,
+                          ),
                         ),
-                        title: const Text(
-                          'Logout',
-                          style: TextStyle(color: AppTheme.errorRed),
+                        if (subscription != null)
+                          _buildSubscriptionInfo(subscription),
+                      ]),
+
+                      const Gap.vertical(AppSpacing.l),
+
+                      _buildSettingsSection('Support', [
+                        _buildSettingsItem(
+                          'Help & Support',
+                          'Get help and contact support',
+                          Icons.help,
+                          () => _showHelpDialog(),
                         ),
-                        onTap: () async {
-                          final authProvider = Provider.of<AuthProvider>(
-                            context,
-                            listen: false,
-                          );
-                          await authProvider.logout();
-                        },
-                      ),
+                        _buildSettingsItem(
+                          'About',
+                          'App version and information',
+                          Icons.info,
+                          () => _showAboutDialog(),
+                        ),
+                        _buildSettingsItem(
+                          'Privacy Policy',
+                          'View our privacy policy',
+                          Icons.privacy_tip,
+                          () => _showPrivacyDialog(),
+                        ),
+                      ]),
+
+                      const Gap.vertical(AppSpacing.l),
+
+                      _buildLogoutSection(authProvider),
+
+                      const Gap.vertical(AppSpacing.xl),
                     ],
                   ),
                 ),
@@ -364,26 +218,228 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              '$label:',
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.mediumGrey,
-              ),
-            ),
+  Widget _buildProfileCard(profile, subscription) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
+        ],
+      ),
+      child: Padding(
+        padding: SpacingUtils.all(AppSpacing.xl),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Hi, ${profile?.businessName ?? 'Laundrette Owner'}',
+                        style: AppTypography.textTheme.headlineSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Gap.vertical(AppSpacing.s),
+                      Text(
+                        'Member since: ${_formatDate(profile?.createdAt ?? DateTime.now())}',
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.white.withOpacity(0.2),
+                  child: Icon(Icons.business, size: 30, color: Colors.white),
+                ),
+              ],
+            ),
+            const Gap.vertical(AppSpacing.l),
+            Row(
+              children: [
+                Icon(
+                  Icons.settings,
+                  color: Colors.white.withOpacity(0.8),
+                  size: 20,
+                ),
+                const Gap.horizontal(AppSpacing.s),
+                Icon(
+                  Icons.dark_mode,
+                  color: Colors.white.withOpacity(0.8),
+                  size: 20,
+                ),
+                const Spacer(),
+                Container(
+                  padding: SpacingUtils.symmetric(
+                    horizontal: AppSpacing.m,
+                    vertical: AppSpacing.s,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'Edit Account',
+                    style: AppTypography.textTheme.bodySmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ).animate().fadeIn(duration: AppMotion.normal).slideY(begin: 0.2, end: 0.0);
+  }
+
+  Widget _buildSettingsSection(String title, List<Widget> children) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: AppTypography.textTheme.titleMedium?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const Gap.vertical(AppSpacing.s),
+        CardsX.elevated(child: Column(children: children)),
+      ],
+    );
+  }
+
+  Widget _buildSettingsItem(
+    String title,
+    String subtitle,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return ListTile(
+      leading: Container(
+        padding: SpacingUtils.all(AppSpacing.s),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: AppColors.primary, size: 20),
+      ),
+      title: Text(
+        title,
+        style: AppTypography.textTheme.titleSmall?.copyWith(
+          color: colorScheme.onSurface,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: AppTypography.textTheme.bodySmall?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
+      ),
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        color: colorScheme.onSurfaceVariant,
+        size: 16,
+      ),
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildToggleItem(
+    String title,
+    String subtitle,
+    IconData icon,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return ListTile(
+      leading: Container(
+        padding: SpacingUtils.all(AppSpacing.s),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: AppColors.primary, size: 20),
+      ),
+      title: Text(
+        title,
+        style: AppTypography.textTheme.titleSmall?.copyWith(
+          color: colorScheme.onSurface,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: AppTypography.textTheme.bodySmall?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
+      ),
+      trailing: Switch(
+        value: value,
+        onChanged: onChanged,
+        activeColor: AppColors.primary,
+      ),
+    );
+  }
+
+  Widget _buildSubscriptionInfo(Subscription subscription) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      margin: SpacingUtils.all(AppSpacing.s),
+      padding: SpacingUtils.all(AppSpacing.m),
+      decoration: BoxDecoration(
+        color: AppColors.success.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.success.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.star, color: AppColors.success, size: 20),
+          const Gap.horizontal(AppSpacing.s),
           Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(color: AppTheme.darkGrey),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${subscription.name} Plan',
+                  style: AppTypography.textTheme.titleSmall?.copyWith(
+                    color: AppColors.success,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  '£${subscription.monthlyPrice.toStringAsFixed(2)}/month',
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -391,27 +447,153 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureRow(String feature, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(feature, style: const TextStyle(color: AppTheme.darkGrey)),
-          Text(
-            value,
-            style: TextStyle(
-              color:
-                  value == 'Yes'
-                      ? AppTheme.successGreen
-                      : value == 'No'
-                      ? AppTheme.errorRed
-                      : AppTheme.mediumGrey,
-              fontWeight: FontWeight.w600,
+  Widget _buildLogoutSection(AuthProvider authProvider) {
+    return CardsX.elevated(
+      child: ListTile(
+        leading: Container(
+          padding: SpacingUtils.all(AppSpacing.s),
+          decoration: BoxDecoration(
+            color: AppColors.error.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(Icons.logout, color: AppColors.error, size: 20),
+        ),
+        title: Text(
+          'Logout',
+          style: AppTypography.textTheme.titleSmall?.copyWith(
+            color: AppColors.error,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: Text(
+          'Sign out of your account',
+          style: AppTypography.textTheme.bodySmall?.copyWith(
+            color: AppColors.error.withOpacity(0.7),
+          ),
+        ),
+        onTap: () async {
+          await authProvider.logout();
+        },
+      ),
+    );
+  }
+
+  // Dialog methods
+  void _showEditProfileDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Edit Profile'),
+            content: const Text(
+              'Edit profile functionality will be implemented soon.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showChangePasswordDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Change Password'),
+            content: const Text(
+              'Change password functionality will be implemented soon.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showLanguageDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Select Language'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children:
+                  ['English', 'Spanish', 'French', 'German'].map((lang) {
+                    return ListTile(
+                      title: Text(lang),
+                      onTap: () {
+                        setState(() => _language = lang);
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  }).toList(),
             ),
           ),
-        ],
-      ),
+    );
+  }
+
+  void _showHelpDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Help & Support'),
+            content: const Text(
+              'Contact our support team at support@laundrex.com or call +44 20 1234 5678',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showAboutDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('About Laundrex'),
+            content: const Text(
+              'Laundrex Business App\nVersion 1.0.0\n\nManage your laundrette business efficiently with our comprehensive platform.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showPrivacyDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Privacy Policy'),
+            content: const Text(
+              'Our privacy policy outlines how we collect, use, and protect your data. Full policy available at laundrex.com/privacy',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
     );
   }
 

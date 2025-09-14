@@ -60,7 +60,7 @@ class AppIcons {
   static const IconData staffPermissions = FontAwesomeIcons.shield;
 
   // Analytics icons
-  static const IconData revenue = FontAwesomeIcons.dollarSign;
+  static const IconData revenue = FontAwesomeIcons.poundSign;
   static const IconData analyticsOrders = FontAwesomeIcons.list;
   static const IconData customers = FontAwesomeIcons.users;
   static const IconData performance = FontAwesomeIcons.chartBar;
@@ -69,7 +69,7 @@ class AppIcons {
   static const IconData reports = FontAwesomeIcons.fileText;
   static const IconData export = FontAwesomeIcons.download;
   static const IconData import = FontAwesomeIcons.upload;
-  static const IconData dollar = FontAwesomeIcons.dollarSign;
+  static const IconData dollar = FontAwesomeIcons.poundSign;
   static const IconData check = FontAwesomeIcons.check;
   static const IconData trendingUp = FontAwesomeIcons.arrowTrendUp;
   static const IconData personAdd = FontAwesomeIcons.userPlus;
@@ -81,7 +81,7 @@ class AppIcons {
   static const IconData fold = FontAwesomeIcons.hand;
   static const IconData bag = FontAwesomeIcons.bagShopping;
   static const IconData pickup = FontAwesomeIcons.truck;
-  static const IconData delivery = FontAwesomeIcons.truckFast;
+  static const IconData delivery = FontAwesomeIcons.clock;
   static const IconData laundry = FontAwesomeIcons.shirt;
   static const IconData dryClean = FontAwesomeIcons.sprayCan;
   static const IconData press = FontAwesomeIcons.hammer;
@@ -169,7 +169,7 @@ class AppIcons {
   static const IconData card = FontAwesomeIcons.creditCard;
   static const IconData cash = FontAwesomeIcons.moneyBill;
   static const IconData wallet = FontAwesomeIcons.wallet;
-  static const IconData money = FontAwesomeIcons.dollarSign;
+  static const IconData money = FontAwesomeIcons.poundSign;
   static const IconData price = FontAwesomeIcons.tag;
   static const IconData discount = FontAwesomeIcons.percent;
   static const IconData tax = FontAwesomeIcons.calculator;

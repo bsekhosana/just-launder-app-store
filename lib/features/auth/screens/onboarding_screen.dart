@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design_system/color_schemes.dart';
 import '../../profile/providers/laundrette_profile_provider.dart';
 import '../providers/auth_provider.dart';
 import '../../navigation/screens/main_navigation_screen.dart';
@@ -134,7 +134,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Onboarding failed: ${e.toString()}'),
-            backgroundColor: AppTheme.errorRed,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -164,8 +164,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       decoration: BoxDecoration(
                         color:
                             index <= _currentStep
-                                ? AppTheme.primaryBlue
-                                : AppTheme.lightGrey,
+                                ? AppColors.primary
+                                : AppColors.lightGrey,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -198,7 +198,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: OutlinedButton(
                         onPressed: _previousStep,
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppTheme.primaryBlue),
+                          side: const BorderSide(color: AppColors.primary),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -207,7 +207,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: const Text(
                           'Previous',
                           style: TextStyle(
-                            color: AppTheme.primaryBlue,
+                            color: AppColors.primary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -218,7 +218,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _nextStep,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryBlue,
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -266,7 +266,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             'What type of business are you?',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: AppTheme.primaryBlue,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 8),
@@ -274,7 +274,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             'This helps us customize your experience',
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.mediumGrey),
           ),
           const SizedBox(height: 40),
           ...List.generate(_businessTypes.length, (index) {
@@ -292,14 +292,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     border: Border.all(
                       color:
                           _selectedBusinessType == type
-                              ? AppTheme.primaryBlue
-                              : AppTheme.lightGrey,
+                              ? AppColors.primary
+                              : AppColors.lightGrey,
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(12),
                     color:
                         _selectedBusinessType == type
-                            ? AppTheme.primaryBlue.withOpacity(0.1)
+                            ? AppColors.primary.withOpacity(0.1)
                             : Colors.white,
                   ),
                   child: Row(
@@ -308,8 +308,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         type == 'Private' ? Icons.home : Icons.business,
                         color:
                             _selectedBusinessType == type
-                                ? AppTheme.primaryBlue
-                                : AppTheme.mediumGrey,
+                                ? AppColors.primary
+                                : AppColors.mediumGrey,
                         size: 24,
                       ),
                       const SizedBox(width: 16),
@@ -324,8 +324,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 fontWeight: FontWeight.w600,
                                 color:
                                     _selectedBusinessType == type
-                                        ? AppTheme.primaryBlue
-                                        : AppTheme.darkGrey,
+                                        ? AppColors.primary
+                                        : AppColors.darkGrey,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -336,8 +336,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               style: TextStyle(
                                 color:
                                     _selectedBusinessType == type
-                                        ? AppTheme.primaryBlue
-                                        : AppTheme.mediumGrey,
+                                        ? AppColors.primary
+                                        : AppColors.mediumGrey,
                               ),
                             ),
                           ],
@@ -346,7 +346,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       if (_selectedBusinessType == type)
                         const Icon(
                           Icons.check_circle,
-                          color: AppTheme.primaryBlue,
+                          color: AppColors.primary,
                         ),
                     ],
                   ),
@@ -369,7 +369,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             'Business Details',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: AppTheme.primaryBlue,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 8),
@@ -377,7 +377,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             'Tell us about your business',
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.mediumGrey),
           ),
           const SizedBox(height: 32),
           TextFormField(
@@ -391,7 +391,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppTheme.primaryBlue),
+                borderSide: const BorderSide(color: AppColors.primary),
               ),
             ),
           ),
@@ -407,7 +407,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppTheme.primaryBlue),
+                borderSide: const BorderSide(color: AppColors.primary),
               ),
             ),
           ),
@@ -425,7 +425,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryBlue),
+                      borderSide: const BorderSide(color: AppColors.primary),
                     ),
                   ),
                 ),
@@ -442,7 +442,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryBlue),
+                      borderSide: const BorderSide(color: AppColors.primary),
                     ),
                   ),
                 ),
@@ -461,7 +461,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppTheme.primaryBlue),
+                borderSide: const BorderSide(color: AppColors.primary),
               ),
             ),
           ),
@@ -480,7 +480,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             'Choose Your Plan',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: AppTheme.primaryBlue,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 8),
@@ -488,7 +488,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             'Select the plan that best fits your needs',
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.mediumGrey),
           ),
           const SizedBox(height: 32),
           ...List.generate(_plans.length, (index) {
@@ -506,14 +506,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     border: Border.all(
                       color:
                           _selectedPlan == plan['name'].toLowerCase()
-                              ? AppTheme.primaryBlue
-                              : AppTheme.lightGrey,
+                              ? AppColors.primary
+                              : AppColors.lightGrey,
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(12),
                     color:
                         _selectedPlan == plan['name'].toLowerCase()
-                            ? AppTheme.primaryBlue.withOpacity(0.1)
+                            ? AppColors.primary.withOpacity(0.1)
                             : Colors.white,
                   ),
                   child: Column(
@@ -533,8 +533,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     color:
                                         _selectedPlan ==
                                                 plan['name'].toLowerCase()
-                                            ? AppTheme.primaryBlue
-                                            : AppTheme.darkGrey,
+                                            ? AppColors.primary
+                                            : AppColors.darkGrey,
                                   ),
                                 ),
                                 Text(
@@ -543,22 +543,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     color:
                                         _selectedPlan ==
                                                 plan['name'].toLowerCase()
-                                            ? AppTheme.primaryBlue
-                                            : AppTheme.mediumGrey,
+                                            ? AppColors.primary
+                                            : AppColors.mediumGrey,
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           Text(
-                            '\$${plan['price']}/month',
+                            '£${plan['price']}/month',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color:
                                   _selectedPlan == plan['name'].toLowerCase()
-                                      ? AppTheme.primaryBlue
-                                      : AppTheme.darkGrey,
+                                      ? AppColors.primary
+                                      : AppColors.darkGrey,
                             ),
                           ),
                         ],
@@ -571,7 +571,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             children: [
                               const Icon(
                                 Icons.check,
-                                color: AppTheme.successGreen,
+                                color: AppColors.success,
                                 size: 16,
                               ),
                               const SizedBox(width: 8),
@@ -581,8 +581,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   color:
                                       _selectedPlan ==
                                               plan['name'].toLowerCase()
-                                          ? AppTheme.primaryBlue
-                                          : AppTheme.mediumGrey,
+                                          ? AppColors.primary
+                                          : AppColors.mediumGrey,
                                 ),
                               ),
                             ],
@@ -610,7 +610,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             'Your Profile',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: AppTheme.primaryBlue,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 8),
@@ -618,7 +618,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             'Tell us about yourself',
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: AppTheme.mediumGrey),
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.mediumGrey),
           ),
           const SizedBox(height: 32),
           Row(
@@ -634,7 +634,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryBlue),
+                      borderSide: const BorderSide(color: AppColors.primary),
                     ),
                   ),
                 ),
@@ -651,7 +651,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.primaryBlue),
+                      borderSide: const BorderSide(color: AppColors.primary),
                     ),
                   ),
                 ),
@@ -671,7 +671,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppTheme.primaryBlue),
+                borderSide: const BorderSide(color: AppColors.primary),
               ),
             ),
           ),
@@ -680,4 +680,3 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 }
-

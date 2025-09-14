@@ -1,24 +1,13 @@
 import 'package:equatable/equatable.dart';
 
 /// Subscription plan types
-enum SubscriptionType {
-  business,
-  private,
-}
+enum SubscriptionType { business, private }
 
 /// Subscription tiers for business plans
-enum BusinessTier {
-  starter,
-  professional,
-  enterprise,
-  unlimited,
-}
+enum BusinessTier { starter, professional, enterprise, unlimited }
 
 /// Subscription tiers for private plans
-enum PrivateTier {
-  basic,
-  premium,
-}
+enum PrivateTier { basic, premium }
 
 /// Subscription model representing a laundrette's subscription plan
 class Subscription extends Equatable {
@@ -95,18 +84,20 @@ class Subscription extends Equatable {
         (e) => e.name == json['type'],
         orElse: () => SubscriptionType.private,
       ),
-      businessTier: json['businessTier'] != null
-          ? BusinessTier.values.firstWhere(
-              (e) => e.name == json['businessTier'],
-              orElse: () => BusinessTier.starter,
-            )
-          : null,
-      privateTier: json['privateTier'] != null
-          ? PrivateTier.values.firstWhere(
-              (e) => e.name == json['privateTier'],
-              orElse: () => PrivateTier.basic,
-            )
-          : null,
+      businessTier:
+          json['businessTier'] != null
+              ? BusinessTier.values.firstWhere(
+                (e) => e.name == json['businessTier'],
+                orElse: () => BusinessTier.starter,
+              )
+              : null,
+      privateTier:
+          json['privateTier'] != null
+              ? PrivateTier.values.firstWhere(
+                (e) => e.name == json['privateTier'],
+                orElse: () => PrivateTier.basic,
+              )
+              : null,
       name: json['name'] as String,
       description: json['description'] as String,
       monthlyPrice: (json['monthlyPrice'] as num).toDouble(),
@@ -180,22 +171,22 @@ class Subscription extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        laundretteId,
-        type,
-        businessTier,
-        privateTier,
-        name,
-        description,
-        monthlyPrice,
-        currency,
-        startDate,
-        endDate,
-        isActive,
-        features,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    laundretteId,
+    type,
+    businessTier,
+    privateTier,
+    name,
+    description,
+    monthlyPrice,
+    currency,
+    startDate,
+    endDate,
+    isActive,
+    features,
+    createdAt,
+    updatedAt,
+  ];
 }
 
 /// Subscription feature definitions
@@ -207,7 +198,6 @@ class SubscriptionFeatures {
   static const String customBranding = 'customBranding';
   static const String apiAccess = 'apiAccess';
   static const String multiLocationManagement = 'multiLocationManagement';
-  static const String driverManagement = 'driverManagement';
   static const String orderAutoAccept = 'orderAutoAccept';
   static const String priorityDelivery = 'priorityDelivery';
   static const String customPricing = 'customPricing';

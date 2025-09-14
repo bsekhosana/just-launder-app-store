@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import '../../../design_system/color_schemes.dart';
 import '../providers/analytics_provider.dart';
 
 class PerformanceChartWidget extends StatelessWidget {
@@ -16,13 +16,16 @@ class PerformanceChartWidget extends StatelessWidget {
           return Container(
             height: 200,
             decoration: BoxDecoration(
-              color: AppTheme.lightGrey.withOpacity(0.1),
+              color: AppColors.surfaceVariant.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Center(
               child: Text(
                 'No performance data available',
-                style: TextStyle(color: AppTheme.mediumGrey, fontSize: 16),
+                style: TextStyle(
+                  color: AppColors.onSurfaceVariant,
+                  fontSize: 16,
+                ),
               ),
             ),
           );
@@ -32,7 +35,7 @@ class PerformanceChartWidget extends StatelessWidget {
           height: 200,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppTheme.lightGrey.withOpacity(0.05),
+            color: AppColors.lightGrey.withOpacity(0.05),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
@@ -60,8 +63,8 @@ class PerformanceChartWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildLegendItem('Completion Rate', AppTheme.successGreen),
-        _buildLegendItem('Orders', AppTheme.primaryBlue),
+        _buildLegendItem('Completion Rate', AppColors.success),
+        _buildLegendItem('Orders', AppColors.primary),
       ],
     );
   }
@@ -80,7 +83,10 @@ class PerformanceChartWidget extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(color: AppTheme.mediumGrey, fontSize: 12),
+          style: const TextStyle(
+            color: AppColors.onSurfaceVariant,
+            fontSize: 12,
+          ),
         ),
       ],
     );
@@ -111,7 +117,7 @@ class PerformanceChartPainter extends CustomPainter {
 
       final completionPaint =
           Paint()
-            ..color = AppTheme.successGreen
+            ..color = AppColors.success
             ..style = PaintingStyle.fill;
 
       canvas.drawRect(
@@ -126,7 +132,7 @@ class PerformanceChartPainter extends CustomPainter {
 
       final orderPaint =
           Paint()
-            ..color = AppTheme.primaryBlue
+            ..color = AppColors.primary
             ..style = PaintingStyle.fill;
 
       canvas.drawRect(
@@ -139,7 +145,7 @@ class PerformanceChartPainter extends CustomPainter {
         text: TextSpan(
           text: '${completionRate.toStringAsFixed(0)}%',
           style: const TextStyle(
-            color: AppTheme.darkGrey,
+            color: AppColors.onSurface,
             fontSize: 10,
             fontWeight: FontWeight.bold,
           ),

@@ -26,7 +26,7 @@ class AnalyticsProvider with ChangeNotifier {
   int _newCustomers = 0;
   double _deliveryTime = 0.0;
   int _totalDeliveries = 0;
-  double _driverEfficiency = 0.0;
+  double _staffEfficiency = 0.0;
   Map<String, double> _revenueByBranch = {};
   Map<String, int> _ordersByBranch = {};
   Map<String, double> _revenueByDay = {};
@@ -47,7 +47,7 @@ class AnalyticsProvider with ChangeNotifier {
   int get newCustomers => _newCustomers;
   double get deliveryTime => _deliveryTime;
   int get totalDeliveries => _totalDeliveries;
-  double get driverEfficiency => _driverEfficiency;
+  double get staffEfficiency => _staffEfficiency;
   Map<String, double> get revenueByBranch => _revenueByBranch;
   Map<String, int> get ordersByBranch => _ordersByBranch;
   Map<String, double> get revenueByDay => _revenueByDay;
@@ -210,7 +210,7 @@ class AnalyticsProvider with ChangeNotifier {
     }
 
     // Mock driver efficiency
-    _driverEfficiency = 85.0; // Mock value
+    _staffEfficiency = 85.0; // Mock value
   }
 
   /// Calculate branch-specific metrics
@@ -313,7 +313,7 @@ class AnalyticsProvider with ChangeNotifier {
     _staffPerformance.clear();
 
     for (final member in staff) {
-      if (member.role == StaffRole.driver) {
+      if (member.role == StaffRole.staff) {
         final driverOrders =
             orders.where((o) => o.driverId == member.id).toList();
         final completedOrders =

@@ -12,8 +12,7 @@ import '../../../ui/primitives/chip_x.dart';
 import '../providers/staff_provider.dart';
 import '../../../data/models/staff_member.dart';
 import 'add_edit_staff_screen.dart';
-import 'driver_management_screen.dart';
-import 'driver_details_screen.dart';
+// Driver screens removed - drivers handled by standalone app
 
 class StaffScreen extends StatefulWidget {
   const StaffScreen({super.key});
@@ -26,7 +25,10 @@ class _StaffScreenState extends State<StaffScreen> {
   @override
   void initState() {
     super.initState();
-    _loadStaff();
+    // Load staff after the first frame is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadStaff();
+    });
   }
 
   Future<void> _loadStaff() async {
@@ -41,7 +43,7 @@ class _StaffScreenState extends State<StaffScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: colorScheme.surface.withOpacity(0.9),
         elevation: 0,
@@ -53,15 +55,48 @@ class _StaffScreenState extends State<StaffScreen> {
           ),
         ),
         actions: [
-          AnimatedButtons.icon(
-            onPressed: _openDriverManagement,
-            child: Icon(AppIcons.delivery, color: AppColors.primary),
-            tooltip: 'Driver Management',
-          ),
-          AnimatedButtons.icon(
-            onPressed: _addStaffMember,
-            child: Icon(AppIcons.add, color: AppColors.primary),
-            tooltip: 'Add Staff',
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedButton(
+                  onPressed: _openDriverManagement,
+                  backgroundColor: Colors.white,
+                  width: 48,
+                  height: 48,
+                  borderRadius: BorderRadius.circular(24),
+                  tooltip: 'Driver Management',
+                  border: Border.all(color: Colors.white, width: 1),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      AppIcons.delivery,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                AnimatedButton(
+                  onPressed: _addStaffMember,
+                  backgroundColor: Colors.white,
+                  width: 48,
+                  height: 48,
+                  borderRadius: BorderRadius.circular(24),
+                  tooltip: 'Add Staff',
+                  border: Border.all(color: Colors.white, width: 1),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      AppIcons.add,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -150,9 +185,13 @@ class _StaffScreenState extends State<StaffScreen> {
             padding: SpacingUtils.all(AppSpacing.l),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: AppColors.primary.withOpacity(0.1),
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.primary.withOpacity(0.1),
+                  ),
                   child:
                       staffMember.profileImageUrl != null
                           ? ClipOval(
@@ -162,18 +201,26 @@ class _StaffScreenState extends State<StaffScreen> {
                               height: 48,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
-                                return Icon(
-                                  AppIcons.staff,
-                                  color: AppColors.primary,
-                                  size: 24,
+                                return SizedBox(
+                                  width: 48,
+                                  height: 48,
+                                  child: Icon(
+                                    AppIcons.staff,
+                                    color: AppColors.primary,
+                                    size: 20,
+                                  ),
                                 );
                               },
                             ),
                           )
-                          : Icon(
-                            AppIcons.staff,
-                            color: AppColors.primary,
-                            size: 24,
+                          : SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: Icon(
+                              AppIcons.staff,
+                              color: AppColors.primary,
+                              size: 20,
+                            ),
                           ),
                 ),
                 const Gap.horizontal(AppSpacing.m),
@@ -219,7 +266,7 @@ class _StaffScreenState extends State<StaffScreen> {
                     if (staffMember.hourlyRate != null &&
                         staffMember.hourlyRate! > 0)
                       Text(
-                        '\$${staffMember.hourlyRate!.toStringAsFixed(2)}/hr',
+                        '£${staffMember.hourlyRate!.toStringAsFixed(2)}/hr',
                         style: AppTypography.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -250,26 +297,22 @@ class _StaffScreenState extends State<StaffScreen> {
   }
 
   void _openDriverManagement() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const DriverManagementScreen()),
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Driver management is handled by the standalone driver app',
+        ),
+      ),
     );
   }
 
   void _viewStaffDetails(StaffMember staffMember) {
-    if (staffMember.role == StaffRole.driver) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => DriverDetailsScreen(driver: staffMember),
-        ),
-      );
-    } else {
-      // TODO: Implement staff details screen for non-drivers
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Staff details coming soon'),
-          backgroundColor: AppColors.info,
-        ),
-      );
-    }
+    // Navigate to edit staff screen for all staff members
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (context) => AddEditStaffScreen(staff: staffMember, isEdit: true),
+      ),
+    );
   }
 }

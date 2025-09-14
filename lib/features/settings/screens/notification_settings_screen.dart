@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/motion.dart';
+import '../../../design_system/icons.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/snack_x.dart';
 import '../providers/settings_provider.dart';
+import '../../../data/services/settings_mock_service.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -13,49 +22,73 @@ class NotificationSettingsScreen extends StatefulWidget {
 
 class _NotificationSettingsScreenState
     extends State<NotificationSettingsScreen> {
-  // Notification preferences
-  bool _orderNotifications = true;
-  bool _staffNotifications = true;
-  bool _paymentNotifications = true;
-  bool _systemNotifications = true;
-  bool _marketingNotifications = false;
-  bool _pushNotifications = true;
-  bool _emailNotifications = true;
-  bool _smsNotifications = false;
-
-  // Notification timing
-  String _quietHoursStart = '22:00';
-  String _quietHoursEnd = '08:00';
-  bool _quietHoursEnabled = true;
-
-  // Frequency settings
-  String _orderUpdateFrequency = 'immediate';
-  String _reportFrequency = 'daily';
-
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Notification Settings'),
-        backgroundColor: AppTheme.primaryBlue,
-        foregroundColor: Colors.white,
+        title: Text(
+          'Notification Settings',
+          style: AppTypography.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: colorScheme.onSurface,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: AnimatedButton(
+              onPressed: _saveSettings,
+              backgroundColor: Colors.white,
+              width: 48,
+              height: 48,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white, width: 1),
+              tooltip: 'Save Settings',
+              child: Align(
+                alignment: Alignment.center,
+                child: Icon(AppIcons.save, color: AppColors.primary, size: 20),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Consumer<SettingsProvider>(
         builder: (context, settingsProvider, child) {
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: SpacingUtils.all(AppSpacing.l),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildNotificationTypesSection(),
-                const SizedBox(height: 24),
-                _buildDeliveryMethodsSection(),
-                const SizedBox(height: 24),
-                _buildTimingSection(),
-                const SizedBox(height: 24),
-                _buildFrequencySection(),
-                const SizedBox(height: 24),
-                _buildTestNotificationSection(),
+                _buildNotificationTypesSection(settingsProvider)
+                    .animate()
+                    .fadeIn(duration: AppMotion.normal)
+                    .slideY(begin: 0.1, end: 0.0),
+                const Gap.vertical(AppSpacing.l),
+                _buildDeliveryMethodsSection()
+                    .animate()
+                    .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
+                    .slideY(begin: 0.1, end: 0.0),
+                const Gap.vertical(AppSpacing.l),
+                _buildTimingSection()
+                    .animate()
+                    .fadeIn(delay: AppMotion.normal, duration: AppMotion.normal)
+                    .slideY(begin: 0.1, end: 0.0),
+                const Gap.vertical(AppSpacing.l),
+                _buildFrequencySection()
+                    .animate()
+                    .fadeIn(delay: AppMotion.slow, duration: AppMotion.normal)
+                    .slideY(begin: 0.1, end: 0.0),
+                const Gap.vertical(AppSpacing.l),
+                _buildTestNotificationSection()
+                    .animate()
+                    .fadeIn(delay: AppMotion.slower, duration: AppMotion.normal)
+                    .slideY(begin: 0.1, end: 0.0),
               ],
             ),
           );
@@ -64,51 +97,56 @@ class _NotificationSettingsScreenState
     );
   }
 
-  Widget _buildNotificationTypesSection() {
-    return Card(
+  Widget _buildNotificationTypesSection(SettingsProvider settingsProvider) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Notification Types',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildNotificationSwitch(
               'Order Notifications',
               'New orders, status updates, and order-related alerts',
-              _orderNotifications,
-              (value) => setState(() => _orderNotifications = value),
-              Icons.shopping_bag,
+              settingsProvider.orderNotifications,
+              (value) => settingsProvider.toggleOrderNotifications(),
+              AppIcons.orders,
             ),
             _buildNotificationSwitch(
               'Staff Notifications',
               'Staff activity, schedule changes, and performance updates',
-              _staffNotifications,
-              (value) => setState(() => _staffNotifications = value),
-              Icons.people,
+              settingsProvider.staffNotifications,
+              (value) => settingsProvider.toggleStaffNotifications(),
+              AppIcons.staff,
             ),
             _buildNotificationSwitch(
               'Payment Notifications',
               'Payment confirmations, billing alerts, and subscription updates',
-              _paymentNotifications,
-              (value) => setState(() => _paymentNotifications = value),
-              Icons.payment,
+              settingsProvider.paymentNotifications,
+              (value) => settingsProvider.togglePaymentNotifications(),
+              AppIcons.payment,
             ),
             _buildNotificationSwitch(
               'System Notifications',
               'App updates, maintenance alerts, and system status',
-              _systemNotifications,
-              (value) => setState(() => _systemNotifications = value),
-              Icons.settings,
+              settingsProvider.systemNotifications,
+              (value) => settingsProvider.toggleSystemNotifications(),
+              AppIcons.settings,
             ),
             _buildNotificationSwitch(
               'Marketing Notifications',
               'Promotional offers, tips, and business insights',
-              _marketingNotifications,
-              (value) => setState(() => _marketingNotifications = value),
+              settingsProvider.marketingNotifications,
+              (value) => settingsProvider.toggleMarketingNotifications(),
               Icons.campaign,
             ),
           ],
@@ -124,28 +162,29 @@ class _NotificationSettingsScreenState
     ValueChanged<bool> onChanged,
     IconData icon,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: AppTheme.primaryBlue, size: 20),
-          const SizedBox(width: 12),
+          Icon(icon, color: AppColors.primary, size: 20),
+          const Gap.horizontal(AppSpacing.s),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: AppTypography.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    fontSize: 16,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 Text(
                   description,
-                  style: const TextStyle(
-                    color: AppTheme.mediumGrey,
-                    fontSize: 14,
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -154,7 +193,7 @@ class _NotificationSettingsScreenState
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: AppTheme.primaryBlue,
+            activeColor: AppColors.primary,
           ),
         ],
       ),
@@ -162,36 +201,45 @@ class _NotificationSettingsScreenState
   }
 
   Widget _buildDeliveryMethodsSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+    final settingsProvider = Provider.of<SettingsProvider>(
+      context,
+      listen: false,
+    );
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Delivery Methods',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildDeliveryMethodSwitch(
               'Push Notifications',
               'Receive notifications on your device',
-              _pushNotifications,
-              (value) => setState(() => _pushNotifications = value),
+              settingsProvider.pushNotifications,
+              (value) => settingsProvider.togglePushNotifications(),
               Icons.notifications,
             ),
             _buildDeliveryMethodSwitch(
               'Email Notifications',
               'Receive notifications via email',
-              _emailNotifications,
-              (value) => setState(() => _emailNotifications = value),
-              Icons.email,
+              settingsProvider.emailNotifications,
+              (value) => settingsProvider.toggleEmailNotifications(),
+              AppIcons.email,
             ),
             _buildDeliveryMethodSwitch(
               'SMS Notifications',
               'Receive notifications via text message',
-              _smsNotifications,
-              (value) => setState(() => _smsNotifications = value),
+              settingsProvider.smsNotifications,
+              (value) => settingsProvider.toggleSmsNotifications(),
               Icons.sms,
             ),
           ],
@@ -207,28 +255,29 @@ class _NotificationSettingsScreenState
     ValueChanged<bool> onChanged,
     IconData icon,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: AppTheme.primaryBlue, size: 20),
-          const SizedBox(width: 12),
+          Icon(icon, color: AppColors.primary, size: 20),
+          const Gap.horizontal(AppSpacing.s),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: AppTypography.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    fontSize: 16,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 Text(
                   description,
-                  style: const TextStyle(
-                    color: AppTheme.mediumGrey,
-                    fontSize: 14,
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -237,7 +286,7 @@ class _NotificationSettingsScreenState
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: AppTheme.primaryBlue,
+            activeColor: AppColors.primary,
           ),
         ],
       ),
@@ -245,59 +294,78 @@ class _NotificationSettingsScreenState
   }
 
   Widget _buildTimingSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+    final settingsProvider = Provider.of<SettingsProvider>(
+      context,
+      listen: false,
+    );
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Quiet Hours',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             Row(
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Enable Quiet Hours'),
+                      Text(
+                        'Enable Quiet Hours',
+                        style: AppTypography.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
                       Text(
                         'No notifications during specified hours',
-                        style: const TextStyle(
-                          color: AppTheme.mediumGrey,
-                          fontSize: 14,
+                        style: AppTypography.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ),
                 ),
                 Switch(
-                  value: _quietHoursEnabled,
-                  onChanged:
-                      (value) => setState(() => _quietHoursEnabled = value),
-                  activeColor: AppTheme.primaryBlue,
+                  value: settingsProvider.quietHoursEnabled,
+                  onChanged: (value) => settingsProvider.toggleQuietHours(),
+                  activeColor: AppColors.primary,
                 ),
               ],
             ),
-            if (_quietHoursEnabled) ...[
-              const SizedBox(height: 16),
+            if (settingsProvider.quietHoursEnabled) ...[
+              const Gap.vertical(AppSpacing.m),
               Row(
                 children: [
                   Expanded(
                     child: _buildTimePicker(
                       'Start Time',
-                      _quietHoursStart,
-                      (time) => setState(() => _quietHoursStart = time),
+                      settingsProvider.quietHoursStart,
+                      (time) => settingsProvider.updateQuietHours(
+                        time,
+                        settingsProvider.quietHoursEnd,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const Gap.horizontal(AppSpacing.m),
                   Expanded(
                     child: _buildTimePicker(
                       'End Time',
-                      _quietHoursEnd,
-                      (time) => setState(() => _quietHoursEnd = time),
+                      settingsProvider.quietHoursEnd,
+                      (time) => settingsProvider.updateQuietHours(
+                        settingsProvider.quietHoursStart,
+                        time,
+                      ),
                     ),
                   ),
                 ],
@@ -314,22 +382,45 @@ class _NotificationSettingsScreenState
     String time,
     ValueChanged<String> onChanged,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-        const SizedBox(height: 8),
+        Text(
+          label,
+          style: AppTypography.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        const Gap.vertical(AppSpacing.xs),
         InkWell(
           onTap: () => _selectTime(time, onChanged),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: SpacingUtils.symmetric(
+              horizontal: AppSpacing.s,
+              vertical: AppSpacing.xs,
+            ),
             decoration: BoxDecoration(
-              border: Border.all(color: AppTheme.lightGrey),
+              border: Border.all(color: AppColors.outline),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [Text(time), const Icon(Icons.access_time, size: 20)],
+              children: [
+                Text(
+                  time,
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                Icon(
+                  AppIcons.time,
+                  size: 20,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ],
             ),
           ),
         ),
@@ -338,29 +429,38 @@ class _NotificationSettingsScreenState
   }
 
   Widget _buildFrequencySection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+    final settingsProvider = Provider.of<SettingsProvider>(
+      context,
+      listen: false,
+    );
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Notification Frequency',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildFrequencyDropdown(
               'Order Updates',
-              _orderUpdateFrequency,
+              settingsProvider.orderUpdateFrequency,
               ['immediate', 'hourly', 'daily'],
-              (value) => setState(() => _orderUpdateFrequency = value!),
+              (value) => settingsProvider.updateOrderUpdateFrequency(value!),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             _buildFrequencyDropdown(
               'Reports',
-              _reportFrequency,
+              settingsProvider.reportFrequency,
               ['immediate', 'daily', 'weekly', 'monthly'],
-              (value) => setState(() => _reportFrequency = value!),
+              (value) => settingsProvider.updateReportFrequency(value!),
             ),
           ],
         ),
@@ -374,26 +474,50 @@ class _NotificationSettingsScreenState
     List<String> options,
     ValueChanged<String?> onChanged,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-        const SizedBox(height: 8),
+        Text(
+          label,
+          style: AppTypography.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        const Gap.vertical(AppSpacing.xs),
         DropdownButtonFormField<String>(
           value: value,
           onChanged: onChanged,
           decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 8,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.outline),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.outline),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.primary),
+            ),
+            contentPadding: SpacingUtils.symmetric(
+              horizontal: AppSpacing.s,
+              vertical: AppSpacing.xs,
             ),
           ),
           items:
               options.map((option) {
                 return DropdownMenuItem(
                   value: option,
-                  child: Text(_formatFrequencyOption(option)),
+                  child: Text(
+                    _formatFrequencyOption(option),
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
                 );
               }).toList(),
         ),
@@ -402,44 +526,67 @@ class _NotificationSettingsScreenState
   }
 
   Widget _buildTestNotificationSection() {
-    return Card(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CardsX.elevated(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: SpacingUtils.all(AppSpacing.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Test Notifications',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 16),
-            const Text(
+            const Gap.vertical(AppSpacing.m),
+            Text(
               'Send test notifications to verify your settings are working correctly.',
-              style: TextStyle(color: AppTheme.mediumGrey),
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
-            const SizedBox(height: 16),
+            const Gap.vertical(AppSpacing.m),
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton.icon(
+                  child: AnimatedButtons.primary(
                     onPressed: _sendTestNotification,
-                    icon: const Icon(Icons.send),
-                    label: const Text('Send Test'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryBlue,
-                      foregroundColor: Colors.white,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.send, color: AppColors.onPrimary),
+                        const Gap.horizontal(AppSpacing.xs),
+                        Text(
+                          'Send Test',
+                          style: AppTypography.textTheme.labelMedium?.copyWith(
+                            color: AppColors.onPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const Gap.horizontal(AppSpacing.s),
                 Expanded(
-                  child: OutlinedButton.icon(
+                  child: AnimatedButtons.secondary(
                     onPressed: _saveSettings,
-                    icon: const Icon(Icons.save),
-                    label: const Text('Save Settings'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppTheme.primaryBlue,
-                      side: const BorderSide(color: AppTheme.primaryBlue),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(AppIcons.save, color: AppColors.primary),
+                        const Gap.horizontal(AppSpacing.xs),
+                        Text(
+                          'Save Settings',
+                          style: AppTypography.textTheme.labelMedium?.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -478,22 +625,58 @@ class _NotificationSettingsScreenState
     }
   }
 
-  void _sendTestNotification() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Test notification sent! Check your device.'),
-        backgroundColor: AppTheme.successGreen,
-      ),
-    );
+  void _sendTestNotification() async {
+    try {
+      final success = await SettingsMockService.testNotification();
+
+      if (success) {
+        SnackXUtils.showSuccess(
+          context,
+          message: 'Test notification sent! Check your device.',
+        );
+      } else {
+        SnackXUtils.showError(
+          context,
+          message: 'Failed to send test notification.',
+        );
+      }
+    } catch (e) {
+      SnackXUtils.showError(
+        context,
+        message: 'An error occurred while sending test notification.',
+      );
+    }
   }
 
-  void _saveSettings() {
-    // TODO: Implement settings save logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Notification settings saved successfully!'),
-        backgroundColor: AppTheme.successGreen,
-      ),
+  void _saveSettings() async {
+    final settingsProvider = Provider.of<SettingsProvider>(
+      context,
+      listen: false,
     );
+
+    try {
+      // Export current settings
+      final settings = settingsProvider.exportSettings();
+
+      // Save to mock service
+      final success = await SettingsMockService.saveSettings(settings);
+
+      if (success) {
+        SnackXUtils.showSuccess(
+          context,
+          message: 'Notification settings saved successfully!',
+        );
+      } else {
+        SnackXUtils.showError(
+          context,
+          message: 'Failed to save settings. Please try again.',
+        );
+      }
+    } catch (e) {
+      SnackXUtils.showError(
+        context,
+        message: 'An error occurred while saving settings.',
+      );
+    }
   }
 }

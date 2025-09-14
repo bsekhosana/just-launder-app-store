@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 /// Staff role types
-enum StaffRole { owner, manager, staff, driver, cleaner }
+enum StaffRole { owner, manager, staff, cleaner }
 
 /// Staff status
 enum StaffStatus { active, inactive, suspended, terminated }
@@ -64,9 +64,6 @@ class StaffMember extends Equatable {
 
   /// Check if staff member is manager or owner
   bool get isManager => role == StaffRole.manager || role == StaffRole.owner;
-
-  /// Check if staff member is driver
-  bool get isDriver => role == StaffRole.driver;
 
   /// Check if staff member can work at specific branch
   bool canWorkAtBranch(String branchId) {
@@ -139,8 +136,6 @@ class StaffMember extends Equatable {
         return 'Manager';
       case StaffRole.staff:
         return 'Staff';
-      case StaffRole.driver:
-        return 'Driver';
       case StaffRole.cleaner:
         return 'Cleaner';
     }

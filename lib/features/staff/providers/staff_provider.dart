@@ -17,7 +17,7 @@ class StaffProvider with ChangeNotifier {
   List<StaffMember> get activeStaff => _staff.where((s) => s.isActive).toList();
 
   /// Get drivers
-  List<StaffMember> get drivers => getStaffByRole(StaffRole.driver);
+  // Drivers handled by standalone driver app
 
   /// Get managers
   List<StaffMember> get managers => getStaffByRole(StaffRole.manager);
@@ -160,7 +160,7 @@ class StaffProvider with ChangeNotifier {
           lastName: 'Rodriguez',
           email: 'david@elitelaundry.com',
           phoneNumber: '+1-555-0104',
-          role: StaffRole.driver,
+          role: StaffRole.staff,
           status: StaffStatus.active,
           profileImageUrl: 'https://example.com/david.jpg',
           branchIds: ['branch_1', 'branch_2'],
