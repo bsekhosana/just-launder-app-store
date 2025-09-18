@@ -35,6 +35,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: colorScheme.surface.withOpacity(0.9),
+        elevation: 0,
+        title: Text(
+          'Settings',
+          style: AppTypography.textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
       body: Consumer2<LaundretteProfileProvider, AuthProvider>(
         builder: (context, profileProvider, authProvider, child) {
           final profile = profileProvider.currentProfile;
@@ -42,25 +53,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           return CustomScrollView(
             slivers: [
-              // Custom App Bar
-              SliverAppBar(
-                expandedHeight: 120,
-                floating: false,
-                pinned: true,
-                backgroundColor: Colors.white,
-                elevation: 0,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(
-                    'Settings',
-                    style: AppTypography.textTheme.titleLarge?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  centerTitle: true,
-                ),
-              ),
-
               // Profile Card
               SliverToBoxAdapter(
                 child: Padding(

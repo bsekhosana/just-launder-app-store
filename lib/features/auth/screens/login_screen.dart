@@ -194,28 +194,81 @@ class _LoginScreenState extends State<LoginScreen> {
                       icon: AppIcons.staff,
                       content: Column(
                         children: [
+                          // Quick Fill Buttons
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    _emailController.text =
+                                        'business@laundrette.com';
+                                    _passwordController.text = 'password';
+                                    SnackXUtils.showSuccess(
+                                      context,
+                                      message: 'Business account filled',
+                                    );
+                                  },
+                                  icon: const Icon(Icons.business, size: 16),
+                                  label: const Text('Fill Business'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primary,
+                                    foregroundColor: AppColors.onPrimary,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    _emailController.text =
+                                        'private@laundrette.com';
+                                    _passwordController.text = 'password';
+                                    SnackXUtils.showSuccess(
+                                      context,
+                                      message: 'Private account filled',
+                                    );
+                                  },
+                                  icon: const Icon(Icons.person, size: 16),
+                                  label: const Text('Fill Private'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primary,
+                                    foregroundColor: AppColors.onPrimary,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
                           DemoAccountItem(
                             accountType: 'Business Account',
                             email: 'business@laundrette.com',
                             password: 'password',
                             onEmailCopy: () {
+                              const email = 'business@laundrette.com';
                               Clipboard.setData(
-                                const ClipboardData(
-                                  text: 'business@laundrette.com',
-                                ),
+                                const ClipboardData(text: email),
                               );
+                              _emailController.text = email;
                               SnackXUtils.showSuccess(
                                 context,
-                                message: 'Email copied to clipboard',
+                                message: 'Email copied and pasted',
                               );
                             },
                             onPasswordCopy: () {
+                              const password = 'password';
                               Clipboard.setData(
-                                const ClipboardData(text: 'password'),
+                                const ClipboardData(text: password),
                               );
+                              _passwordController.text = password;
                               SnackXUtils.showSuccess(
                                 context,
-                                message: 'Password copied to clipboard',
+                                message: 'Password copied and pasted',
                               );
                             },
                           ),
@@ -224,23 +277,25 @@ class _LoginScreenState extends State<LoginScreen> {
                             email: 'private@laundrette.com',
                             password: 'password',
                             onEmailCopy: () {
+                              const email = 'private@laundrette.com';
                               Clipboard.setData(
-                                const ClipboardData(
-                                  text: 'private@laundrette.com',
-                                ),
+                                const ClipboardData(text: email),
                               );
+                              _emailController.text = email;
                               SnackXUtils.showSuccess(
                                 context,
-                                message: 'Email copied to clipboard',
+                                message: 'Email copied and pasted',
                               );
                             },
                             onPasswordCopy: () {
+                              const password = 'password';
                               Clipboard.setData(
-                                const ClipboardData(text: 'password'),
+                                const ClipboardData(text: password),
                               );
+                              _passwordController.text = password;
                               SnackXUtils.showSuccess(
                                 context,
-                                message: 'Password copied to clipboard',
+                                message: 'Password copied and pasted',
                               );
                             },
                           ),

@@ -23,7 +23,7 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(milliseconds: 100));
 
       // Mock authentication - replace with real API call
       if (email == 'business@laundrette.com' && password == 'password') {
@@ -192,7 +192,7 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       // Simulate checking stored auth token
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(milliseconds: 100));
 
       // Mock - in real app, check stored token
       _isLoading = false;

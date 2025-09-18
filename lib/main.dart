@@ -49,25 +49,38 @@ class JustLaundretteApp extends StatelessWidget {
   }
 }
 
-class AppWrapper extends StatelessWidget {
+class AppWrapper extends StatefulWidget {
   const AppWrapper({super.key});
 
   @override
+  State<AppWrapper> createState() => _AppWrapperState();
+}
+
+class _AppWrapperState extends State<AppWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize authentication state
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      authProvider.checkAuthStatus();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(
-      builder: (context, authProvider, child) {
-        if (authProvider.isLoading) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
+    final authProvider = Provider.of<AuthProvider>(context, listen: true);
+    
+    if (authProvider.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
-        if (authProvider.isAuthenticated) {
-          return const MainNavigationScreen();
-        }
+    if (authProvider.isAuthenticated) {
+      return const MainNavigationScreen();
+    }
 
-        return const LoginScreen();
-      },
-    );
+    return const LoginScreen();
   }
 }
