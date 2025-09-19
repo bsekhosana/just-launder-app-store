@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
-import '../../../design_system/radii.dart';
 import '../../../ui/primitives/card_x.dart';
-import '../../../ui/primitives/chip_x.dart';
 import '../../../data/models/laundrette_order.dart';
 
 class OrderFiltersWidget extends StatefulWidget {

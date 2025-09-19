@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../design_system/radii.dart';
 import '../../design_system/spacing.dart';
 import '../../design_system/typography.dart';
 import '../../design_system/motion.dart';
 import '../../design_system/icons.dart';
-import '../../design_system/elevations.dart';
 import '../../design_system/color_schemes.dart';
 
 /// Enhanced text field with floating label, states, and animations
@@ -172,8 +170,6 @@ class _TextFieldXState extends State<TextFieldX>
         hasError
             ? (widget.errorBorderColor ?? colorScheme.error)
             : (widget.focusedBorderColor ?? AppColors.primary);
-
-    final effectiveShadows = widget.shadows ?? Shadows.input;
 
     return Container(
       width: widget.width,

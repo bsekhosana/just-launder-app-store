@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
-import '../../../design_system/motion.dart';
-import '../../../design_system/icons.dart';
-import '../../../ui/primitives/animated_button.dart';
 import '../../../ui/primitives/card_x.dart';
-import '../../../ui/primitives/snack_x.dart';
 import '../providers/branch_provider.dart';
 import '../../../data/models/laundrette_branch.dart';
 

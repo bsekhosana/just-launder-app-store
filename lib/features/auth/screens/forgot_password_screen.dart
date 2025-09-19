@@ -8,7 +8,6 @@ import '../../../design_system/radii.dart';
 import '../../../design_system/elevations.dart';
 import '../../../ui/primitives/animated_button.dart';
 import '../../../ui/primitives/text_field_x.dart';
-import '../../../core/theme/app_theme.dart';
 import '../providers/auth_provider.dart';
 import 'otp_verification_screen.dart';
 
