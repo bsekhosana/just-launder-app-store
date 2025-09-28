@@ -6,6 +6,8 @@ import 'features/profile/providers/laundrette_profile_provider.dart';
 import 'features/branches/providers/branch_provider.dart';
 import 'features/orders/providers/order_provider.dart';
 import 'features/staff/providers/staff_provider.dart';
+import 'features/staff/providers/staff_management_provider.dart';
+import 'features/orders/providers/tenant_order_provider.dart';
 import 'features/analytics/providers/analytics_provider.dart';
 import 'features/settings/providers/settings_provider.dart';
 import 'features/onboarding/providers/onboarding_provider.dart';
@@ -30,6 +32,8 @@ class JustLaundretteApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => BranchProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
         ChangeNotifierProvider(create: (_) => StaffProvider()),
+        ChangeNotifierProvider(create: (_) => StaffManagementProvider()),
+        ChangeNotifierProvider(create: (_) => TenantOrderProvider()),
         ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
