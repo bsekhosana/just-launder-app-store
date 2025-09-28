@@ -8,6 +8,8 @@ import 'features/orders/providers/order_provider.dart';
 import 'features/staff/providers/staff_provider.dart';
 import 'features/analytics/providers/analytics_provider.dart';
 import 'features/settings/providers/settings_provider.dart';
+import 'features/onboarding/providers/onboarding_provider.dart';
+import 'features/connectivity/providers/connectivity_provider.dart';
 import 'features/navigation/screens/main_navigation_screen.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/onboarding_screen.dart';
@@ -30,6 +32,10 @@ class JustLaundretteApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => StaffProvider()),
         ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => OnboardingProvider()),
+        ChangeNotifierProvider(
+          create: (_) => ConnectivityProvider()..initialize(),
+        ),
       ],
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
@@ -70,11 +76,9 @@ class _AppWrapperState extends State<AppWrapper> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: true);
-    
+
     if (authProvider.isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (authProvider.isAuthenticated) {
