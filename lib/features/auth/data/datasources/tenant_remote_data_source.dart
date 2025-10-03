@@ -8,11 +8,9 @@ import '../../onboarding/data/models/onboarding_status_model.dart';
 /// Remote data source for tenant authentication API calls
 class TenantRemoteDataSource {
   static const String baseUrl = 'https://justlaunder.co.uk/api/v1';
-  static const String localBaseUrl = 'http://127.0.0.1:8000/api/v1';
 
-  // Use local URL for development, production URL for release
-  static String get apiBaseUrl =>
-      const bool.fromEnvironment('dart.vm.product') ? baseUrl : localBaseUrl;
+  // Always use production URL
+  static String get apiBaseUrl => baseUrl;
 
   static String? _authToken;
   static String? _deviceId;
@@ -259,19 +257,73 @@ class TenantRemoteDataSource {
           'message': jsonData['message'],
         };
       } else {
+        // Handle specific error cases
+        String errorMessage = _getErrorMessage(statusCode, jsonData);
+
         return {
           'success': false,
-          'error': jsonData['message'] ?? 'Request failed',
+          'error': errorMessage,
           'statusCode': statusCode,
           'errors': jsonData['errors'],
         };
       }
     } catch (e) {
+      // Handle JSON parsing errors
+      String errorMessage = _getErrorMessage(statusCode, null);
       return {
         'success': false,
-        'error': 'Failed to parse response: $e',
+        'error': errorMessage,
         'statusCode': statusCode,
       };
+    }
+  }
+
+  /// Get user-friendly error message based on status code
+  String _getErrorMessage(int statusCode, Map<String, dynamic>? jsonData) {
+    // Priority 1: Try to get message from API response first
+    if (jsonData != null && jsonData['message'] != null) {
+      final apiMessage = jsonData['message'] as String;
+      if (apiMessage.isNotEmpty) {
+        return apiMessage;
+      }
+    }
+
+    // Priority 2: Try to get validation errors from API response
+    if (jsonData != null && jsonData['errors'] != null) {
+      final errors = jsonData['errors'] as Map<String, dynamic>;
+      if (errors.isNotEmpty) {
+        final firstError = errors.values.first;
+        if (firstError is List && firstError.isNotEmpty) {
+          final errorMessage = firstError.first as String;
+          if (errorMessage.isNotEmpty) {
+            return errorMessage;
+          }
+        }
+      }
+    }
+
+    // Priority 3: Apply our own fallback messages based on status code
+    switch (statusCode) {
+      case 400:
+        return 'Invalid request. Please check your input and try again.';
+      case 401:
+        return 'Invalid email or password. Please check your credentials and try again.';
+      case 403:
+        return 'Access denied. You do not have permission to perform this action.';
+      case 404:
+        return 'The requested resource was not found.';
+      case 422:
+        return 'Validation failed. Please check your input and try again.';
+      case 429:
+        return 'Too many requests. Please wait a moment and try again.';
+      case 500:
+        return 'Server error. Please try again later.';
+      case 502:
+      case 503:
+      case 504:
+        return 'Service temporarily unavailable. Please try again later.';
+      default:
+        return 'Request failed. Please try again.';
     }
   }
 

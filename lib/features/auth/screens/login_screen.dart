@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
@@ -13,6 +14,7 @@ import '../../../ui/primitives/animated_button.dart';
 import '../../../ui/primitives/text_field_x.dart';
 import '../../../ui/primitives/snack_x.dart';
 import '../../../ui/primitives/accordion_x.dart';
+import '../../../core/widgets/watermark_background.dart';
 import '../providers/auth_provider.dart';
 import 'forgot_password_screen.dart';
 import 'registration_screen.dart';
@@ -40,7 +42,14 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
+    return WatermarkBackgroundBuilder.bottomRight(
+      icon: FontAwesomeIcons.warehouse,
+      iconColor: AppColors.primary,
+      margin: const EdgeInsets.all(16),
+      opacity: 0.10,
+      iconSizePercentage: 0.45,
+      iconShift: -15.0,
+      child: Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -376,6 +385,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 

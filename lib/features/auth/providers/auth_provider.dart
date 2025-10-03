@@ -6,12 +6,14 @@ import '../data/models/tenant_model.dart';
 class AuthProvider extends ChangeNotifier {
   bool _isAuthenticated = false;
   bool _isLoading = false;
+  bool _isInitializing = false;
   TenantModel? _currentTenant;
   String? _pendingEmail;
   String? _pendingOTP;
 
   bool get isAuthenticated => _isAuthenticated;
   bool get isLoading => _isLoading;
+  bool get isInitializing => _isInitializing;
   TenantModel? get currentTenant => _currentTenant;
   String? get currentUserId => _currentTenant?.id.toString();
   String? get currentLaundretteId => _currentTenant?.id.toString();
@@ -253,5 +255,17 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  /// Set loading state
+  void _setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
+
+  /// Set initializing state
+  void _setInitializing(bool initializing) {
+    _isInitializing = initializing;
+    notifyListeners();
   }
 }

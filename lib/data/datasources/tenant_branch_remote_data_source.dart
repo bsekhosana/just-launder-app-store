@@ -7,11 +7,9 @@ import '../../features/branches/data/models/laundrette_branch.dart';
 /// Remote data source for tenant branch API calls
 class TenantBranchRemoteDataSource {
   static const String baseUrl = 'https://justlaunder.co.uk/api/v1';
-  static const String localBaseUrl = 'http://127.0.0.1:8000/api/v1';
 
-  // Use local URL for development, production URL for release
-  static String get apiBaseUrl =>
-      const bool.fromEnvironment('dart.vm.product') ? baseUrl : localBaseUrl;
+  // Always use production URL
+  static String get apiBaseUrl => baseUrl;
 
   static String? _authToken;
   static String? _deviceId;
@@ -305,5 +303,3 @@ class TenantBranchRemoteDataSource {
     return pricing;
   }
 }
-
-
