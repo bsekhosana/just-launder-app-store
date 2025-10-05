@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/datasources/tenant_remote_data_source.dart';
 import '../data/models/tenant_model.dart';
+import '../../../core/utils/log_helper.dart';
 
 /// Authentication provider for laundrette management app
 class AuthProvider extends ChangeNotifier {
@@ -254,6 +257,91 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  /// Update tenant profile with OTP support
+  Future<bool> updateProfileWithOtp({
+    required String firstName,
+    required String lastName,
+    required String email,
+    String? mobile,
+    String? otp,
+  }) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      LogHelper.auth('Updating tenant profile for user: $email');
+
+      final response = await TenantRemoteDataSource().updateProfileWithOtp(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        mobile: mobile,
+        otp: otp,
+      );
+
+      LogHelper.auth('Tenant profile update response - success: ${response.success}, data: ${response.data}, error: ${response.error}');
+
+      if (response.success && response.data != null) {
+        // Update the current tenant with new data
+        if (_currentTenant != null) {
+          _currentTenant = TenantModel.fromJson(response.data!);
+          await _saveTenantToStorage();
+        }
+        LogHelper.auth('Tenant profile updated successfully');
+        return true;
+      } else {
+        _setError(response.error ?? 'Failed to update profile');
+        LogHelper.auth('Tenant profile update failed: ${response.error}');
+        return false;
+      }
+    } catch (e) {
+      _setError('Failed to update profile: $e');
+      LogHelper.error('Tenant profile update exception: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Send OTP for profile changes
+  Future<bool> sendProfileOtp({
+    required String type,
+  }) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      LogHelper.auth('Sending tenant profile OTP for type: $type');
+
+      final response = await TenantRemoteDataSource().sendProfileOtp(type: type);
+
+      LogHelper.auth('Send tenant profile OTP response - success: ${response.success}, error: ${response.error}');
+
+      if (response.success) {
+        LogHelper.auth('Tenant profile OTP sent successfully');
+        return true;
+      } else {
+        _setError(response.error ?? 'Failed to send OTP');
+        LogHelper.auth('Send tenant profile OTP failed: ${response.error}');
+        return false;
+      }
+    } catch (e) {
+      _setError('Failed to send OTP: $e');
+      LogHelper.error('Send tenant profile OTP exception: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Save tenant to storage
+  Future<void> _saveTenantToStorage() async {
+    if (_currentTenant != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('tenant_data', jsonEncode(_currentTenant!.toJson()));
     }
   }
 

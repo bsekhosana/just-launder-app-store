@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/tenant_model.dart';
+import '../models/api_response_model.dart';
 import '../../onboarding/data/models/onboarding_status_model.dart';
+import '../../../core/utils/log_helper.dart';
 
 /// Remote data source for tenant authentication API calls
 class TenantRemoteDataSource {
@@ -324,6 +326,133 @@ class TenantRemoteDataSource {
         return 'Service temporarily unavailable. Please try again later.';
       default:
         return 'Request failed. Please try again.';
+    }
+  }
+
+  /// Update tenant profile with OTP support
+  Future<ApiResponseModel<Map<String, dynamic>>> updateProfileWithOtp({
+    required String firstName,
+    required String lastName,
+    required String email,
+    String? mobile,
+    String? otp,
+  }) async {
+    try {
+      if (_authToken == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final data = <String, dynamic>{
+        'first_name': firstName,
+        'last_name': lastName,
+        'email': email,
+        if (mobile != null) 'mobile': mobile,
+        if (otp != null) 'otp': otp,
+      };
+
+      LogHelper.api(
+        'Making profile update request to $apiBaseUrl/v1/tenant/profile',
+      );
+      LogHelper.api('Profile update payload: ${jsonEncode(data)}');
+
+      final response = await http.put(
+        Uri.parse('$apiBaseUrl/v1/tenant/profile'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_authToken',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(data),
+      );
+
+      LogHelper.api('Profile update response status: ${response.statusCode}');
+      LogHelper.api('Profile update response body: ${response.body}');
+
+      return _handleApiResponse<Map<String, dynamic>>(response);
+    } on SocketException {
+      return ApiResponseModel.error('No internet connection');
+    } on HttpException catch (e) {
+      return ApiResponseModel.error('HTTP error: ${e.message}');
+    } catch (e) {
+      return ApiResponseModel.error('Unexpected error: $e');
+    }
+  }
+
+  /// Send OTP for profile changes
+  Future<ApiResponseModel<Map<String, dynamic>>> sendProfileOtp({
+    required String type,
+  }) async {
+    try {
+      if (_authToken == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final data = <String, dynamic>{'type': type};
+
+      LogHelper.api(
+        'Making send profile OTP request to $apiBaseUrl/v1/tenant/profile/send-otp',
+      );
+
+      final response = await http.post(
+        Uri.parse('$apiBaseUrl/v1/tenant/profile/send-otp'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_authToken',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(data),
+      );
+
+      LogHelper.api('Send profile OTP response status: ${response.statusCode}');
+      LogHelper.api('Send profile OTP response body: ${response.body}');
+
+      return _handleApiResponse<Map<String, dynamic>>(response);
+    } on SocketException {
+      return ApiResponseModel.error('No internet connection');
+    } on HttpException catch (e) {
+      return ApiResponseModel.error('HTTP error: ${e.message}');
+    } catch (e) {
+      return ApiResponseModel.error('Unexpected error: $e');
+    }
+  }
+
+  /// Handle API response for new methods (returns ApiResponseModel)
+  ApiResponseModel<T> _handleApiResponse<T>(http.Response response) {
+    final statusCode = response.statusCode;
+    final body = response.body;
+
+    LogHelper.api('_handleApiResponse: Status code: $statusCode');
+    LogHelper.api('_handleApiResponse: Body: $body');
+
+    try {
+      final jsonData = jsonDecode(body);
+      LogHelper.api('_handleApiResponse: Parsed JSON: $jsonData');
+
+      if (statusCode >= 200 && statusCode < 300) {
+        final success = jsonData['success'] ?? true;
+        final message = jsonData['message'];
+        final data = jsonData['data'];
+
+        LogHelper.api('_handleApiResponse: Success case - success: $success, message: $message, data: $data');
+
+        return ApiResponseModel<T>.success(
+          data: data as T?,
+          message: message,
+        );
+      } else {
+        final errorMessage = jsonData['message'] ?? jsonData['error'] ?? 'Request failed';
+        LogHelper.api('_handleApiResponse: Error case - status: $statusCode, message: $errorMessage');
+
+        return ApiResponseModel<T>.error(
+          errorMessage,
+          statusCode: statusCode,
+          errors: jsonData['errors'],
+        );
+      }
+    } catch (e) {
+      LogHelper.error('_handleApiResponse: JSON parsing error: $e');
+      String errorMessage = _getErrorMessage(statusCode, null);
+      return ApiResponseModel<T>.error(errorMessage, statusCode: statusCode);
     }
   }
 
