@@ -433,15 +433,17 @@ class TenantRemoteDataSource {
         final message = jsonData['message'];
         final data = jsonData['data'];
 
-        LogHelper.api('_handleApiResponse: Success case - success: $success, message: $message, data: $data');
-
-        return ApiResponseModel<T>.success(
-          data: data as T?,
-          message: message,
+        LogHelper.api(
+          '_handleApiResponse: Success case - success: $success, message: $message, data: $data',
         );
+
+        return ApiResponseModel<T>.success(data: data as T?, message: message);
       } else {
-        final errorMessage = jsonData['message'] ?? jsonData['error'] ?? 'Request failed';
-        LogHelper.api('_handleApiResponse: Error case - status: $statusCode, message: $errorMessage');
+        final errorMessage =
+            jsonData['message'] ?? jsonData['error'] ?? 'Request failed';
+        LogHelper.api(
+          '_handleApiResponse: Error case - status: $statusCode, message: $errorMessage',
+        );
 
         return ApiResponseModel<T>.error(
           errorMessage,

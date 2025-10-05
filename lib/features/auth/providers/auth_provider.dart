@@ -282,7 +282,9 @@ class AuthProvider extends ChangeNotifier {
         otp: otp,
       );
 
-      LogHelper.auth('Tenant profile update response - success: ${response.success}, data: ${response.data}, error: ${response.error}');
+      LogHelper.auth(
+        'Tenant profile update response - success: ${response.success}, data: ${response.data}, error: ${response.error}',
+      );
 
       if (response.success && response.data != null) {
         // Update the current tenant with new data
@@ -307,18 +309,20 @@ class AuthProvider extends ChangeNotifier {
   }
 
   /// Send OTP for profile changes
-  Future<bool> sendProfileOtp({
-    required String type,
-  }) async {
+  Future<bool> sendProfileOtp({required String type}) async {
     try {
       _setLoading(true);
       _clearError();
 
       LogHelper.auth('Sending tenant profile OTP for type: $type');
 
-      final response = await TenantRemoteDataSource().sendProfileOtp(type: type);
+      final response = await TenantRemoteDataSource().sendProfileOtp(
+        type: type,
+      );
 
-      LogHelper.auth('Send tenant profile OTP response - success: ${response.success}, error: ${response.error}');
+      LogHelper.auth(
+        'Send tenant profile OTP response - success: ${response.success}, error: ${response.error}',
+      );
 
       if (response.success) {
         LogHelper.auth('Tenant profile OTP sent successfully');
@@ -341,7 +345,10 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _saveTenantToStorage() async {
     if (_currentTenant != null) {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('tenant_data', jsonEncode(_currentTenant!.toJson()));
+      await prefs.setString(
+        'tenant_data',
+        jsonEncode(_currentTenant!.toJson()),
+      );
     }
   }
 
