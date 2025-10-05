@@ -39,6 +39,16 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   void initState() {
     super.initState();
     _startResendCountdown();
+    _setupPasteListener();
+  }
+
+  void _setupPasteListener() {
+    // Listen for paste events on the first field
+    _focusNodes[0].addListener(() {
+      if (_focusNodes[0].hasFocus) {
+        _handlePasteOnFirstField();
+      }
+    });
   }
 
   @override
@@ -218,17 +228,18 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(6, (index) {
                   return SizedBox(
-                    width: 45,
-                    height: 55,
+                    width: 50,
+                    height: 65,
                     child: TextFormField(
                       controller: _otpControllers[index],
                       focusNode: _focusNodes[index],
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
                       maxLength: 1,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
+                        color: Colors.grey[800], // Dark grey text
                       ),
                       decoration: InputDecoration(
                         counterText: '',
@@ -372,5 +383,37 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         ),
       ),
     );
+  }
+
+  void _handlePasteOnFirstField() async {
+    try {
+      final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
+      if (clipboardData?.text != null) {
+        final pastedText = clipboardData!.text!.replaceAll(
+          RegExp(r'[^0-9]'),
+          '',
+        );
+        if (pastedText.length >= 6) {
+          // Fill all fields with the pasted OTP
+          for (int i = 0; i < 6; i++) {
+            _otpControllers[i].text = pastedText[i];
+          }
+          // Focus on the last field
+          _focusNodes[5].requestFocus();
+          // Auto-verify if all fields are filled
+          _verifyOTP();
+        } else if (pastedText.isNotEmpty) {
+          // Fill available fields
+          for (int i = 0; i < pastedText.length && i < 6; i++) {
+            _otpControllers[i].text = pastedText[i];
+          }
+          // Focus on the next empty field
+          final nextIndex = pastedText.length < 6 ? pastedText.length : 5;
+          _focusNodes[nextIndex].requestFocus();
+        }
+      }
+    } catch (e) {
+      // Handle clipboard access errors silently
+    }
   }
 }

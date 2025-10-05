@@ -126,7 +126,7 @@ class TenantRemoteDataSource {
   Future<Map<String, dynamic>> forgotPassword(String email) async {
     try {
       final response = await http.post(
-        Uri.parse('$apiBaseUrl/auth/tenant/forgot-password'),
+        Uri.parse('$apiBaseUrl/v1/auth/tenant/forgot-password'),
         headers: _headers,
         body: jsonEncode({'email': email}),
       );
@@ -150,7 +150,7 @@ class TenantRemoteDataSource {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$apiBaseUrl/auth/tenant/reset-password'),
+        Uri.parse('$apiBaseUrl/v1/auth/tenant/reset-password'),
         headers: _headers,
         body: jsonEncode({
           'email': email,
@@ -174,7 +174,7 @@ class TenantRemoteDataSource {
   Future<Map<String, dynamic>> logout() async {
     try {
       final response = await http.post(
-        Uri.parse('$apiBaseUrl/tenant/logout'),
+        Uri.parse('$apiBaseUrl/v1/tenant/logout'),
         headers: _headers,
       );
 
