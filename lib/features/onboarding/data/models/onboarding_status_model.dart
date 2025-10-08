@@ -31,13 +31,15 @@ class OnboardingStatusModel extends Equatable {
             .toList() ??
         [];
 
-    // Get web URL and ensure it has the tenant/onboarding path
+    // Get web URL and ensure it points to admin dashboard for authenticated users
+    // The admin dashboard automatically shows onboarding steps for incomplete onboarding
     String webUrl = json['web_url'] as String? ?? 'https://justlaunder.co.uk';
-    if (!webUrl.contains('/tenant/onboarding')) {
+    if (!webUrl.contains('/admin') && !webUrl.contains('/tenant')) {
+      // If base URL, append admin/dashboard (where onboarding continues for logged-in users)
       webUrl =
           webUrl.endsWith('/')
-              ? '${webUrl}tenant/onboarding'
-              : '$webUrl/tenant/onboarding';
+              ? '${webUrl}admin/dashboard'
+              : '$webUrl/admin/dashboard';
     }
 
     return OnboardingStatusModel(
