@@ -12,6 +12,7 @@ import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
 import '../../navigation/screens/main_navigation_screen.dart';
 import '../../../core/widgets/custom_snackbar.dart';
+import '../../../core/widgets/watermark_background.dart';
 
 /// Onboarding status screen for tenant app
 class OnboardingStatusScreen extends StatefulWidget {
@@ -80,21 +81,34 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Onboarding Status'),
-        backgroundColor: AppColors.background,
-        elevation: 0,
-      ),
-      body: Consumer<OnboardingProvider>(
+    return WatermarkBackgroundBuilder.bottomRight(
+      icon: FontAwesomeIcons.store,
+      iconColor: AppColors.primary.withOpacity(0.08),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text('Onboarding Status'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: AppColors.primary),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: SafeArea(
+          child: Consumer<OnboardingProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              ),
+            );
           }
 
           if (provider.error != null) {
-            return Center(
+            return Padding(
+              padding: const EdgeInsets.all(AppSpacing.xl),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -103,22 +117,30 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                     size: 64,
                     color: AppColors.error,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.l),
                   Text(
                     'Error loading onboarding status',
-                    style: AppTypography.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    provider.error!,
-                    style: AppTypography.bodyMedium,
+                    style: AppTypography.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.onSurface,
+                    ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.s),
+                  Text(
+                    provider.error!,
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
                   AnimatedButton(
                     onPressed: () {
                       provider.loadOnboardingStatus();
                     },
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.onPrimary,
                     child: const Text('Retry'),
                   ),
                 ],
@@ -128,11 +150,21 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
           final status = provider.onboardingStatus;
           if (status == null) {
-            return const Center(child: Text('No onboarding data available'));
+            return Padding(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Center(
+                child: Text(
+                  'No onboarding data available',
+                  style: AppTypography.textTheme.bodyLarge?.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            );
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.l),
+            padding: const EdgeInsets.all(AppSpacing.xl),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -309,6 +341,8 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
             ),
           );
         },
+          ),
+        ),
       ),
     );
   }
