@@ -88,7 +88,6 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text('Onboarding Status'),
           backgroundColor: Colors.transparent,
           elevation: 0,
           automaticallyImplyLeading: false,
@@ -166,189 +165,25 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(AppSpacing.xl),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Header Card with Progress
-                    CardsX.elevated(
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.l),
-                        child: Column(
-                          children: [
-                            // Status Icon and Title
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(AppSpacing.m),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        status.isCompleted
-                                            ? AppColors.success.withOpacity(0.1)
-                                            : AppColors.primary.withOpacity(
-                                              0.1,
-                                            ),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    status.isCompleted
-                                        ? Icons.check_circle
-                                        : Icons.pending_actions,
-                                    color:
-                                        status.isCompleted
-                                            ? AppColors.success
-                                            : AppColors.primary,
-                                    size: 32,
-                                  ),
-                                ),
-                                const SizedBox(width: AppSpacing.m),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        status.isCompleted
-                                            ? 'Onboarding Complete!'
-                                            : 'Setup Your Business',
-                                        style: AppTypography
-                                            .textTheme
-                                            .headlineSmall
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        status.isCompleted
-                                            ? 'Your account is ready to use'
-                                            : '${status.completedSteps.length} of ${status.totalSteps} steps completed',
-                                        style: AppTypography
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(
-                                              color: AppColors.onSurfaceVariant,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                    // Header Section
+                    _buildHeader(status),
+                    
+                    const SizedBox(height: AppSpacing.xxl),
 
-                            const SizedBox(height: AppSpacing.l),
-
-                            // Progress Bar
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Progress',
-                                      style: AppTypography.textTheme.labelLarge
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                    Text(
-                                      '${status.progressPercentage.toInt()}%',
-                                      style: AppTypography.textTheme.labelLarge
-                                          ?.copyWith(
-                                            color: AppColors.primary,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: AppSpacing.s),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: LinearProgressIndicator(
-                                    value: status.progressPercentage / 100,
-                                    minHeight: 8,
-                                    backgroundColor: AppColors.surfaceVariant,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      status.isCompleted
-                                          ? AppColors.success
-                                          : AppColors.primary,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    // Progress Carousel Card
+                    _buildProgressCarousel(status),
 
                     const SizedBox(height: AppSpacing.xl),
 
-                    // Steps Section
-                    Text(
-                      'Onboarding Steps',
-                      style: AppTypography.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.m),
-
-                    // Steps List
-                    ...status.steps.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final step = entry.value;
-                      final isCompleted = status.completedSteps.contains(
-                        step.id,
-                      );
-                      final isCurrent =
-                          !isCompleted && status.completedSteps.length == index;
-
-                      return _buildStepCard(step, isCompleted, isCurrent);
-                    }),
+                    // Timeline
+                    _buildTimeline(status),
 
                     const SizedBox(height: AppSpacing.xl),
 
                     // Action Buttons
-                    if (!status.isCompleted) ...[
-                      AnimatedButton(
-                        onPressed: () => _openWebOnboarding(status.webUrl),
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.onPrimary,
-                        height: 56,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.open_in_browser, size: 20),
-                            const SizedBox(width: AppSpacing.s),
-                            Text(
-                              'Complete on Website',
-                              style: AppTypography.textTheme.labelLarge
-                                  ?.copyWith(
-                                    color: AppColors.onPrimary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.m),
-                      AnimatedButton(
-                        onPressed: () => provider.loadOnboardingStatus(),
-                        height: 56,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.refresh, size: 20),
-                            const SizedBox(width: AppSpacing.s),
-                            Text(
-                              'Refresh Status',
-                              style: AppTypography.textTheme.labelLarge
-                                  ?.copyWith(fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                    _buildActionButtons(status, provider),
 
                     const SizedBox(height: AppSpacing.xl),
 
@@ -361,7 +196,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.logout, size: 20),
+                          const Icon(Icons.logout, size: 20, color: AppColors.onSurfaceVariant),
                           const SizedBox(width: AppSpacing.s),
                           Text(
                             'Logout',
@@ -385,131 +220,286 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     );
   }
 
-  Widget _buildStepCard(OnboardingStep step, bool isCompleted, bool isCurrent) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.m),
-      child: CardsX.elevated(
-        child: Padding(
+  Widget _buildHeader(OnboardingStatusModel status) {
+    return Column(
+      children: [
+        // Header Icon
+        Container(
           padding: const EdgeInsets.all(AppSpacing.l),
-          child: Row(
-            children: [
-              // Step Icon
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color:
-                      isCompleted
-                          ? AppColors.success.withOpacity(0.1)
-                          : isCurrent
-                          ? AppColors.primary.withOpacity(0.1)
-                          : AppColors.surfaceVariant,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child:
-                      isCompleted
-                          ? const Icon(
-                            Icons.check,
-                            color: AppColors.success,
-                            size: 24,
-                          )
-                          : Icon(
-                            _getIconForStep(step.icon),
-                            color:
-                                isCurrent
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            FontAwesomeIcons.clipboardList,
+            color: AppColors.primary,
+            size: 32,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.l),
+        
+        // Title
+        Text(
+          'Setup Your Business',
+          style: AppTypography.textTheme.displaySmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: AppSpacing.s),
+        
+        // Subtitle
+        Text(
+          status.isCompleted
+              ? 'Your account is ready to use'
+              : 'Complete these steps to get started with Just Laundrette',
+          style: AppTypography.textTheme.bodyLarge?.copyWith(
+            color: AppColors.onSurfaceVariant,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProgressCarousel(OnboardingStatusModel status) {
+    return Container(
+      height: 200,
+      child: PageView.builder(
+        controller: PageController(
+          initialPage: status.currentStep - 1,
+          viewportFraction: 0.8,
+        ),
+        itemCount: status.steps.length,
+        itemBuilder: (context, index) {
+          final step = status.steps[index];
+          final isCompleted = status.completedSteps.contains(step.id);
+          final isCurrent = !isCompleted && status.completedSteps.length == index;
+          
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
+            child: CardsX.elevated(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.l),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Step Icon
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: isCompleted
+                            ? AppColors.success.withOpacity(0.1)
+                            : isCurrent
+                                ? AppColors.primary.withOpacity(0.1)
+                                : AppColors.surfaceVariant,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: isCompleted
+                            ? const Icon(
+                                Icons.check,
+                                color: AppColors.success,
+                                size: 28,
+                              )
+                            : Icon(
+                                _getIconForStep(step.icon),
+                                color: isCurrent
                                     ? AppColors.primary
                                     : AppColors.onSurfaceVariant,
-                            size: 20,
-                          ),
-                ),
-              ),
-
-              const SizedBox(width: AppSpacing.m),
-
-              // Step Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            step.title,
-                            style: AppTypography.textTheme.titleMedium
-                                ?.copyWith(
-                                  fontWeight:
-                                      isCurrent
-                                          ? FontWeight.bold
-                                          : FontWeight.w600,
-                                  color:
-                                      isCompleted
-                                          ? AppColors.success
-                                          : isCurrent
-                                          ? AppColors.primary
-                                          : AppColors.onSurface,
-                                ),
-                          ),
-                        ),
-                        if (step.webOnly)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              'Web Only',
-                              style: AppTypography.textTheme.labelSmall
-                                  ?.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      step.description,
-                      style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.onSurfaceVariant,
+                                size: 24,
+                              ),
                       ),
                     ),
-                    if (isCurrent) ...[
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                            ),
+                    const SizedBox(height: AppSpacing.m),
+                    
+                    // Step Title
+                    Text(
+                      step.title,
+                      style: AppTypography.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isCompleted
+                            ? AppColors.success
+                            : isCurrent
+                                ? AppColors.primary
+                                : AppColors.onSurface,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.s),
+                    
+                    // Step Description
+                    Text(
+                      step.description,
+                      style: AppTypography.textTheme.bodySmall?.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    
+                    if (step.webOnly) ...[
+                      const SizedBox(height: AppSpacing.s),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'Web Only',
+                          style: AppTypography.textTheme.labelSmall?.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Current Step',
-                            style: AppTypography.textTheme.labelSmall?.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ],
                 ),
               ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildTimeline(OnboardingStatusModel status) {
+    return CardsX.elevated(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.l),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Progress Overview',
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.l),
+            
+            // Progress Bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                value: status.progressPercentage / 100,
+                minHeight: 8,
+                backgroundColor: AppColors.surfaceVariant,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  status.isCompleted ? AppColors.success : AppColors.primary,
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.m),
+            
+            // Progress Text
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${status.completedSteps.length} of ${status.totalSteps} steps completed',
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+                Text(
+                  '${status.progressPercentage.toInt()}%',
+                  style: AppTypography.textTheme.labelLarge?.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(OnboardingStatusModel status, OnboardingProvider provider) {
+    if (status.isCompleted) {
+      return AnimatedButton(
+        onPressed: () {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => const MainNavigationScreen(),
+            ),
+            (route) => false,
+          );
+        },
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.onPrimary,
+        height: 56,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.home, size: 20, color: AppColors.onPrimary),
+            const SizedBox(width: AppSpacing.s),
+            Text(
+              'Go to Dashboard',
+              style: AppTypography.textTheme.labelLarge?.copyWith(
+                color: AppColors.onPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        AnimatedButton(
+          onPressed: () => _openWebOnboarding(status.webUrl),
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.onPrimary,
+          height: 56,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.open_in_browser, size: 20, color: AppColors.onPrimary),
+              const SizedBox(width: AppSpacing.s),
+              Text(
+                'Complete on Website',
+                style: AppTypography.textTheme.labelLarge?.copyWith(
+                  color: AppColors.onPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
         ),
-      ),
+        const SizedBox(height: AppSpacing.m),
+        AnimatedButton(
+          onPressed: () => provider.loadOnboardingStatus(),
+          backgroundColor: AppColors.surfaceVariant,
+          foregroundColor: AppColors.onSurfaceVariant,
+          height: 56,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.refresh, size: 20, color: AppColors.onSurfaceVariant),
+              const SizedBox(width: AppSpacing.s),
+              Text(
+                'Refresh Status',
+                style: AppTypography.textTheme.labelLarge?.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -537,28 +527,29 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   Future<void> _openWebOnboarding(String url) async {
     try {
       final uri = Uri.parse(url);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-        if (mounted) {
-          CustomSnackbar.showSuccess(
-            context,
-            message: 'Opening website to complete onboarding...',
-          );
-        }
-      } else {
-        if (mounted) {
-          CustomSnackbar.showError(
-            context,
-            message:
-                'Could not open website. Please visit justlaunder.co.uk manually.',
-          );
-        }
+      
+      // Try to launch the URL
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      
+      if (launched && mounted) {
+        CustomSnackbar.showSuccess(
+          context,
+          message: 'Opening website to complete onboarding...',
+        );
+      } else if (mounted) {
+        CustomSnackbar.showError(
+          context,
+          message: 'Could not open website. Please visit justlaunder.co.uk manually.',
+        );
       }
     } catch (e) {
       if (mounted) {
         CustomSnackbar.showError(
           context,
-          message: 'Failed to open website: $e',
+          message: 'Failed to open website. Please visit justlaunder.co.uk manually.',
         );
       }
     }
@@ -569,108 +560,107 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder:
-          (context) => Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        padding: const EdgeInsets.all(AppSpacing.l),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Drag handle
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceVariant,
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
-            padding: const EdgeInsets.all(AppSpacing.l),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+            const SizedBox(height: AppSpacing.l),
+
+            // Error icon
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.m),
+              decoration: BoxDecoration(
+                color: AppColors.error.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.logout,
+                color: AppColors.error,
+                size: 32,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.l),
+
+            // Title
+            Text(
+              'Logout',
+              style: AppTypography.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.onSurface,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.s),
+
+            // Message
+            Text(
+              'Are you sure you want to logout? You will need to login again to access your account.',
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+
+            // Buttons
+            Row(
               children: [
-                // Drag handle
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceVariant,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.l),
-
-                // Error icon
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.m),
-                  decoration: BoxDecoration(
-                    color: AppColors.error.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.logout,
-                    color: AppColors.error,
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.l),
-
-                // Title
-                Text(
-                  'Logout',
-                  style: AppTypography.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.onSurface,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.s),
-
-                // Message
-                Text(
-                  'Are you sure you want to logout? You will need to login again to access your account.',
-                  style: AppTypography.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.onSurfaceVariant,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSpacing.xl),
-
-                // Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: AnimatedButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        backgroundColor: AppColors.surfaceVariant,
-                        foregroundColor: AppColors.onSurfaceVariant,
-                        height: 48,
-                        child: Text(
-                          'Cancel',
-                          style: AppTypography.textTheme.labelLarge?.copyWith(
-                            color: AppColors.onSurfaceVariant,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                Expanded(
+                  child: AnimatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    backgroundColor: AppColors.surfaceVariant,
+                    foregroundColor: AppColors.onSurfaceVariant,
+                    height: 48,
+                    child: Text(
+                      'Cancel',
+                      style: AppTypography.textTheme.labelLarge?.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(width: AppSpacing.m),
-                    Expanded(
-                      child: AnimatedButton(
-                        onPressed: () async {
-                          Navigator.of(context).pop();
-                          await _performLogout(context);
-                        },
-                        backgroundColor: AppColors.error,
-                        foregroundColor: AppColors.onPrimary,
-                        height: 48,
-                        child: Text(
-                          'Logout',
-                          style: AppTypography.textTheme.labelLarge?.copyWith(
-                            color: AppColors.onPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.m),
+                Expanded(
+                  child: AnimatedButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      await _performLogout(context);
+                    },
+                    backgroundColor: AppColors.error,
+                    foregroundColor: AppColors.onPrimary,
+                    height: 48,
+                    child: Text(
+                      'Logout',
+                      style: AppTypography.textTheme.labelLarge?.copyWith(
+                        color: AppColors.onPrimary,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.l),
               ],
             ),
-          ),
+            const SizedBox(height: AppSpacing.l),
+          ],
+        ),
+      ),
     );
   }
 
@@ -684,9 +674,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         CustomSnackbar.showSuccess(context, message: 'Logged out successfully');
 
         // Navigate back to login screen
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil('/login', (route) => false);
+        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (e) {
       if (mounted) {

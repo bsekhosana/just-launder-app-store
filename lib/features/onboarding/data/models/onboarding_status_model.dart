@@ -158,7 +158,6 @@ class OnboardingStep extends Equatable {
     return null;
   }
 
-
   Map<String, dynamic> toJson() {
     return {
       'id': id,
