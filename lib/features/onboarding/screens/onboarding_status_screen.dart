@@ -97,250 +97,266 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         ),
         body: SafeArea(
           child: Consumer<OnboardingProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
-            );
-          }
-
-          if (provider.error != null) {
-            return Padding(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: AppColors.error,
-                  ),
-                  const SizedBox(height: AppSpacing.l),
-                  Text(
-                    'Error loading onboarding status',
-                    style: AppTypography.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.onSurface,
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: AppSpacing.s),
-                  Text(
-                    provider.error!,
-                    style: AppTypography.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.onSurfaceVariant,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-                  AnimatedButton(
-                    onPressed: () {
-                      provider.loadOnboardingStatus();
-                    },
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.onPrimary,
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
+                );
+              }
 
-          final status = provider.onboardingStatus;
-          if (status == null) {
-            return Padding(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: Center(
-                child: Text(
-                  'No onboarding data available',
-                  style: AppTypography.textTheme.bodyLarge?.copyWith(
-                    color: AppColors.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            );
-          }
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.xl),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header Card with Progress
-                CardsX.elevated(
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.l),
-                    child: Column(
-                      children: [
-                        // Status Icon and Title
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(AppSpacing.m),
-                              decoration: BoxDecoration(
-                                color:
-                                    status.isCompleted
-                                        ? AppColors.success.withOpacity(0.1)
-                                        : AppColors.primary.withOpacity(0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                status.isCompleted
-                                    ? Icons.check_circle
-                                    : Icons.pending_actions,
-                                color:
-                                    status.isCompleted
-                                        ? AppColors.success
-                                        : AppColors.primary,
-                                size: 32,
-                              ),
-                            ),
-                            const SizedBox(width: AppSpacing.m),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    status.isCompleted
-                                        ? 'Onboarding Complete!'
-                                        : 'Setup Your Business',
-                                    style: AppTypography.textTheme.headlineSmall
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    status.isCompleted
-                                        ? 'Your account is ready to use'
-                                        : '${status.completedSteps.length} of ${status.totalSteps} steps completed',
-                                    style: AppTypography.textTheme.bodyMedium
-                                        ?.copyWith(
-                                          color: AppColors.onSurfaceVariant,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+              if (provider.error != null) {
+                return Padding(
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: AppColors.error,
+                      ),
+                      const SizedBox(height: AppSpacing.l),
+                      Text(
+                        'Error loading onboarding status',
+                        style: AppTypography.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.onSurface,
                         ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSpacing.s),
+                      Text(
+                        provider.error!,
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
+                      AnimatedButton(
+                        onPressed: () {
+                          provider.loadOnboardingStatus();
+                        },
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.onPrimary,
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
+              }
 
-                        const SizedBox(height: AppSpacing.l),
+              final status = provider.onboardingStatus;
+              if (status == null) {
+                return Padding(
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  child: Center(
+                    child: Text(
+                      'No onboarding data available',
+                      style: AppTypography.textTheme.bodyLarge?.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                );
+              }
 
-                        // Progress Bar
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.xl),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header Card with Progress
+                    CardsX.elevated(
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.l),
+                        child: Column(
                           children: [
+                            // Status Icon and Title
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Progress',
-                                  style: AppTypography.textTheme.labelLarge
-                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                Container(
+                                  padding: const EdgeInsets.all(AppSpacing.m),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        status.isCompleted
+                                            ? AppColors.success.withOpacity(0.1)
+                                            : AppColors.primary.withOpacity(
+                                              0.1,
+                                            ),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    status.isCompleted
+                                        ? Icons.check_circle
+                                        : Icons.pending_actions,
+                                    color:
+                                        status.isCompleted
+                                            ? AppColors.success
+                                            : AppColors.primary,
+                                    size: 32,
+                                  ),
                                 ),
-                                Text(
-                                  '${status.progressPercentage.toInt()}%',
-                                  style: AppTypography.textTheme.labelLarge
-                                      ?.copyWith(
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.bold,
+                                const SizedBox(width: AppSpacing.m),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        status.isCompleted
+                                            ? 'Onboarding Complete!'
+                                            : 'Setup Your Business',
+                                        style: AppTypography
+                                            .textTheme
+                                            .headlineSmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        status.isCompleted
+                                            ? 'Your account is ready to use'
+                                            : '${status.completedSteps.length} of ${status.totalSteps} steps completed',
+                                        style: AppTypography
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              color: AppColors.onSurfaceVariant,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: AppSpacing.s),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: LinearProgressIndicator(
-                                value: status.progressPercentage / 100,
-                                minHeight: 8,
-                                backgroundColor: AppColors.surfaceVariant,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  status.isCompleted
-                                      ? AppColors.success
-                                      : AppColors.primary,
+
+                            const SizedBox(height: AppSpacing.l),
+
+                            // Progress Bar
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Progress',
+                                      style: AppTypography.textTheme.labelLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                    Text(
+                                      '${status.progressPercentage.toInt()}%',
+                                      style: AppTypography.textTheme.labelLarge
+                                          ?.copyWith(
+                                            color: AppColors.primary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                  ],
                                 ),
-                              ),
+                                const SizedBox(height: AppSpacing.s),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: LinearProgressIndicator(
+                                    value: status.progressPercentage / 100,
+                                    minHeight: 8,
+                                    backgroundColor: AppColors.surfaceVariant,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      status.isCompleted
+                                          ? AppColors.success
+                                          : AppColors.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
 
-                const SizedBox(height: AppSpacing.xl),
+                    const SizedBox(height: AppSpacing.xl),
 
-                // Steps Section
-                Text(
-                  'Onboarding Steps',
-                  style: AppTypography.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.m),
+                    // Steps Section
+                    Text(
+                      'Onboarding Steps',
+                      style: AppTypography.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.m),
 
-                // Steps List
-                ...status.steps.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final step = entry.value;
-                  final isCompleted = status.completedSteps.contains(step.id);
-                  final isCurrent =
-                      !isCompleted && status.completedSteps.length == index;
+                    // Steps List
+                    ...status.steps.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final step = entry.value;
+                      final isCompleted = status.completedSteps.contains(
+                        step.id,
+                      );
+                      final isCurrent =
+                          !isCompleted && status.completedSteps.length == index;
 
-                  return _buildStepCard(step, isCompleted, isCurrent);
-                }),
+                      return _buildStepCard(step, isCompleted, isCurrent);
+                    }),
 
-                const SizedBox(height: AppSpacing.xl),
+                    const SizedBox(height: AppSpacing.xl),
 
-                // Action Buttons
-                if (!status.isCompleted) ...[
-                  AnimatedButton(
-                    onPressed: () => _openWebOnboarding(status.webUrl),
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.onPrimary,
-                    height: 56,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.open_in_browser, size: 20),
-                        const SizedBox(width: AppSpacing.s),
-                        Text(
-                          'Complete on Website',
-                          style: AppTypography.textTheme.labelLarge?.copyWith(
-                            color: AppColors.onPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
+                    // Action Buttons
+                    if (!status.isCompleted) ...[
+                      AnimatedButton(
+                        onPressed: () => _openWebOnboarding(status.webUrl),
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.onPrimary,
+                        height: 56,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.open_in_browser, size: 20),
+                            const SizedBox(width: AppSpacing.s),
+                            Text(
+                              'Complete on Website',
+                              style: AppTypography.textTheme.labelLarge
+                                  ?.copyWith(
+                                    color: AppColors.onPrimary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.m),
-                  AnimatedButton(
-                    onPressed: () => provider.loadOnboardingStatus(),
-                    height: 56,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.refresh, size: 20),
-                        const SizedBox(width: AppSpacing.s),
-                        Text(
-                          'Refresh Status',
-                          style: AppTypography.textTheme.labelLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                      ),
+                      const SizedBox(height: AppSpacing.m),
+                      AnimatedButton(
+                        onPressed: () => provider.loadOnboardingStatus(),
+                        height: 56,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.refresh, size: 20),
+                            const SizedBox(width: AppSpacing.s),
+                            Text(
+                              'Refresh Status',
+                              style: AppTypography.textTheme.labelLarge
+                                  ?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ],
+                      ),
+                    ],
 
-                const SizedBox(height: AppSpacing.xl),
-              ],
-            ),
-          );
-        },
+                    const SizedBox(height: AppSpacing.xl),
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ),

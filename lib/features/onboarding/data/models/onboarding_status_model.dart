@@ -44,7 +44,7 @@ class OnboardingStatusModel extends Equatable {
 
     return OnboardingStatusModel(
       tenantId: json['tenant_id']?.toString() ?? '',
-      isCompleted: json['onboarding_completed'] as bool? ?? false,
+      isCompleted: OnboardingStep._parseBool(json['onboarding_completed']) ?? false,
       currentStep: json['current_step'] as int? ?? 1,
       completedSteps: completedStepsList,
       totalSteps: json['total_steps'] as int? ?? 7,
@@ -112,9 +112,21 @@ class OnboardingStep extends Equatable {
       title: json['title'] as String,
       description: json['description'] as String,
       icon: json['icon'] as String? ?? 'circle',
-      required: json['required'] as bool? ?? true,
-      webOnly: json['web_only'] as bool? ?? false,
+      required: _parseBool(json['required']) ?? true,
+      webOnly: _parseBool(json['web_only']) ?? false,
     );
+  }
+
+  /// Helper method to parse bool from various types (bool, int, string)
+  static bool? _parseBool(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is int) return value == 1;
+    if (value is String) {
+      final lower = value.toLowerCase();
+      return lower == 'true' || lower == '1';
+    }
+    return null;
   }
 
   Map<String, dynamic> toJson() {
