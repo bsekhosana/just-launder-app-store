@@ -134,16 +134,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () {
-                                _emailController.text =
-                                    'business@laundrette.com';
+                                _emailController.text = 'tenant@example.com';
                                 _passwordController.text = 'password';
                                 CustomSnackbar.showSuccess(
                                   context,
-                                  message: 'Business account filled',
+                                  message: 'Tenant account filled',
                                 );
                               },
                               icon: const Icon(Icons.business, size: 16),
-                              label: const Text('Fill Business'),
+                              label: const Text('Fill Tenant'),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
                                 foregroundColor: AppColors.onPrimary,
@@ -158,11 +157,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: ElevatedButton.icon(
                               onPressed: () {
                                 _emailController.text =
-                                    'private@laundrette.com';
+                                    'privatetenant@example.com';
                                 _passwordController.text = 'password';
                                 CustomSnackbar.showSuccess(
                                   context,
-                                  message: 'Private account filled',
+                                  message: 'Private tenant filled',
                                 );
                               },
                               icon: const Icon(Icons.person, size: 16),
@@ -180,11 +179,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 16),
                       DemoAccountItem(
-                        accountType: 'Business Account',
-                        email: 'business@laundrette.com',
+                        accountType: 'Tenant Account',
+                        email: 'tenant@example.com',
                         password: 'password',
                         onEmailCopy: () {
-                          const email = 'business@laundrette.com';
+                          const email = 'tenant@example.com';
                           Clipboard.setData(const ClipboardData(text: email));
                           _emailController.text = email;
                           CustomSnackbar.showSuccess(
@@ -205,11 +204,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       DemoAccountItem(
-                        accountType: 'Private Account',
-                        email: 'private@laundrette.com',
+                        accountType: 'Private Tenant',
+                        email: 'privatetenant@example.com',
                         password: 'password',
                         onEmailCopy: () {
-                          const email = 'private@laundrette.com';
+                          const email = 'privatetenant@example.com';
                           Clipboard.setData(const ClipboardData(text: email));
                           _emailController.text = email;
                           CustomSnackbar.showSuccess(
