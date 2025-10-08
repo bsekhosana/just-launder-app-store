@@ -253,6 +253,8 @@ class TenantRemoteDataSource {
   /// Get onboarding status
   Future<Map<String, dynamic>> getOnboardingStatus() async {
     try {
+      print('🔑 Auth Token: ${_authToken != null ? "Present (${_authToken!.length} chars)" : "Missing"}');
+      print('🌐 Headers: $_headers');
       final response = await http.get(
         Uri.parse('$apiBaseUrl/v1/tenant/onboarding/status'),
         headers: _headers,
