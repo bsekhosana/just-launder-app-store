@@ -46,7 +46,7 @@ class OnboardingStatusModel extends Equatable {
       tenantId: json['tenant_id']?.toString() ?? '',
       isCompleted:
           OnboardingStep._parseBool(json['onboarding_completed']) ?? false,
-      currentStep: json['current_step'] as int? ?? 1,
+      currentStep: _parseCurrentStep(json['current_step']),
       completedSteps: completedStepsList,
       totalSteps: json['total_steps'] as int? ?? 7,
       progressPercentage:
@@ -88,6 +88,34 @@ class OnboardingStatusModel extends Equatable {
     webUrl,
     nextAction,
   ];
+
+  /// Helper method to parse current step from various types (int, string)
+  static int _parseCurrentStep(dynamic value) {
+    if (value == null) return 1;
+    if (value is int) return value;
+    if (value is String) {
+      // Map step IDs to step numbers
+      switch (value) {
+        case 'personal_info':
+          return 1;
+        case 'business_info':
+          return 2;
+        case 'business_documents':
+          return 3;
+        case 'bank_details':
+          return 4;
+        case 'subscription':
+          return 5;
+        case 'branches':
+          return 6;
+        case 'service_items':
+          return 7;
+        default:
+          return 1;
+      }
+    }
+    return 1;
+  }
 }
 
 class OnboardingStep extends Equatable {
@@ -129,6 +157,7 @@ class OnboardingStep extends Equatable {
     }
     return null;
   }
+
 
   Map<String, dynamic> toJson() {
     return {

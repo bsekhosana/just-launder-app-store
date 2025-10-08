@@ -91,10 +91,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
           title: const Text('Onboarding Status'),
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: AppColors.primary),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          automaticallyImplyLeading: false,
         ),
         body: SafeArea(
           child: Consumer<OnboardingProvider>(
@@ -572,107 +569,108 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        padding: const EdgeInsets.all(AppSpacing.l),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Drag handle
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
-                borderRadius: BorderRadius.circular(2),
+      builder:
+          (context) => Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
               ),
             ),
-            const SizedBox(height: AppSpacing.l),
-            
-            // Error icon
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.m),
-              decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.logout,
-                color: AppColors.error,
-                size: 32,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.l),
-            
-            // Title
-            Text(
-              'Logout',
-              style: AppTypography.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.onSurface,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.s),
-            
-            // Message
-            Text(
-              'Are you sure you want to logout? You will need to login again to access your account.',
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.xl),
-            
-            // Buttons
-            Row(
+            padding: const EdgeInsets.all(AppSpacing.l),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: AnimatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    backgroundColor: AppColors.surfaceVariant,
-                    foregroundColor: AppColors.onSurfaceVariant,
-                    height: 48,
-                    child: Text(
-                      'Cancel',
-                      style: AppTypography.textTheme.labelLarge?.copyWith(
-                        color: AppColors.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                // Drag handle
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceVariant,
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.m),
-                Expanded(
-                  child: AnimatedButton(
-                    onPressed: () async {
-                      Navigator.of(context).pop();
-                      await _performLogout(context);
-                    },
-                    backgroundColor: AppColors.error,
-                    foregroundColor: AppColors.onPrimary,
-                    height: 48,
-                    child: Text(
-                      'Logout',
-                      style: AppTypography.textTheme.labelLarge?.copyWith(
-                        color: AppColors.onPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                const SizedBox(height: AppSpacing.l),
+
+                // Error icon
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.m),
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.logout,
+                    color: AppColors.error,
+                    size: 32,
                   ),
                 ),
+                const SizedBox(height: AppSpacing.l),
+
+                // Title
+                Text(
+                  'Logout',
+                  style: AppTypography.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.onSurface,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s),
+
+                // Message
+                Text(
+                  'Are you sure you want to logout? You will need to login again to access your account.',
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.xl),
+
+                // Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: AnimatedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        backgroundColor: AppColors.surfaceVariant,
+                        foregroundColor: AppColors.onSurfaceVariant,
+                        height: 48,
+                        child: Text(
+                          'Cancel',
+                          style: AppTypography.textTheme.labelLarge?.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.m),
+                    Expanded(
+                      child: AnimatedButton(
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+                          await _performLogout(context);
+                        },
+                        backgroundColor: AppColors.error,
+                        foregroundColor: AppColors.onPrimary,
+                        height: 48,
+                        child: Text(
+                          'Logout',
+                          style: AppTypography.textTheme.labelLarge?.copyWith(
+                            color: AppColors.onPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.l),
               ],
             ),
-            const SizedBox(height: AppSpacing.l),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -681,25 +679,18 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     try {
       final authProvider = context.read<AuthProvider>();
       await authProvider.logout();
-      
+
       if (mounted) {
-        CustomSnackbar.showSuccess(
-          context,
-          message: 'Logged out successfully',
-        );
-        
+        CustomSnackbar.showSuccess(context, message: 'Logged out successfully');
+
         // Navigate back to login screen
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          '/login',
-          (route) => false,
-        );
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (e) {
       if (mounted) {
-        CustomSnackbar.showError(
-          context,
-          message: 'Failed to logout: $e',
-        );
+        CustomSnackbar.showError(context, message: 'Failed to logout: $e');
       }
     }
   }
