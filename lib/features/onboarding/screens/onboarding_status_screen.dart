@@ -25,7 +25,8 @@ class OnboardingStatusScreen extends StatefulWidget {
 
 class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   Timer? _pollingTimer;
-  static const int _pollingIntervalSeconds = 5; // Temporarily reduced for debugging
+  static const int _pollingIntervalSeconds =
+      5; // Temporarily reduced for debugging
 
   @override
   void initState() {
@@ -488,17 +489,22 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         const SizedBox(height: AppSpacing.m),
         AnimatedButton(
           onPressed:
-              provider.isLoading ? null : () async {
-                print('🔄 Manual refresh triggered');
-                await provider.loadOnboardingStatus();
-                if (provider.onboardingStatus != null) {
-                  print('🔄 Manual refresh: Status - Completed: ${provider.onboardingStatus!.isCompleted}, Progress: ${provider.onboardingStatus!.progressPercentage}%, Steps: ${provider.onboardingStatus!.completedSteps.length}/${provider.onboardingStatus!.totalSteps}');
-                  CustomSnackbar.showSuccess(
-                    context,
-                    message: 'Status refreshed - ${provider.onboardingStatus!.completedSteps.length}/${provider.onboardingStatus!.totalSteps} steps completed',
-                  );
-                }
-              },
+              provider.isLoading
+                  ? null
+                  : () async {
+                    print('🔄 Manual refresh triggered');
+                    await provider.loadOnboardingStatus();
+                    if (provider.onboardingStatus != null) {
+                      print(
+                        '🔄 Manual refresh: Status - Completed: ${provider.onboardingStatus!.isCompleted}, Progress: ${provider.onboardingStatus!.progressPercentage}%, Steps: ${provider.onboardingStatus!.completedSteps.length}/${provider.onboardingStatus!.totalSteps}',
+                      );
+                      CustomSnackbar.showSuccess(
+                        context,
+                        message:
+                            'Status refreshed - ${provider.onboardingStatus!.completedSteps.length}/${provider.onboardingStatus!.totalSteps} steps completed',
+                      );
+                    }
+                  },
           backgroundColor: AppColors.surfaceVariant,
           foregroundColor: AppColors.onSurfaceVariant,
           height: 56,

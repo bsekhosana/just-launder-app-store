@@ -254,7 +254,7 @@ class TenantRemoteDataSource {
   Future<Map<String, dynamic>> getOnboardingStatus() async {
     try {
       final response = await http.get(
-        Uri.parse('$apiBaseUrl/tenant/onboarding/status'),
+        Uri.parse('$apiBaseUrl/v1/tenant/onboarding/status'),
         headers: _headers,
       );
 
@@ -272,7 +272,7 @@ class TenantRemoteDataSource {
   Future<Map<String, dynamic>> getOnboardingProgress() async {
     try {
       final response = await http.get(
-        Uri.parse('$apiBaseUrl/tenant/onboarding/progress'),
+        Uri.parse('$apiBaseUrl/v1/tenant/onboarding/status'),
         headers: _headers,
       );
 
