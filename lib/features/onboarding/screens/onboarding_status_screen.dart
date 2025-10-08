@@ -13,6 +13,7 @@ import '../../../design_system/spacing.dart';
 import '../../navigation/screens/main_navigation_screen.dart';
 import '../../../core/widgets/custom_snackbar.dart';
 import '../../../core/widgets/watermark_background.dart';
+import '../../auth/providers/auth_provider.dart';
 
 /// Onboarding status screen for tenant app
 class OnboardingStatusScreen extends StatefulWidget {
@@ -353,6 +354,30 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                     ],
 
                     const SizedBox(height: AppSpacing.xl),
+
+                    // Logout Button
+                    AnimatedButton(
+                      onPressed: () => _showLogoutConfirmation(context),
+                      backgroundColor: AppColors.surfaceVariant,
+                      foregroundColor: AppColors.onSurfaceVariant,
+                      height: 56,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.logout, size: 20),
+                          const SizedBox(width: AppSpacing.s),
+                          Text(
+                            'Logout',
+                            style: AppTypography.textTheme.labelLarge?.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: AppSpacing.xl),
                   ],
                 ),
               );
@@ -537,6 +562,143 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         CustomSnackbar.showError(
           context,
           message: 'Failed to open website: $e',
+        );
+      }
+    }
+  }
+
+  /// Show logout confirmation dialog
+  void _showLogoutConfirmation(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        padding: const EdgeInsets.all(AppSpacing.l),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Drag handle
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.l),
+            
+            // Error icon
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.m),
+              decoration: BoxDecoration(
+                color: AppColors.error.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.logout,
+                color: AppColors.error,
+                size: 32,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.l),
+            
+            // Title
+            Text(
+              'Logout',
+              style: AppTypography.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.onSurface,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.s),
+            
+            // Message
+            Text(
+              'Are you sure you want to logout? You will need to login again to access your account.',
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            
+            // Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: AnimatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    backgroundColor: AppColors.surfaceVariant,
+                    foregroundColor: AppColors.onSurfaceVariant,
+                    height: 48,
+                    child: Text(
+                      'Cancel',
+                      style: AppTypography.textTheme.labelLarge?.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.m),
+                Expanded(
+                  child: AnimatedButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      await _performLogout(context);
+                    },
+                    backgroundColor: AppColors.error,
+                    foregroundColor: AppColors.onPrimary,
+                    height: 48,
+                    child: Text(
+                      'Logout',
+                      style: AppTypography.textTheme.labelLarge?.copyWith(
+                        color: AppColors.onPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.l),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Perform logout action
+  Future<void> _performLogout(BuildContext context) async {
+    try {
+      final authProvider = context.read<AuthProvider>();
+      await authProvider.logout();
+      
+      if (mounted) {
+        CustomSnackbar.showSuccess(
+          context,
+          message: 'Logged out successfully',
+        );
+        
+        // Navigate back to login screen
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          '/login',
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        CustomSnackbar.showError(
+          context,
+          message: 'Failed to logout: $e',
         );
       }
     }

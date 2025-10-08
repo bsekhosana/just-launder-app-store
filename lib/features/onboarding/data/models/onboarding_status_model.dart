@@ -44,7 +44,8 @@ class OnboardingStatusModel extends Equatable {
 
     return OnboardingStatusModel(
       tenantId: json['tenant_id']?.toString() ?? '',
-      isCompleted: OnboardingStep._parseBool(json['onboarding_completed']) ?? false,
+      isCompleted:
+          OnboardingStep._parseBool(json['onboarding_completed']) ?? false,
       currentStep: json['current_step'] as int? ?? 1,
       completedSteps: completedStepsList,
       totalSteps: json['total_steps'] as int? ?? 7,
