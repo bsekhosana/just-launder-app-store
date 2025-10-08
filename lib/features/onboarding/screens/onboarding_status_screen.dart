@@ -1,11 +1,14 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../providers/onboarding_provider.dart';
-import '../data/models/onboarding_status_model.dart';
 import '../../../ui/primitives/card_x.dart';
 import '../../../ui/primitives/animated_button.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
+import '../../navigation/screens/main_navigation_screen.dart';
+import '../../../core/widgets/custom_snackbar.dart';
 
 /// Onboarding status screen for tenant app
 class OnboardingStatusScreen extends StatefulWidget {
@@ -16,12 +19,60 @@ class OnboardingStatusScreen extends StatefulWidget {
 }
 
 class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
+  Timer? _pollingTimer;
+  static const int _pollingIntervalSeconds = 15;
+
   @override
   void initState() {
     super.initState();
+    _startPolling();
+  }
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startPolling() {
+    // Load immediately
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<OnboardingProvider>().loadOnboardingStatus();
     });
+
+    // Then poll every 15 seconds
+    _pollingTimer = Timer.periodic(
+      const Duration(seconds: _pollingIntervalSeconds),
+      (timer) async {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+
+        final provider = context.read<OnboardingProvider>();
+        await provider.loadOnboardingStatus();
+
+        // Check if onboarding is completed
+        if (provider.onboardingStatus?.isCompleted == true) {
+          timer.cancel();
+          if (mounted) {
+            CustomSnackbar.showSuccess(
+              context,
+              message: 'Onboarding completed! Welcome to Just Laundrette.',
+            );
+            await Future.delayed(const Duration(milliseconds: 500));
+            if (mounted) {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => const MainNavigationScreen(),
+                ),
+                (route) => false,
+              );
+            }
+          }
+        }
+      },
+    );
   }
 
   @override
@@ -84,63 +135,72 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
               children: [
                 // Status overview
                 CardsX.elevated(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            status.isCompleted
-                                ? Icons.check_circle
-                                : Icons.pending,
-                            color:
-                                status.isCompleted
-                                    ? AppColors.success
-                                    : AppColors.warning,
-                            size: 24,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
                               status.isCompleted
-                                  ? 'Onboarding Complete'
-                                  : 'Onboarding In Progress',
-                              style: AppTypography.headlineSmall,
+                                  ? Icons.check_circle
+                                  : Icons.pending,
+                              color:
+                                  status.isCompleted
+                                      ? AppColors.success
+                                      : AppColors.warning,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                status.isCompleted
+                                    ? 'Onboarding Complete'
+                                    : 'Onboarding In Progress',
+                                style: AppTypography.textTheme.headlineSmall,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Status: ${status.isCompleted ? "Completed" : "Pending"}',
+                          style: AppTypography.textTheme.bodyLarge,
+                        ),
+                        const SizedBox(height: 16),
+                        if (status.progress.isNotEmpty) ...[
+                          Text(
+                            'Progress Details:',
+                            style: AppTypography.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
+                          const SizedBox(height: 8),
+                          ...status.progress.entries.map((entry) => Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  entry.value == true ? Icons.check_circle : Icons.circle_outlined,
+                                  size: 16,
+                                  color: entry.value == true ? AppColors.success : AppColors.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    entry.key.replaceAll('_', ' ').toUpperCase(),
+                                    style: AppTypography.textTheme.bodyMedium,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
                         ],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Current Step: ${status.currentStep}',
-                        style: AppTypography.bodyLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      LinearProgressIndicator(
-                        value: status.progress,
-                        backgroundColor: AppColors.surface,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          status.isCompleted
-                              ? AppColors.success
-                              : AppColors.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${(status.progress * 100).toInt()}% Complete',
-                        style: AppTypography.bodySmall,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-
-                const SizedBox(height: 24),
-
-                // Steps list
-                Text('Onboarding Steps', style: AppTypography.headlineSmall),
-                const SizedBox(height: 16),
-
-                ...status.steps.map((step) => _buildStepCard(step)),
 
                 const SizedBox(height: 24),
 
@@ -150,69 +210,22 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                     onPressed: () {
                       _showGoToWebDialog(context);
                     },
-                    child: const Text('Complete Onboarding on Web'),
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.onPrimary,
+                    child: const Text('Complete Onboarding on Website'),
                   ),
                   const SizedBox(height: 12),
-                ],
-
-                if (status.isCompleted) ...[
                   AnimatedButton(
                     onPressed: () {
-                      context.read<OnboardingProvider>().submitOnboarding();
+                      provider.loadOnboardingStatus();
                     },
-                    child: const Text('Submit for Review'),
+                    child: const Text('Refresh Status'),
                   ),
                 ],
               ],
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildStepCard(OnboardingStepModel step) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: CardsX.elevated(
-        child: Row(
-          children: [
-            Icon(
-              icon:
-                  step.isCompleted
-                      ? Icons.check_circle
-                      : step.isCurrent
-                      ? Icons.radio_button_checked
-                      : Icons.radio_button_unchecked,
-              color:
-                  step.isCompleted
-                      ? AppColors.success
-                      : step.isCurrent
-                      ? AppColors.primary
-                      : AppColors.textSecondary,
-              size: 24,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    step.title,
-                    style: AppTypography.bodyLarge.copyWith(
-                      fontWeight:
-                          step.isCurrent ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                  if (step.description != null) ...[
-                    const SizedBox(height: 4),
-                    Text(step.description!, style: AppTypography.bodySmall),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -244,58 +257,36 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     );
   }
 
-  void _showSummaryDialog(BuildContext context, Map<String, dynamic> summary) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Onboarding Summary'),
-            content: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children:
-                    summary.entries
-                        .map(
-                          (entry) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '${entry.key}: ',
-                                  style: AppTypography.bodyMedium.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    entry.value.toString(),
-                                    style: AppTypography.bodyMedium,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                        .toList(),
-              ),
-            ),
-            actions: [
-              AnimatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Close'),
-              ),
-            ],
-          ),
-    );
-  }
 
-  void _openWebOnboarding() {
-    // TODO: Implement web browser opening or in-app web view
-    // This could use url_launcher or webview_flutter
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Opening web browser...')));
+  Future<void> _openWebOnboarding() async {
+    const url = 'https://justlaunder.co.uk/tenant/onboarding';
+
+    try {
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        if (mounted) {
+          CustomSnackbar.showSuccess(
+            context,
+            message: 'Opening website to complete onboarding...',
+          );
+        }
+      } else {
+        if (mounted) {
+          CustomSnackbar.showError(
+            context,
+            message:
+                'Could not open website. Please visit justlaunder.co.uk manually.',
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        CustomSnackbar.showError(
+          context,
+          message: 'Failed to open website: $e',
+        );
+      }
+    }
   }
 }

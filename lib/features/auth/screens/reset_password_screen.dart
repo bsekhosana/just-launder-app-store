@@ -11,6 +11,7 @@ import '../../../core/widgets/custom_snackbar.dart';
 import '../../../core/widgets/password_input_field.dart';
 import '../../../core/utils/log_helper.dart';
 import '../providers/auth_provider.dart';
+import '../../onboarding/screens/onboarding_status_screen.dart';
 import 'email_verification_awaiting_screen.dart';
 import '../../navigation/screens/main_navigation_screen.dart';
 
@@ -148,8 +149,20 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
               (route) => false,
             );
+          } else if (tenant != null && !tenant.onboardingCompleted) {
+            // Email verified but onboarding not complete
+            CustomSnackbar.showSuccess(
+              context,
+              message: 'Signed in successfully!',
+            );
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const OnboardingStatusScreen(),
+              ),
+              (route) => false,
+            );
           } else {
-            // Email verified, proceed to main app
+            // Email verified and onboarding complete, proceed to main app
             CustomSnackbar.showSuccess(context, message: 'Welcome back!');
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(

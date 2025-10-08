@@ -13,6 +13,7 @@ import '../../../core/widgets/animated_auth_screen.dart';
 import '../../../core/widgets/app_icon.dart';
 import '../../../core/widgets/custom_snackbar.dart';
 import '../providers/auth_provider.dart';
+import 'email_verification_awaiting_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -74,16 +75,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       );
 
       if (success) {
-        CustomSnackbar.showSuccess(
-          context,
-          message: 'Registration successful! Please verify your email.',
-        );
-
-        // Navigate back to login screen after a short delay
-        await Future.delayed(const Duration(milliseconds: 1000));
-
         if (mounted) {
-          Navigator.of(context).pop();
+          final tenant = authProvider.currentTenant;
+          if (tenant != null) {
+            // Navigate to email verification screen
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => EmailVerificationAwaitingScreen(
+                  email: tenant.email,
+                ),
+              ),
+              (route) => false,
+            );
+          }
         }
       } else {
         final errorMessage =

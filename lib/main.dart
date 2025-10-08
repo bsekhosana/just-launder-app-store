@@ -14,7 +14,9 @@ import 'features/settings/providers/settings_provider.dart';
 import 'features/onboarding/providers/onboarding_provider.dart';
 import 'features/connectivity/providers/connectivity_provider.dart';
 import 'features/navigation/screens/main_navigation_screen.dart';
+import 'features/onboarding/screens/onboarding_status_screen.dart';
 import 'features/auth/screens/login_screen.dart';
+import 'features/auth/screens/email_verification_awaiting_screen.dart';
 import 'features/auth/screens/onboarding_screen.dart';
 
 void main() {
@@ -81,8 +83,21 @@ class _AppWrapperState extends State<AppWrapper> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    // Show main navigation if authenticated, otherwise show login
+    // Check authentication and route appropriately
     if (authProvider.isAuthenticated) {
+      final tenant = authProvider.currentTenant;
+
+      // Check email verification
+      if (tenant != null && !tenant.isEmailVerified) {
+        return EmailVerificationAwaitingScreen(email: tenant.email);
+      }
+
+      // Check onboarding completion
+      if (tenant != null && !tenant.onboardingCompleted) {
+        return const OnboardingStatusScreen();
+      }
+
+      // All checks passed, show main navigation
       return const MainNavigationScreen();
     }
 

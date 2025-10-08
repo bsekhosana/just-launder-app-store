@@ -12,6 +12,7 @@ import '../../../core/widgets/custom_snackbar.dart';
 import '../../../ui/primitives/animated_button.dart';
 import '../providers/auth_provider.dart';
 import '../../navigation/screens/main_navigation_screen.dart';
+import '../../onboarding/screens/onboarding_status_screen.dart';
 import 'login_screen.dart';
 
 /// Email verification awaiting screen for laundrette app
@@ -92,18 +93,31 @@ class _EmailVerificationAwaitingScreenState
         _pollingTimer?.cancel();
         CustomSnackbar.showSuccess(
           context,
-          message: 'Email verified successfully! Welcome to Just Laundrette.',
+          message: 'Email verified successfully!',
         );
 
         await Future.delayed(const Duration(milliseconds: 500));
 
         if (mounted) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => const MainNavigationScreen(),
-            ),
-            (route) => false,
-          );
+          // Check onboarding status
+          final tenant = authProvider.currentTenant;
+          if (tenant != null && !tenant.onboardingCompleted) {
+            // Navigate to onboarding screen
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const OnboardingStatusScreen(),
+              ),
+              (route) => false,
+            );
+          } else {
+            // Navigate to home
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(),
+              ),
+              (route) => false,
+            );
+          }
         }
       }
     } catch (e) {

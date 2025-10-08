@@ -14,6 +14,7 @@ import '../../../core/widgets/animated_auth_screen.dart';
 import '../../../core/widgets/app_icon.dart';
 import '../../../core/widgets/custom_snackbar.dart';
 import '../providers/auth_provider.dart';
+import '../../onboarding/screens/onboarding_status_screen.dart';
 import 'forgot_password_screen.dart';
 import 'registration_screen.dart';
 import 'email_verification_awaiting_screen.dart';
@@ -302,9 +303,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 (route) => false,
               );
             } else {
-              // Email verified, proceed to main app
-              CustomSnackbar.showSuccess(context, message: 'Welcome back!');
-              // Navigation will be handled by AppWrapper
+              // Email verified, check onboarding status
+              if (!tenant.onboardingCompleted) {
+                // Navigate to onboarding screen
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) => const OnboardingStatusScreen(),
+                  ),
+                  (route) => false,
+                );
+              } else {
+                // All checks passed, proceed to main app
+                CustomSnackbar.showSuccess(context, message: 'Welcome back!');
+                // Navigation will be handled by AppWrapper
+              }
             }
           }
         }
