@@ -25,7 +25,7 @@ class OnboardingStatusScreen extends StatefulWidget {
 
 class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   Timer? _pollingTimer;
-  static const int _pollingIntervalSeconds = 15;
+  static const int _pollingIntervalSeconds = 5; // Temporarily reduced for debugging
 
   @override
   void initState() {
@@ -55,7 +55,16 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         }
 
         final provider = context.read<OnboardingProvider>();
+        print('🔄 Polling: Loading onboarding status...');
         await provider.loadOnboardingStatus();
+
+        if (provider.onboardingStatus != null) {
+          print(
+            '📊 Polling: Status updated - Completed: ${provider.onboardingStatus!.isCompleted}, Progress: ${provider.onboardingStatus!.progressPercentage}%, Steps: ${provider.onboardingStatus!.completedSteps.length}/${provider.onboardingStatus!.totalSteps}',
+          );
+        } else {
+          print('❌ Polling: No onboarding status data received');
+        }
 
         // Check if onboarding is completed
         if (provider.onboardingStatus?.isCompleted == true) {
@@ -479,7 +488,17 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         const SizedBox(height: AppSpacing.m),
         AnimatedButton(
           onPressed:
-              provider.isLoading ? null : () => provider.loadOnboardingStatus(),
+              provider.isLoading ? null : () async {
+                print('🔄 Manual refresh triggered');
+                await provider.loadOnboardingStatus();
+                if (provider.onboardingStatus != null) {
+                  print('🔄 Manual refresh: Status - Completed: ${provider.onboardingStatus!.isCompleted}, Progress: ${provider.onboardingStatus!.progressPercentage}%, Steps: ${provider.onboardingStatus!.completedSteps.length}/${provider.onboardingStatus!.totalSteps}');
+                  CustomSnackbar.showSuccess(
+                    context,
+                    message: 'Status refreshed - ${provider.onboardingStatus!.completedSteps.length}/${provider.onboardingStatus!.totalSteps} steps completed',
+                  );
+                }
+              },
           backgroundColor: AppColors.surfaceVariant,
           foregroundColor: AppColors.onSurfaceVariant,
           height: 56,

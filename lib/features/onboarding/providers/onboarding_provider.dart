@@ -19,14 +19,22 @@ class OnboardingProvider extends ChangeNotifier {
     _clearError();
 
     try {
+      print('🌐 API: Calling getOnboardingStatus...');
       final response = await TenantRemoteDataSource().getOnboardingStatus();
+      print('🌐 API: Response received: $response');
 
       if (response['success'] == true && response['data'] != null) {
+        print('🌐 API: Parsing onboarding status data...');
         _onboardingStatus = OnboardingStatusModel.fromJson(response['data']);
+        print(
+          '🌐 API: Status parsed successfully - Completed: ${_onboardingStatus!.isCompleted}, Steps: ${_onboardingStatus!.completedSteps.length}/${_onboardingStatus!.totalSteps}',
+        );
       } else {
+        print('🌐 API: Error in response: ${response['error']}');
         _setError(response['error'] ?? 'Failed to load onboarding status');
       }
     } catch (e) {
+      print('🌐 API: Exception occurred: $e');
       _setError('Failed to load onboarding status: $e');
     } finally {
       _setLoading(false);
