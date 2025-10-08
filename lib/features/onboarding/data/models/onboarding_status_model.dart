@@ -1,78 +1,124 @@
 import 'package:equatable/equatable.dart';
 
 class OnboardingStatusModel extends Equatable {
-  final String id;
   final String tenantId;
   final bool isCompleted;
-  final Map<String, dynamic> progress;
-  final DateTime? completedAt;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final int currentStep;
+  final List<String> completedSteps;
+  final int totalSteps;
+  final double progressPercentage;
+  final List<OnboardingStep> steps;
+  final String webUrl;
+  final String? nextAction;
 
   const OnboardingStatusModel({
-    required this.id,
     required this.tenantId,
     required this.isCompleted,
-    required this.progress,
-    this.completedAt,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.currentStep,
+    required this.completedSteps,
+    required this.totalSteps,
+    required this.progressPercentage,
+    required this.steps,
+    required this.webUrl,
+    this.nextAction,
   });
 
   factory OnboardingStatusModel.fromJson(Map<String, dynamic> json) {
+    final stepsData = json['steps'] as List<dynamic>? ?? [];
+    final completedStepsList =
+        (json['completed_steps'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+        [];
+
     return OnboardingStatusModel(
+      tenantId: json['tenant_id']?.toString() ?? '',
+      isCompleted: json['onboarding_completed'] as bool? ?? false,
+      currentStep: json['current_step'] as int? ?? 1,
+      completedSteps: completedStepsList,
+      totalSteps: json['total_steps'] as int? ?? 7,
+      progressPercentage:
+          (json['progress_percentage'] as num?)?.toDouble() ?? 0.0,
+      steps:
+          stepsData
+              .map(
+                (step) => OnboardingStep.fromJson(step as Map<String, dynamic>),
+              )
+              .toList(),
+      webUrl:
+          json['web_url'] as String? ??
+          'https://justlaunder.co.uk/tenant/onboarding',
+      nextAction: json['next_action'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'tenant_id': tenantId,
+      'onboarding_completed': isCompleted,
+      'current_step': currentStep,
+      'completed_steps': completedSteps,
+      'total_steps': totalSteps,
+      'progress_percentage': progressPercentage,
+      'steps': steps.map((s) => s.toJson()).toList(),
+      'web_url': webUrl,
+      'next_action': nextAction,
+    };
+  }
+
+  @override
+  List<Object?> get props => [
+    tenantId,
+    isCompleted,
+    currentStep,
+    completedSteps,
+    totalSteps,
+    progressPercentage,
+    steps,
+    webUrl,
+    nextAction,
+  ];
+}
+
+class OnboardingStep extends Equatable {
+  final String id;
+  final String title;
+  final String description;
+  final String icon;
+  final bool required;
+  final bool webOnly;
+
+  const OnboardingStep({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.required,
+    this.webOnly = false,
+  });
+
+  factory OnboardingStep.fromJson(Map<String, dynamic> json) {
+    return OnboardingStep(
       id: json['id'] as String,
-      tenantId: json['tenant_id'] as String,
-      isCompleted: json['is_completed'] as bool,
-      progress: json['progress'] as Map<String, dynamic>,
-      completedAt: json['completed_at'] != null 
-          ? DateTime.parse(json['completed_at'] as String)
-          : null,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      title: json['title'] as String,
+      description: json['description'] as String,
+      icon: json['icon'] as String? ?? 'circle',
+      required: json['required'] as bool? ?? true,
+      webOnly: json['web_only'] as bool? ?? false,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'tenant_id': tenantId,
-      'is_completed': isCompleted,
-      'progress': progress,
-      'completed_at': completedAt?.toIso8601String(),
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+      'title': title,
+      'description': description,
+      'icon': icon,
+      'required': required,
+      'web_only': webOnly,
     };
   }
 
-  OnboardingStatusModel copyWith({
-    String? id,
-    String? tenantId,
-    bool? isCompleted,
-    Map<String, dynamic>? progress,
-    DateTime? completedAt,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return OnboardingStatusModel(
-      id: id ?? this.id,
-      tenantId: tenantId ?? this.tenantId,
-      isCompleted: isCompleted ?? this.isCompleted,
-      progress: progress ?? this.progress,
-      completedAt: completedAt ?? this.completedAt,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-
   @override
-  List<Object?> get props => [
-        id,
-        tenantId,
-        isCompleted,
-        progress,
-        completedAt,
-        createdAt,
-        updatedAt,
-      ];
+  List<Object?> get props => [id, title, description, icon, required, webOnly];
 }
