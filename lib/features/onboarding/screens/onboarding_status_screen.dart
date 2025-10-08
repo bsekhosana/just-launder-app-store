@@ -95,7 +95,8 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         body: SafeArea(
           child: Consumer<OnboardingProvider>(
             builder: (context, provider, child) {
-              if (provider.isLoading) {
+              if (provider.isLoading && provider.onboardingStatus == null) {
+                // Only show full screen loader on initial load
                 return const Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
@@ -169,7 +170,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                   children: [
                     // Header Section
                     _buildHeader(status),
-                    
+
                     const SizedBox(height: AppSpacing.xxl),
 
                     // Progress Carousel Card
@@ -196,7 +197,11 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.logout, size: 20, color: AppColors.onSurfaceVariant),
+                          const Icon(
+                            Icons.logout,
+                            size: 20,
+                            color: AppColors.onSurfaceVariant,
+                          ),
                           const SizedBox(width: AppSpacing.s),
                           Text(
                             'Logout',
@@ -237,7 +242,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
           ),
         ),
         const SizedBox(height: AppSpacing.l),
-        
+
         // Title
         Text(
           'Setup Your Business',
@@ -248,7 +253,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppSpacing.s),
-        
+
         // Subtitle
         Text(
           status.isCompleted
@@ -265,7 +270,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
   Widget _buildProgressCarousel(OnboardingStatusModel status) {
     return Container(
-      height: 200,
+      height: 240,
       child: PageView.builder(
         controller: PageController(
           initialPage: status.currentStep - 1,
@@ -275,61 +280,68 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         itemBuilder: (context, index) {
           final step = status.steps[index];
           final isCompleted = status.completedSteps.contains(step.id);
-          final isCurrent = !isCompleted && status.completedSteps.length == index;
-          
+          final isCurrent =
+              !isCompleted && status.completedSteps.length == index;
+
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
             child: CardsX.elevated(
               child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.l),
+                padding: const EdgeInsets.all(AppSpacing.m),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Step Icon
                     Container(
-                      width: 60,
-                      height: 60,
+                      width: 50,
+                      height: 50,
                       decoration: BoxDecoration(
-                        color: isCompleted
-                            ? AppColors.success.withOpacity(0.1)
-                            : isCurrent
+                        color:
+                            isCompleted
+                                ? AppColors.success.withOpacity(0.1)
+                                : isCurrent
                                 ? AppColors.primary.withOpacity(0.1)
                                 : AppColors.surfaceVariant,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
-                        child: isCompleted
-                            ? const Icon(
-                                Icons.check,
-                                color: AppColors.success,
-                                size: 28,
-                              )
-                            : Icon(
-                                _getIconForStep(step.icon),
-                                color: isCurrent
-                                    ? AppColors.primary
-                                    : AppColors.onSurfaceVariant,
-                                size: 24,
-                              ),
+                        child:
+                            isCompleted
+                                ? const Icon(
+                                  Icons.check,
+                                  color: AppColors.success,
+                                  size: 24,
+                                )
+                                : Icon(
+                                  _getIconForStep(step.icon),
+                                  color:
+                                      isCurrent
+                                          ? AppColors.primary
+                                          : AppColors.onSurfaceVariant,
+                                  size: 20,
+                                ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.m),
-                    
+                    const SizedBox(height: AppSpacing.s),
+
                     // Step Title
                     Text(
                       step.title,
-                      style: AppTypography.textTheme.titleMedium?.copyWith(
+                      style: AppTypography.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: isCompleted
-                            ? AppColors.success
-                            : isCurrent
+                        color:
+                            isCompleted
+                                ? AppColors.success
+                                : isCurrent
                                 ? AppColors.primary
                                 : AppColors.onSurface,
                       ),
                       textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.s),
-                    
+                    const SizedBox(height: AppSpacing.xs),
+
                     // Step Description
                     Text(
                       step.description,
@@ -337,30 +349,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                         color: AppColors.onSurfaceVariant,
                       ),
                       textAlign: TextAlign.center,
-                      maxLines: 3,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    
-                    if (step.webOnly) ...[
-                      const SizedBox(height: AppSpacing.s),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'Web Only',
-                          style: AppTypography.textTheme.labelSmall?.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
@@ -385,7 +376,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.l),
-            
+
             // Progress Bar
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
@@ -399,7 +390,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.m),
-            
+
             // Progress Text
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -425,7 +416,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     );
   }
 
-  Widget _buildActionButtons(OnboardingStatusModel status, OnboardingProvider provider) {
+  Widget _buildActionButtons(
+    OnboardingStatusModel status,
+    OnboardingProvider provider,
+  ) {
     if (status.isCompleted) {
       return AnimatedButton(
         onPressed: () {
@@ -466,7 +460,11 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.open_in_browser, size: 20, color: AppColors.onPrimary),
+              const Icon(
+                Icons.open_in_browser,
+                size: 20,
+                color: AppColors.onPrimary,
+              ),
               const SizedBox(width: AppSpacing.s),
               Text(
                 'Complete on Website',
@@ -480,17 +478,31 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         ),
         const SizedBox(height: AppSpacing.m),
         AnimatedButton(
-          onPressed: () => provider.loadOnboardingStatus(),
+          onPressed: provider.isLoading ? null : () => provider.loadOnboardingStatus(),
           backgroundColor: AppColors.surfaceVariant,
           foregroundColor: AppColors.onSurfaceVariant,
           height: 56,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.refresh, size: 20, color: AppColors.onSurfaceVariant),
+              if (provider.isLoading)
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.onSurfaceVariant),
+                  ),
+                )
+              else
+                const Icon(
+                  Icons.refresh,
+                  size: 20,
+                  color: AppColors.onSurfaceVariant,
+                ),
               const SizedBox(width: AppSpacing.s),
               Text(
-                'Refresh Status',
+                provider.isLoading ? 'Refreshing...' : 'Refresh Status',
                 style: AppTypography.textTheme.labelLarge?.copyWith(
                   color: AppColors.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
@@ -527,13 +539,13 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   Future<void> _openWebOnboarding(String url) async {
     try {
       final uri = Uri.parse(url);
-      
+
       // Try to launch the URL
       final launched = await launchUrl(
         uri,
         mode: LaunchMode.externalApplication,
       );
-      
+
       if (launched && mounted) {
         CustomSnackbar.showSuccess(
           context,
@@ -542,14 +554,16 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
       } else if (mounted) {
         CustomSnackbar.showError(
           context,
-          message: 'Could not open website. Please visit justlaunder.co.uk manually.',
+          message:
+              'Could not open website. Please visit justlaunder.co.uk manually.',
         );
       }
     } catch (e) {
       if (mounted) {
         CustomSnackbar.showError(
           context,
-          message: 'Failed to open website. Please visit justlaunder.co.uk manually.',
+          message:
+              'Failed to open website. Please visit justlaunder.co.uk manually.',
         );
       }
     }
@@ -560,107 +574,108 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        padding: const EdgeInsets.all(AppSpacing.l),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Drag handle
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
-                borderRadius: BorderRadius.circular(2),
+      builder:
+          (context) => Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
               ),
             ),
-            const SizedBox(height: AppSpacing.l),
-
-            // Error icon
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.m),
-              decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.logout,
-                color: AppColors.error,
-                size: 32,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.l),
-
-            // Title
-            Text(
-              'Logout',
-              style: AppTypography.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.onSurface,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.s),
-
-            // Message
-            Text(
-              'Are you sure you want to logout? You will need to login again to access your account.',
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color: AppColors.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.xl),
-
-            // Buttons
-            Row(
+            padding: const EdgeInsets.all(AppSpacing.l),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: AnimatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    backgroundColor: AppColors.surfaceVariant,
-                    foregroundColor: AppColors.onSurfaceVariant,
-                    height: 48,
-                    child: Text(
-                      'Cancel',
-                      style: AppTypography.textTheme.labelLarge?.copyWith(
-                        color: AppColors.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                // Drag handle
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceVariant,
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.m),
-                Expanded(
-                  child: AnimatedButton(
-                    onPressed: () async {
-                      Navigator.of(context).pop();
-                      await _performLogout(context);
-                    },
-                    backgroundColor: AppColors.error,
-                    foregroundColor: AppColors.onPrimary,
-                    height: 48,
-                    child: Text(
-                      'Logout',
-                      style: AppTypography.textTheme.labelLarge?.copyWith(
-                        color: AppColors.onPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                const SizedBox(height: AppSpacing.l),
+
+                // Error icon
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.m),
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.logout,
+                    color: AppColors.error,
+                    size: 32,
                   ),
                 ),
+                const SizedBox(height: AppSpacing.l),
+
+                // Title
+                Text(
+                  'Logout',
+                  style: AppTypography.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.onSurface,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s),
+
+                // Message
+                Text(
+                  'Are you sure you want to logout? You will need to login again to access your account.',
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.xl),
+
+                // Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: AnimatedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        backgroundColor: AppColors.surfaceVariant,
+                        foregroundColor: AppColors.onSurfaceVariant,
+                        height: 48,
+                        child: Text(
+                          'Cancel',
+                          style: AppTypography.textTheme.labelLarge?.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.m),
+                    Expanded(
+                      child: AnimatedButton(
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+                          await _performLogout(context);
+                        },
+                        backgroundColor: AppColors.error,
+                        foregroundColor: AppColors.onPrimary,
+                        height: 48,
+                        child: Text(
+                          'Logout',
+                          style: AppTypography.textTheme.labelLarge?.copyWith(
+                            color: AppColors.onPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.l),
               ],
             ),
-            const SizedBox(height: AppSpacing.l),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -674,7 +689,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         CustomSnackbar.showSuccess(context, message: 'Logged out successfully');
 
         // Navigate back to login screen
-        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (e) {
       if (mounted) {
