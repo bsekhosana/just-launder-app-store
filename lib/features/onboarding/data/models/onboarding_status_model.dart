@@ -31,6 +31,15 @@ class OnboardingStatusModel extends Equatable {
             .toList() ??
         [];
 
+    // Get web URL and ensure it has the tenant/onboarding path
+    String webUrl = json['web_url'] as String? ?? 'https://justlaunder.co.uk';
+    if (!webUrl.contains('/tenant/onboarding')) {
+      webUrl =
+          webUrl.endsWith('/')
+              ? '${webUrl}tenant/onboarding'
+              : '$webUrl/tenant/onboarding';
+    }
+
     return OnboardingStatusModel(
       tenantId: json['tenant_id']?.toString() ?? '',
       isCompleted: json['onboarding_completed'] as bool? ?? false,
@@ -45,9 +54,7 @@ class OnboardingStatusModel extends Equatable {
                 (step) => OnboardingStep.fromJson(step as Map<String, dynamic>),
               )
               .toList(),
-      webUrl:
-          json['web_url'] as String? ??
-          'https://justlaunder.co.uk/tenant/onboarding',
+      webUrl: webUrl,
       nextAction: json['next_action'] as String?,
     );
   }

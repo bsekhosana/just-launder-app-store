@@ -148,18 +148,20 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                             Container(
                               padding: const EdgeInsets.all(AppSpacing.m),
                               decoration: BoxDecoration(
-                                color: status.isCompleted
-                                    ? AppColors.success.withOpacity(0.1)
-                                    : AppColors.primary.withOpacity(0.1),
+                                color:
+                                    status.isCompleted
+                                        ? AppColors.success.withOpacity(0.1)
+                                        : AppColors.primary.withOpacity(0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 status.isCompleted
                                     ? Icons.check_circle
                                     : Icons.pending_actions,
-                                color: status.isCompleted
-                                    ? AppColors.success
-                                    : AppColors.primary,
+                                color:
+                                    status.isCompleted
+                                        ? AppColors.success
+                                        : AppColors.primary,
                                 size: 32,
                               ),
                             ),
@@ -172,27 +174,27 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                                     status.isCompleted
                                         ? 'Onboarding Complete!'
                                         : 'Setup Your Business',
-                                    style: AppTypography.textTheme.headlineSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: AppTypography.textTheme.headlineSmall
+                                        ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     status.isCompleted
                                         ? 'Your account is ready to use'
                                         : '${status.completedSteps.length} of ${status.totalSteps} steps completed',
-                                    style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                      color: AppColors.onSurfaceVariant,
-                                    ),
+                                    style: AppTypography.textTheme.bodyMedium
+                                        ?.copyWith(
+                                          color: AppColors.onSurfaceVariant,
+                                        ),
                                   ),
                                 ],
                               ),
                             ),
                           ],
                         ),
-                        
+
                         const SizedBox(height: AppSpacing.l),
-                        
+
                         // Progress Bar
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,16 +204,16 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                               children: [
                                 Text(
                                   'Progress',
-                                  style: AppTypography.textTheme.labelLarge?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                  style: AppTypography.textTheme.labelLarge
+                                      ?.copyWith(fontWeight: FontWeight.w600),
                                 ),
                                 Text(
                                   '${status.progressPercentage.toInt()}%',
-                                  style: AppTypography.textTheme.labelLarge?.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: AppTypography.textTheme.labelLarge
+                                      ?.copyWith(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
                               ],
                             ),
@@ -252,8 +254,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                   final index = entry.key;
                   final step = entry.value;
                   final isCompleted = status.completedSteps.contains(step.id);
-                  final isCurrent = !isCompleted && status.completedSteps.length == index;
-                  
+                  final isCurrent =
+                      !isCompleted && status.completedSteps.length == index;
+
                   return _buildStepCard(step, isCompleted, isCurrent);
                 }),
 
@@ -300,7 +303,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                     ),
                   ),
                 ],
-                
+
                 const SizedBox(height: AppSpacing.xl),
               ],
             ),
@@ -323,32 +326,35 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: isCompleted
-                      ? AppColors.success.withOpacity(0.1)
-                      : isCurrent
+                  color:
+                      isCompleted
+                          ? AppColors.success.withOpacity(0.1)
+                          : isCurrent
                           ? AppColors.primary.withOpacity(0.1)
                           : AppColors.surfaceVariant,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
-                  child: isCompleted
-                      ? const Icon(
-                          Icons.check,
-                          color: AppColors.success,
-                          size: 24,
-                        )
-                      : Icon(
-                          _getIconForStep(step.icon),
-                          color: isCurrent
-                              ? AppColors.primary
-                              : AppColors.onSurfaceVariant,
-                          size: 20,
-                        ),
+                  child:
+                      isCompleted
+                          ? const Icon(
+                            Icons.check,
+                            color: AppColors.success,
+                            size: 24,
+                          )
+                          : Icon(
+                            _getIconForStep(step.icon),
+                            color:
+                                isCurrent
+                                    ? AppColors.primary
+                                    : AppColors.onSurfaceVariant,
+                            size: 20,
+                          ),
                 ),
               ),
-              
+
               const SizedBox(width: AppSpacing.m),
-              
+
               // Step Info
               Expanded(
                 child: Column(
@@ -359,14 +365,19 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                         Expanded(
                           child: Text(
                             step.title,
-                            style: AppTypography.textTheme.titleMedium?.copyWith(
-                              fontWeight: isCurrent ? FontWeight.bold : FontWeight.w600,
-                              color: isCompleted
-                                  ? AppColors.success
-                                  : isCurrent
-                                      ? AppColors.primary
-                                      : AppColors.onSurface,
-                            ),
+                            style: AppTypography.textTheme.titleMedium
+                                ?.copyWith(
+                                  fontWeight:
+                                      isCurrent
+                                          ? FontWeight.bold
+                                          : FontWeight.w600,
+                                  color:
+                                      isCompleted
+                                          ? AppColors.success
+                                          : isCurrent
+                                          ? AppColors.primary
+                                          : AppColors.onSurface,
+                                ),
                           ),
                         ),
                         if (step.webOnly)
@@ -381,10 +392,11 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                             ),
                             child: Text(
                               'Web Only',
-                              style: AppTypography.textTheme.labelSmall?.copyWith(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: AppTypography.textTheme.labelSmall
+                                  ?.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                           ),
                       ],
