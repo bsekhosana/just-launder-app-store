@@ -84,7 +84,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   Widget build(BuildContext context) {
     return WatermarkBackgroundBuilder.bottomRight(
       icon: FontAwesomeIcons.store,
-      iconColor: AppColors.primary.withOpacity(0.08),
+      iconColor: AppColors.primary.withOpacity(0.15),
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -478,7 +478,8 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         ),
         const SizedBox(height: AppSpacing.m),
         AnimatedButton(
-          onPressed: provider.isLoading ? null : () => provider.loadOnboardingStatus(),
+          onPressed:
+              provider.isLoading ? null : () => provider.loadOnboardingStatus(),
           backgroundColor: AppColors.surfaceVariant,
           foregroundColor: AppColors.onSurfaceVariant,
           height: 56,
@@ -491,7 +492,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                   height: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.onSurfaceVariant),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.onSurfaceVariant,
+                    ),
                   ),
                 )
               else
