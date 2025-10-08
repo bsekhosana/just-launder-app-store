@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/animated_button.dart';
 import '../providers/branch_provider.dart';
-import '../../../data/models/laundrette_branch.dart';
+import '../data/models/laundrette_branch.dart';
 
 class AddEditBranchScreen extends StatefulWidget {
   final LaundretteBranch? branch;
@@ -150,7 +152,7 @@ class _AddEditBranchScreenState extends State<AddEditBranchScreen> {
               ),
             ),
           ),
-          const Gap.horizontal(AppSpacing.s),
+          const SizedBox(width: AppSpacing.s),
         ],
       ),
       body: Form(
@@ -161,13 +163,13 @@ class _AddEditBranchScreenState extends State<AddEditBranchScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildBasicInfoSection(),
-              const Gap.vertical(AppSpacing.l),
+              const SizedBox(height: AppSpacing.l),
               _buildStatusSection(),
-              const Gap.vertical(AppSpacing.l),
+              const SizedBox(height: AppSpacing.l),
               _buildOperatingHoursSection(),
-              const Gap.vertical(AppSpacing.l),
+              const SizedBox(height: AppSpacing.l),
               _buildPricingSection(),
-              const Gap.vertical(AppSpacing.l),
+              const SizedBox(height: AppSpacing.l),
               _buildSettingsSection(),
             ],
           ),
@@ -604,36 +606,28 @@ class _AddEditBranchScreenState extends State<AddEditBranchScreen> {
           widget.isEdit
               ? widget.branch!.id
               : DateTime.now().millisecondsSinceEpoch.toString(),
-      laundretteId: 'laundrette_business_1', // Mock laundrette ID
       name: _nameController.text.trim(),
       description:
           _descriptionController.text.trim().isEmpty
-              ? null
+              ? ''
               : _descriptionController.text.trim(),
       address: _addressController.text.trim(),
       city: _cityController.text.trim(),
       postcode: _postcodeController.text.trim(),
-      country: _countryController.text.trim(),
-      latitude: 40.7128, // Mock coordinates
-      longitude: -74.0060,
-      status: _selectedStatus,
-      isOpen: _isOpen,
-      operatingHours: Map.from(_operatingHours),
-      bagPricing: bagPricing,
-      servicePricing: servicePricing,
-      autoAcceptOrders: _autoAcceptOrders,
-      supportsPriorityDelivery: _supportsPriorityDelivery,
-      phoneNumber:
+      phone:
           _phoneController.text.trim().isEmpty
-              ? null
+              ? ''
               : _phoneController.text.trim(),
       email:
           _emailController.text.trim().isEmpty
-              ? null
+              ? ''
               : _emailController.text.trim(),
-      maxConcurrentOrders: int.parse(_maxOrdersController.text),
-      currentOrderCount: widget.isEdit ? widget.branch!.currentOrderCount : 0,
-      settings: {'notifications': true, 'autoAssignDrivers': true},
+      status: _selectedStatus,
+      services: [], // Empty services list for now
+      operatingHours: Map.from(_operatingHours),
+      latitude: 40.7128, // Mock coordinates
+      longitude: -74.0060,
+      images: [], // Empty images list for now
       createdAt: widget.isEdit ? widget.branch!.createdAt : DateTime.now(),
       updatedAt: DateTime.now(),
     );

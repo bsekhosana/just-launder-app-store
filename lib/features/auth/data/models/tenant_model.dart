@@ -27,18 +27,22 @@ class TenantModel {
   factory TenantModel.fromJson(Map<String, dynamic> json) {
     return TenantModel(
       id: json['id'] as int,
-      firstName: json['first_name'] as String,
-      lastName: json['last_name'] as String,
+      firstName: (json['first_name'] ?? json['name']?.toString().split(' ').first ?? '') as String,
+      lastName: (json['last_name'] ?? json['name']?.toString().split(' ').skip(1).join(' ') ?? '') as String,
       email: json['email'] as String,
-      mobile: json['mobile'] as String,
-      role: json['role'] as String,
-      onboardingCompleted: json['onboarding_completed'] as bool,
+      mobile: (json['mobile'] ?? json['phone'] ?? '') as String,
+      role: (json['role'] is String ? json['role'] : json['role']?['value'] ?? 'tenant') as String,
+      onboardingCompleted: (json['onboarding_completed'] ?? false) as bool,
       emailVerifiedAt:
           json['email_verified_at'] != null
               ? DateTime.parse(json['email_verified_at'] as String)
               : null,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      createdAt: json['created_at'] != null 
+          ? DateTime.parse(json['created_at'] as String)
+          : DateTime.now(),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : DateTime.now(),
     );
   }
 

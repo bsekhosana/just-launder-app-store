@@ -168,7 +168,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen>
                           child: Column(
                             children: [
                               _buildAnalyticsCard(staffProvider),
-                              const Gap.vertical(AppSpacing.s),
+                              const SizedBox(height: AppSpacing.s),
                             ],
                           ),
                         ),
@@ -181,7 +181,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen>
                         duration: AppMotion.normal,
                       ),
                 ),
-                const Gap.vertical(AppSpacing.s),
+                const SizedBox(height: AppSpacing.s),
               ],
               Expanded(
                 child: TabBarView(
@@ -227,7 +227,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Row(
               children: [
                 Expanded(
@@ -273,7 +273,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen>
     return Column(
       children: [
         Icon(icon, color: color, size: 24),
-        const Gap.vertical(AppSpacing.s),
+        const SizedBox(height: AppSpacing.s),
         Text(
           value,
           style: AppTypography.textTheme.titleLarge?.copyWith(
@@ -307,7 +307,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen>
                 .animate()
                 .scale(duration: AppMotion.slow, curve: AppCurves.emphasized)
                 .fadeIn(duration: AppMotion.normal),
-            const Gap.vertical(AppSpacing.l),
+            const SizedBox(height: AppSpacing.l),
             Text(
                   emptyMessage,
                   style: AppTypography.textTheme.bodyLarge?.copyWith(
@@ -365,7 +365,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen>
                                 ),
                           ),
                         ),
-                        const Gap.horizontal(AppSpacing.m),
+                        const SizedBox(width: AppSpacing.m),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -394,21 +394,21 @@ class _StaffManagementScreenState extends State<StaffManagementScreen>
                     ),
                   ],
                 ),
-                const Gap.vertical(AppSpacing.s),
+                const SizedBox(height: AppSpacing.s),
                 Row(
                   children: [
                     ChipsX.status(
                       label: member.roleDisplayText,
                       status: _getRoleChipStatus(member.role),
                     ),
-                    const Gap.horizontal(AppSpacing.s),
+                    const SizedBox(width: AppSpacing.s),
                     if (member.phone != null) ...[
                       Icon(
                         AppIcons.phone,
                         size: 16,
                         color: colorScheme.onSurfaceVariant,
                       ),
-                      const Gap.horizontal(AppSpacing.xs),
+                      const SizedBox(width: AppSpacing.xs),
                       Text(
                         member.phone!,
                         style: AppTypography.textTheme.bodySmall?.copyWith(
@@ -418,7 +418,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen>
                     ],
                   ],
                 ),
-                const Gap.vertical(AppSpacing.s),
+                const SizedBox(height: AppSpacing.s),
                 Row(
                   children: [
                     Icon(
@@ -426,7 +426,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen>
                       size: 16,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    const Gap.horizontal(AppSpacing.xs),
+                    const SizedBox(width: AppSpacing.xs),
                     Text(
                       'Last login: ${member.lastLoginDisplayText}',
                       style: AppTypography.textTheme.bodySmall?.copyWith(
@@ -436,7 +436,7 @@ class _StaffManagementScreenState extends State<StaffManagementScreen>
                     const Spacer(),
                     if (member.metadata['performance_rating'] != null) ...[
                       Icon(AppIcons.star, size: 16, color: AppColors.warning),
-                      const Gap.horizontal(AppSpacing.xs),
+                      const SizedBox(width: AppSpacing.xs),
                       Text(
                         '${member.metadata['performance_rating']}',
                         style: AppTypography.textTheme.bodySmall?.copyWith(

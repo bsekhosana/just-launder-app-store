@@ -3,6 +3,7 @@ import '../../design_system/color_schemes.dart';
 import '../../design_system/radii.dart';
 import '../../design_system/spacing.dart';
 import '../../design_system/elevations.dart';
+import '../../design_system/spacing_utils.dart';
 import '../../design_system/motion.dart';
 import 'glass_surface.dart';
 
@@ -154,7 +155,7 @@ class _CardXState extends State<CardX> with SingleTickerProviderStateMixin {
             margin: widget.margin,
             decoration: BoxDecoration(
               color: effectiveBackgroundColor,
-              borderRadius: widget.borderRadius ?? Radii.card,
+              borderRadius: widget.borderRadius ?? BorderRadius.circular(Radii.card),
               border:
                   widget.variant == CardVariant.outlined
                       ? Border.all(

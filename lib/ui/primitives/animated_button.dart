@@ -4,6 +4,7 @@ import '../../design_system/radii.dart';
 import '../../design_system/spacing.dart';
 import '../../design_system/motion.dart';
 import '../../design_system/elevations.dart';
+import '../../design_system/spacing_utils.dart';
 
 /// An animated button with scale, fade, and loading states
 /// Provides smooth micro-interactions and visual feedback
@@ -116,6 +117,11 @@ class _AnimatedButtonState extends State<AnimatedButton>
             ? (widget.disabledBackgroundColor ?? colorScheme.surfaceVariant)
             : (widget.backgroundColor ?? colorScheme.primary);
 
+    final effectiveForegroundColor =
+        widget.isDisabled
+            ? (widget.disabledForegroundColor ?? colorScheme.onSurfaceVariant)
+            : (widget.foregroundColor ?? colorScheme.onPrimary);
+
     final effectiveShadows =
         widget.shadows ??
         (effectiveBackgroundColor == Colors.transparent ? [] : Shadows.button);
@@ -138,7 +144,8 @@ class _AnimatedButtonState extends State<AnimatedButton>
                   ),
               decoration: BoxDecoration(
                 color: effectiveBackgroundColor,
-                borderRadius: widget.borderRadius ?? Radii.button,
+                borderRadius:
+                    widget.borderRadius ?? BorderRadius.circular(Radii.button),
                 border: widget.border,
                 boxShadow: effectiveShadows,
               ),
@@ -151,7 +158,7 @@ class _AnimatedButtonState extends State<AnimatedButton>
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.primary,
+                              effectiveForegroundColor,
                             ),
                           ),
                         )
@@ -197,7 +204,6 @@ class AnimatedButtons {
     String? tooltip,
   }) {
     return AnimatedButton(
-      child: child,
       onPressed: onPressed,
       onLongPress: onLongPress,
       isLoading: isLoading,
@@ -206,6 +212,7 @@ class AnimatedButtons {
       width: width,
       height: height,
       tooltip: tooltip,
+      child: child,
     );
   }
 
@@ -222,7 +229,6 @@ class AnimatedButtons {
     String? tooltip,
   }) {
     return AnimatedButton(
-      child: child,
       onPressed: onPressed,
       onLongPress: onLongPress,
       isLoading: isLoading,
@@ -233,6 +239,7 @@ class AnimatedButtons {
       width: width,
       height: height,
       tooltip: tooltip,
+      child: child,
     );
   }
 
@@ -249,18 +256,18 @@ class AnimatedButtons {
     String? tooltip,
   }) {
     return AnimatedButton(
-      child: child,
       onPressed: onPressed,
       onLongPress: onLongPress,
       isLoading: isLoading,
       isDisabled: isDisabled,
       backgroundColor: Colors.transparent,
       foregroundColor: null, // Will use theme primary color
-      shadows: [],
+      shadows: const [],
       padding: padding,
       width: width,
       height: height,
       tooltip: tooltip,
+      child: child,
     );
   }
 
@@ -275,16 +282,16 @@ class AnimatedButtons {
     String? tooltip,
   }) {
     return AnimatedButton(
-      child: child,
       onPressed: onPressed,
       onLongPress: onLongPress,
       isLoading: isLoading,
       isDisabled: isDisabled,
       width: size ?? 48,
       height: size ?? 48,
-      borderRadius: Radii.circular,
+      borderRadius: BorderRadius.circular(Radii.lg),
       padding: EdgeInsets.zero,
       tooltip: tooltip,
+      child: child,
     );
   }
 
@@ -299,17 +306,17 @@ class AnimatedButtons {
     String? tooltip,
   }) {
     return AnimatedButton(
-      child: child,
       onPressed: onPressed,
       onLongPress: onLongPress,
       isLoading: isLoading,
       isDisabled: isDisabled,
       width: size ?? 56,
       height: size ?? 56,
-      borderRadius: Radii.circular,
+      borderRadius: BorderRadius.circular(Radii.lg),
       padding: EdgeInsets.zero,
       shadows: Shadows.floatingActionButton,
       tooltip: tooltip,
+      child: child,
     );
   }
 
@@ -326,7 +333,6 @@ class AnimatedButtons {
     String? tooltip,
   }) {
     return AnimatedButton(
-      child: child,
       onPressed: onPressed,
       onLongPress: onLongPress,
       isLoading: isLoading,
@@ -337,6 +343,7 @@ class AnimatedButtons {
       width: width,
       height: height,
       tooltip: tooltip,
+      child: child,
     );
   }
 }

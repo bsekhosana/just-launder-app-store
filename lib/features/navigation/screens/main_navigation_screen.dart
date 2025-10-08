@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../design_system/radii.dart';
 import '../../../design_system/motion.dart';
 import '../../../design_system/icons.dart';
@@ -155,7 +156,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               decoration: BoxDecoration(
                 color:
                     isSelected ? Colors.white : Colors.white.withOpacity(0.8),
-                borderRadius: Radii.m,
+                borderRadius: BorderRadius.circular(Radii.m),
                 border: Border.all(
                   color:
                       isSelected
@@ -189,7 +190,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               duration: AppMotion.fast,
               curve: AppCurves.standard,
             ),
-            const Gap.vertical(AppSpacing.xs),
+            const SizedBox(height: AppSpacing.xs),
             Flexible(
               child: AnimatedDefaultTextStyle(
                 duration: AppMotion.fast,

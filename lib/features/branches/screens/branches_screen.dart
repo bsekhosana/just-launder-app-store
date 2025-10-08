@@ -4,13 +4,14 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../design_system/motion.dart';
 import '../../../design_system/icons.dart';
 import '../../../ui/primitives/animated_button.dart';
 import '../../../ui/primitives/card_x.dart';
 import '../../../ui/primitives/chip_x.dart';
 import '../providers/branch_provider.dart';
-import '../../../data/models/laundrette_branch.dart';
+import '../data/models/laundrette_branch.dart';
 import 'add_edit_branch_screen.dart';
 import 'branch_details_screen.dart';
 
@@ -94,7 +95,7 @@ class _BranchesScreenState extends State<BranchesScreen> {
                         curve: AppCurves.emphasized,
                       )
                       .fadeIn(duration: AppMotion.normal),
-                  const Gap.vertical(AppSpacing.l),
+                  const SizedBox(height: AppSpacing.l),
                   Text(
                         'No branches found',
                         style: AppTypography.textTheme.bodyLarge?.copyWith(
@@ -109,7 +110,7 @@ class _BranchesScreenState extends State<BranchesScreen> {
                         delay: AppMotion.fast,
                         duration: AppMotion.normal,
                       ),
-                  const Gap.vertical(AppSpacing.s),
+                  const SizedBox(height: AppSpacing.s),
                   Text(
                         'Add your first branch to get started',
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
@@ -177,21 +178,21 @@ class _BranchesScreenState extends State<BranchesScreen> {
                     ),
                   ],
                 ),
-                const Gap.vertical(AppSpacing.s),
+                const SizedBox(height: AppSpacing.s),
                 Text(
                   branch.fullAddress,
                   style: AppTypography.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const Gap.vertical(AppSpacing.xs),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   '${branch.currentOrderCount}/${branch.maxConcurrentOrders} orders',
                   style: AppTypography.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const Gap.vertical(AppSpacing.m),
+                const SizedBox(height: AppSpacing.m),
                 Row(
                   children: [
                     Icon(
@@ -199,7 +200,7 @@ class _BranchesScreenState extends State<BranchesScreen> {
                       size: 16,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    const Gap.horizontal(AppSpacing.xs),
+                    const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Text(
                         branch.phoneNumber ?? 'No phone',
@@ -209,13 +210,13 @@ class _BranchesScreenState extends State<BranchesScreen> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const Gap.horizontal(AppSpacing.m),
+                    const SizedBox(width: AppSpacing.m),
                     Icon(
                       AppIcons.email,
                       size: 16,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    const Gap.horizontal(AppSpacing.xs),
+                    const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Text(
                         branch.email ?? 'No email',
@@ -227,7 +228,7 @@ class _BranchesScreenState extends State<BranchesScreen> {
                     ),
                   ],
                 ),
-                const Gap.vertical(AppSpacing.m),
+                const SizedBox(height: AppSpacing.m),
                 Wrap(
                   spacing: AppSpacing.s,
                   runSpacing: AppSpacing.xs,
@@ -246,7 +247,7 @@ class _BranchesScreenState extends State<BranchesScreen> {
                     ],
                   ],
                 ),
-                const Gap.vertical(AppSpacing.m),
+                const SizedBox(height: AppSpacing.m),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -260,7 +261,7 @@ class _BranchesScreenState extends State<BranchesScreen> {
                             size: 16,
                             color: AppColors.primary,
                           ),
-                          const Gap.horizontal(AppSpacing.xs),
+                          const SizedBox(width: AppSpacing.xs),
                           Text(
                             'Edit',
                             style: AppTypography.textTheme.labelMedium
@@ -272,7 +273,7 @@ class _BranchesScreenState extends State<BranchesScreen> {
                         ],
                       ),
                     ),
-                    const Gap.horizontal(AppSpacing.s),
+                    const SizedBox(width: AppSpacing.s),
                     AnimatedButtons.text(
                       onPressed: () => _deleteBranch(branch),
                       child: Row(
@@ -283,7 +284,7 @@ class _BranchesScreenState extends State<BranchesScreen> {
                             size: 16,
                             color: AppColors.error,
                           ),
-                          const Gap.horizontal(AppSpacing.xs),
+                          const SizedBox(width: AppSpacing.xs),
                           Text(
                             'Delete',
                             style: AppTypography.textTheme.labelMedium

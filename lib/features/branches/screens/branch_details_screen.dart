@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../ui/primitives/card_x.dart';
-import '../../../data/models/laundrette_branch.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../data/models/laundrette_branch.dart';
 import 'add_edit_branch_screen.dart';
 import '../widgets/branch_stats_widget.dart';
 
@@ -54,15 +56,15 @@ class BranchDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             BranchStatsWidget(branch: branch),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildStatusCard(context),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildBasicInfoCard(context),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildOperatingHoursCard(context),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildPricingCard(context),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildSettingsCard(context),
           ],
         ),
@@ -184,7 +186,7 @@ class BranchDetailsScreen extends StatelessWidget {
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildInfoRow(context, 'Name', branch.name),
             if (branch.description != null)
               _buildInfoRow(context, 'Description', branch.description!),
@@ -217,7 +219,7 @@ class BranchDetailsScreen extends StatelessWidget {
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             ...branch.operatingHours.entries.map((entry) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -264,7 +266,7 @@ class BranchDetailsScreen extends StatelessWidget {
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Text(
               'Bag Pricing',
               style: Theme.of(
@@ -287,7 +289,7 @@ class BranchDetailsScreen extends StatelessWidget {
                 ),
               );
             }).toList(),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Text(
               'Service Pricing',
               style: Theme.of(
@@ -329,7 +331,7 @@ class BranchDetailsScreen extends StatelessWidget {
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildSettingItem(
               context,
               'Auto Accept Orders',
@@ -421,8 +423,6 @@ class BranchDetailsScreen extends StatelessWidget {
         return AppColors.mediumGrey;
       case BranchStatus.maintenance:
         return AppColors.warningOrange;
-      case BranchStatus.closed:
-        return AppColors.errorRed;
     }
   }
 

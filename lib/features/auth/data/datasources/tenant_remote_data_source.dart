@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/tenant_model.dart';
 import '../models/api_response_model.dart';
-import '../../onboarding/data/models/onboarding_status_model.dart';
-import '../../../core/utils/log_helper.dart';
+import '../../../onboarding/data/models/onboarding_status_model.dart';
+import '../../../../core/utils/log_helper.dart';
 
 /// Remote data source for tenant authentication API calls
 class TenantRemoteDataSource {
@@ -52,6 +52,7 @@ class TenantRemoteDataSource {
   static Map<String, String> get _headers => {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'X-App-Type': 'laundrette', // Mandatory app type for all API calls
     if (_authToken != null) 'Authorization': 'Bearer $_authToken',
     if (_deviceId != null) 'X-Device-ID': _deviceId!,
     if (_deviceName != null) 'X-Device-Name': _deviceName!,
@@ -82,6 +83,7 @@ class TenantRemoteDataSource {
           'password': password,
           'password_confirmation': passwordConfirmation,
           'terms_accepted': termsAccepted,
+          'app_type': 'laundrette',
           'device_id': _deviceId,
           'device_name': _deviceName,
         }),
@@ -109,6 +111,7 @@ class TenantRemoteDataSource {
         body: jsonEncode({
           'email': email,
           'password': password,
+          'app_type': 'laundrette',
           'device_id': _deviceId,
           'device_name': _deviceName,
         }),
@@ -125,50 +128,107 @@ class TenantRemoteDataSource {
   }
 
   /// Forgot password
-  Future<Map<String, dynamic>> forgotPassword(String email) async {
+  Future<ApiResponseModel<Map<String, dynamic>>> forgotPassword(
+    String email,
+  ) async {
     try {
+      LogHelper.api(
+        'Making forgot password request to $apiBaseUrl/auth/tenant/forgot-password',
+      );
+      LogHelper.api('Forgot password payload: ${jsonEncode({'email': email})}');
+
       final response = await http.post(
-        Uri.parse('$apiBaseUrl/v1/auth/tenant/forgot-password'),
+        Uri.parse('$apiBaseUrl/auth/tenant/forgot-password'),
         headers: _headers,
-        body: jsonEncode({'email': email}),
+        body: jsonEncode({'email': email, 'app_type': 'laundrette'}),
       );
 
-      return _handleResponse(response);
+      LogHelper.api('Forgot password response status: ${response.statusCode}');
+      LogHelper.api('Forgot password response body: ${response.body}');
+
+      return _handleApiResponse<Map<String, dynamic>>(response);
     } on SocketException {
-      return {'success': false, 'error': 'No internet connection'};
+      return ApiResponseModel.error('No internet connection');
     } on HttpException catch (e) {
-      return {'success': false, 'error': 'HTTP error: ${e.message}'};
+      return ApiResponseModel.error('HTTP error: ${e.message}');
     } catch (e) {
-      return {'success': false, 'error': 'Unexpected error: $e'};
+      return ApiResponseModel.error('Unexpected error: $e');
     }
   }
 
-  /// Reset password with OTP
-  Future<Map<String, dynamic>> resetPassword({
+  /// Verify OTP code
+  Future<ApiResponseModel<Map<String, dynamic>>> verifyOtp({
     required String email,
     required String otp,
-    required String password,
-    required String passwordConfirmation,
   }) async {
     try {
+      LogHelper.api(
+        'Making verify OTP request to $apiBaseUrl/tenant/verify-otp',
+      );
+      LogHelper.api(
+        'Verify OTP payload: ${jsonEncode({'email': email, 'otp': otp})}',
+      );
+
       final response = await http.post(
-        Uri.parse('$apiBaseUrl/v1/auth/tenant/reset-password'),
+        Uri.parse('$apiBaseUrl/tenant/verify-otp'),
         headers: _headers,
         body: jsonEncode({
           'email': email,
           'otp': otp,
-          'password': password,
-          'password_confirmation': passwordConfirmation,
+          'app_type': 'laundrette',
         }),
       );
 
-      return _handleResponse(response);
+      LogHelper.api('Verify OTP response status: ${response.statusCode}');
+      LogHelper.api('Verify OTP response body: ${response.body}');
+
+      return _handleApiResponse<Map<String, dynamic>>(response);
     } on SocketException {
-      return {'success': false, 'error': 'No internet connection'};
+      return ApiResponseModel.error('No internet connection');
     } on HttpException catch (e) {
-      return {'success': false, 'error': 'HTTP error: ${e.message}'};
+      return ApiResponseModel.error('HTTP error: ${e.message}');
     } catch (e) {
-      return {'success': false, 'error': 'Unexpected error: $e'};
+      return ApiResponseModel.error('Unexpected error: $e');
+    }
+  }
+
+  /// Reset password with OTP
+  Future<ApiResponseModel<Map<String, dynamic>>> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    try {
+      LogHelper.api(
+        'Making reset password request to $apiBaseUrl/tenant/reset-password',
+      );
+      LogHelper.api(
+        'Reset password payload: ${jsonEncode({'email': email, 'otp': otp, 'password': newPassword, 'password_confirmation': confirmPassword})}',
+      );
+
+      final response = await http.post(
+        Uri.parse('$apiBaseUrl/tenant/reset-password'),
+        headers: _headers,
+        body: jsonEncode({
+          'email': email,
+          'otp': otp,
+          'password': newPassword,
+          'password_confirmation': confirmPassword,
+          'app_type': 'laundrette',
+        }),
+      );
+
+      LogHelper.api('Reset password response status: ${response.statusCode}');
+      LogHelper.api('Reset password response body: ${response.body}');
+
+      return _handleApiResponse<Map<String, dynamic>>(response);
+    } on SocketException {
+      return ApiResponseModel.error('No internet connection');
+    } on HttpException catch (e) {
+      return ApiResponseModel.error('HTTP error: ${e.message}');
+    } catch (e) {
+      return ApiResponseModel.error('Unexpected error: $e');
     }
   }
 
@@ -361,6 +421,7 @@ class TenantRemoteDataSource {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_authToken',
           'Accept': 'application/json',
+          'X-App-Type': 'laundrette',
         },
         body: jsonEncode(data),
       );
@@ -399,6 +460,7 @@ class TenantRemoteDataSource {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_authToken',
           'Accept': 'application/json',
+          'X-App-Type': 'laundrette',
         },
         body: jsonEncode(data),
       );
@@ -455,6 +517,68 @@ class TenantRemoteDataSource {
       LogHelper.error('_handleApiResponse: JSON parsing error: $e');
       String errorMessage = _getErrorMessage(statusCode, null);
       return ApiResponseModel<T>.error(errorMessage, statusCode: statusCode);
+    }
+  }
+
+  /// Check email verification status
+  Future<ApiResponseModel<Map<String, dynamic>>> checkEmailVerificationStatus(
+    String email,
+  ) async {
+    try {
+      LogHelper.api(
+        'Making check email verification request to $apiBaseUrl/auth/tenant/email-verification-status',
+      );
+      LogHelper.api('Payload: ${jsonEncode({'email': email})}');
+
+      final response = await http.post(
+        Uri.parse('$apiBaseUrl/auth/tenant/email-verification-status'),
+        headers: _headers,
+        body: jsonEncode({'email': email, 'app_type': 'laundrette'}),
+      );
+
+      LogHelper.api(
+        'Email verification status response: ${response.statusCode}',
+      );
+      LogHelper.api('Email verification status body: ${response.body}');
+
+      return _handleApiResponse<Map<String, dynamic>>(response);
+    } on SocketException {
+      return ApiResponseModel.error('No internet connection');
+    } on HttpException catch (e) {
+      return ApiResponseModel.error('HTTP error: ${e.message}');
+    } catch (e) {
+      return ApiResponseModel.error('Unexpected error: $e');
+    }
+  }
+
+  /// Resend verification email
+  Future<ApiResponseModel<Map<String, dynamic>>> resendVerificationEmail(
+    String email,
+  ) async {
+    try {
+      LogHelper.api(
+        'Making resend verification email request to $apiBaseUrl/auth/tenant/resend-verification-email',
+      );
+      LogHelper.api('Payload: ${jsonEncode({'email': email})}');
+
+      final response = await http.post(
+        Uri.parse('$apiBaseUrl/auth/tenant/resend-verification-email'),
+        headers: _headers,
+        body: jsonEncode({'email': email, 'app_type': 'laundrette'}),
+      );
+
+      LogHelper.api(
+        'Resend verification email response: ${response.statusCode}',
+      );
+      LogHelper.api('Resend verification email body: ${response.body}');
+
+      return _handleApiResponse<Map<String, dynamic>>(response);
+    } on SocketException {
+      return ApiResponseModel.error('No internet connection');
+    } on HttpException catch (e) {
+      return ApiResponseModel.error('HTTP error: ${e.message}');
+    } catch (e) {
+      return ApiResponseModel.error('Unexpected error: $e');
     }
   }
 

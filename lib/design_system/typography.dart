@@ -77,26 +77,6 @@ class AppTypography {
       height: 1.43,
     ),
 
-    // Body styles
-    bodyLarge: GoogleFonts.inter(
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0.5,
-      height: 1.50,
-    ),
-    bodyMedium: GoogleFonts.inter(
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0.25,
-      height: 1.43,
-    ),
-    bodySmall: GoogleFonts.inter(
-      fontSize: 12,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0.4,
-      height: 1.33,
-    ),
-
     // Label styles
     labelLarge: GoogleFonts.inter(
       fontSize: 14,
@@ -116,58 +96,48 @@ class AppTypography {
       letterSpacing: 0.5,
       height: 1.45,
     ),
+
+    // Body styles
+    bodyLarge: GoogleFonts.inter(
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.5,
+      height: 1.50,
+    ),
+    bodyMedium: GoogleFonts.inter(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.25,
+      height: 1.43,
+    ),
+    bodySmall: GoogleFonts.inter(
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 0.4,
+      height: 1.33,
+    ),
   );
 
-  // Custom text styles for specific use cases
+  // App-specific text styles
   static TextStyle get appBarTitle => GoogleFonts.inter(
     fontSize: 20,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.15,
-    height: 1.2,
+    height: 1.20,
   );
 
   static TextStyle get buttonText => GoogleFonts.inter(
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.1,
-    height: 1.43,
-  );
-
-  static TextStyle get caption => GoogleFonts.inter(
-    fontSize: 12,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 0.4,
-    height: 1.33,
-  );
-
-  static TextStyle get overline => GoogleFonts.inter(
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 1.5,
-    height: 1.6,
-  );
-
-  // Card text styles
-  static TextStyle get cardTitle => GoogleFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.w600,
-    letterSpacing: 0.15,
-    height: 1.25,
+    letterSpacing: 0.1,
+    height: 1.50,
   );
 
-  static TextStyle get cardSubtitle => GoogleFonts.inter(
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 0.25,
-    height: 1.43,
-  );
-
-  // Form text styles
   static TextStyle get inputLabel => GoogleFonts.inter(
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.5,
-    height: 1.33,
+    height: 1.43,
   );
 
   static TextStyle get inputText => GoogleFonts.inter(
@@ -184,71 +154,39 @@ class AppTypography {
     height: 1.50,
   );
 
-  // Navigation text styles
-  static TextStyle get navLabel => GoogleFonts.inter(
+  static TextStyle get caption => GoogleFonts.inter(
     fontSize: 12,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.4,
+    height: 1.33,
+  );
+
+  static TextStyle get overline => GoogleFonts.inter(
+    fontSize: 10,
     fontWeight: FontWeight.w500,
-    letterSpacing: 0.5,
-    height: 1.33,
+    letterSpacing: 1.5,
+    height: 1.60,
   );
 
-  // Status text styles
-  static TextStyle get statusText => GoogleFonts.inter(
-    fontSize: 12,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.5,
-    height: 1.33,
-  );
+  // Direct access to commonly used text styles for backward compatibility
+  static TextStyle get bodyMedium => textTheme.bodyMedium!;
+  static TextStyle get bodyLarge => textTheme.bodyLarge!;
+  static TextStyle get bodySmall => textTheme.bodySmall!;
+  static TextStyle get headlineLarge => textTheme.headlineLarge!;
+  static TextStyle get headlineMedium => textTheme.headlineMedium!;
+  static TextStyle get headlineSmall => textTheme.headlineSmall!;
+  static TextStyle get titleLarge => textTheme.titleLarge!;
+  static TextStyle get titleMedium => textTheme.titleMedium!;
+  static TextStyle get titleSmall => textTheme.titleSmall!;
+  static TextStyle get labelLarge => textTheme.labelLarge!;
+  static TextStyle get labelMedium => textTheme.labelMedium!;
+  static TextStyle get labelSmall => textTheme.labelSmall!;
 
-  // Error text styles
+  // Error text style
   static TextStyle get errorText => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.4,
     height: 1.33,
   );
-
-  // Success text styles
-  static TextStyle get successText => GoogleFonts.inter(
-    fontSize: 12,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 0.4,
-    height: 1.33,
-  );
-
-  // Warning text styles
-  static TextStyle get warningText => GoogleFonts.inter(
-    fontSize: 12,
-    fontWeight: FontWeight.w400,
-    letterSpacing: 0.4,
-    height: 1.33,
-  );
-}
-
-/// Typography utilities
-class TypographyUtils {
-  /// Get text style with custom color
-  static TextStyle withColor(TextStyle style, Color color) {
-    return style.copyWith(color: color);
-  }
-
-  /// Get text style with custom weight
-  static TextStyle withWeight(TextStyle style, FontWeight weight) {
-    return style.copyWith(fontWeight: weight);
-  }
-
-  /// Get text style with custom size
-  static TextStyle withSize(TextStyle style, double size) {
-    return style.copyWith(fontSize: size);
-  }
-
-  /// Get text style with custom letter spacing
-  static TextStyle withLetterSpacing(TextStyle style, double spacing) {
-    return style.copyWith(letterSpacing: spacing);
-  }
-
-  /// Get text style with custom height
-  static TextStyle withHeight(TextStyle style, double height) {
-    return style.copyWith(height: height);
-  }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../data/datasources/tenant_remote_data_source.dart';
+import '../../auth/data/datasources/tenant_remote_data_source.dart';
 import '../data/models/onboarding_status_model.dart';
 
 /// Onboarding provider for tenant app

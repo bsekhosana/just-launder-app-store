@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../design_system/icons.dart';
 import '../../../ui/primitives/card_x.dart';
 import '../../../ui/primitives/animated_button.dart';
@@ -202,11 +203,11 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildPeriodSelector(),
-              const Gap.vertical(AppSpacing.l),
+              const SizedBox(height: AppSpacing.l),
               _buildKeyMetricsGrid(),
-              const Gap.vertical(AppSpacing.xl),
+              const SizedBox(height: AppSpacing.xl),
               _buildQuickStatsRow(),
-              const Gap.vertical(AppSpacing.xl),
+              const SizedBox(height: AppSpacing.xl),
               _buildRecentActivityCard(),
             ],
           ),
@@ -295,7 +296,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Gap.vertical(AppSpacing.m),
+                const SizedBox(height: AppSpacing.m),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -313,7 +314,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                                     fontWeight: FontWeight.w500,
                                   ),
                             ),
-                            const Gap.vertical(AppSpacing.xs),
+                            const SizedBox(height: AppSpacing.xs),
                             DropdownButtonFormField<String>(
                               value: analyticsProvider.selectedPeriod,
                               isExpanded: true,
@@ -374,7 +375,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                           ],
                         ),
                       ),
-                      const Gap.horizontal(AppSpacing.m),
+                      const SizedBox(width: AppSpacing.m),
                       SizedBox(
                         width: 180,
                         child: Column(
@@ -388,7 +389,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                                     fontWeight: FontWeight.w500,
                                   ),
                             ),
-                            const Gap.vertical(AppSpacing.xs),
+                            const SizedBox(height: AppSpacing.xs),
                             Consumer<BranchProvider>(
                               builder: (context, branchProvider, child) {
                                 return DropdownButtonFormField<String>(
@@ -539,7 +540,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                       AppColors.accent,
                     ),
                   ),
-                  const Gap.horizontal(AppSpacing.m),
+                  const SizedBox(width: AppSpacing.m),
                   Expanded(
                     child: _buildQuickStatCard(
                       'New Customers',
@@ -548,7 +549,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                       AppColors.primary,
                     ),
                   ),
-                  const Gap.horizontal(AppSpacing.m),
+                  const SizedBox(width: AppSpacing.m),
                   Expanded(
                     child: _buildQuickStatCard(
                       'Avg Delivery Time',
@@ -573,7 +574,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                           AppColors.accent,
                         ),
                       ),
-                      const Gap.horizontal(AppSpacing.m),
+                      const SizedBox(width: AppSpacing.m),
                       Expanded(
                         child: _buildQuickStatCard(
                           'New Customers',
@@ -584,7 +585,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                       ),
                     ],
                   ),
-                  const Gap.vertical(AppSpacing.m),
+                  const SizedBox(height: AppSpacing.m),
                   _buildQuickStatCard(
                     'Avg Delivery Time',
                     analyticsProvider.averageDeliveryTimeFormatted,
@@ -616,7 +617,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, color: color, size: 28),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             Text(
               value,
               style: AppTypography.textTheme.headlineSmall?.copyWith(
@@ -626,7 +627,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const Gap.vertical(AppSpacing.xs),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               title,
               style: AppTypography.textTheme.bodySmall?.copyWith(
@@ -654,7 +655,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
             Row(
               children: [
                 Icon(Icons.timeline, color: AppColors.primary, size: 20),
-                const Gap.horizontal(AppSpacing.s),
+                const SizedBox(width: AppSpacing.s),
                 Text(
                   'Recent Activity',
                   style: AppTypography.textTheme.titleMedium?.copyWith(
@@ -664,7 +665,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildActivityItem(
               'New order received',
               'Order #12345',
@@ -719,7 +720,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
             ),
             child: Icon(icon, color: color, size: 18),
           ),
-          const Gap.horizontal(AppSpacing.s),
+          const SizedBox(width: AppSpacing.s),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../design_system/color_schemes.dart';
-import '../../../data/models/laundrette_branch.dart';
+import '../data/models/laundrette_branch.dart';
 
 class BranchStatsWidget extends StatelessWidget {
   final LaundretteBranch branch;

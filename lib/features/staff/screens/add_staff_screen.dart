@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../design_system/motion.dart';
 import '../../../design_system/icons.dart';
 import '../../../ui/primitives/animated_button.dart';
@@ -67,7 +68,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
               ),
             ),
           ),
-          const Gap.horizontal(AppSpacing.s),
+          const SizedBox(width: AppSpacing.s),
         ],
       ),
       body: Form(
@@ -78,11 +79,11 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildPersonalInfoCard(),
-              const Gap.vertical(AppSpacing.l),
+              const SizedBox(height: AppSpacing.l),
               _buildRoleAndStatusCard(),
-              const Gap.vertical(AppSpacing.l),
+              const SizedBox(height: AppSpacing.l),
               _buildPermissionsCard(),
-              const Gap.vertical(AppSpacing.l),
+              const SizedBox(height: AppSpacing.l),
               _buildActionButtons(),
             ],
           ),
@@ -107,7 +108,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Row(
               children: [
                 Expanded(
@@ -125,7 +126,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                     },
                   ),
                 ),
-                const Gap.horizontal(AppSpacing.m),
+                const SizedBox(width: AppSpacing.m),
                 Expanded(
                   child: TextFormField(
                     controller: _lastNameController,
@@ -143,7 +144,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             TextFormField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -161,7 +162,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                 return null;
               },
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             TextFormField(
               controller: _phoneController,
               decoration: const InputDecoration(
@@ -192,7 +193,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             DropdownButtonFormField<StaffRole>(
               value: _selectedRole,
               decoration: const InputDecoration(labelText: 'Role'),
@@ -210,7 +211,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                 });
               },
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             DropdownButtonFormField<StaffStatus>(
               value: _selectedStatus,
               decoration: const InputDecoration(labelText: 'Status'),
@@ -249,14 +250,14 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             Text(
               'Select the permissions this staff member should have:',
               style: AppTypography.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             ...StaffPermission.values.map(
               (permission) => _buildPermissionCheckbox(permission),
             ),
@@ -312,7 +313,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Row(
               children: [
                 Expanded(
@@ -339,7 +340,7 @@ class _AddStaffScreenState extends State<AddStaffScreen> {
                             ),
                   ),
                 ),
-                const Gap.horizontal(AppSpacing.m),
+                const SizedBox(width: AppSpacing.m),
                 Expanded(
                   child: AnimatedButton(
                     onPressed: _isLoading ? null : _cancel,

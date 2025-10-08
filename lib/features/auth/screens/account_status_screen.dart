@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../../../core/widgets/custom_elevated_button.dart';
-import '../../../core/widgets/custom_icon.dart';
+import '../../../ui/primitives/animated_button.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 
@@ -29,8 +28,8 @@ class AccountStatusScreen extends StatelessWidget {
               const Spacer(),
 
               // Status icon
-              CustomIcon(
-                icon: status == 'suspended' ? Icons.pause_circle : Icons.block,
+              Icon(
+                status == 'suspended' ? Icons.pause_circle : Icons.block,
                 size: 120,
                 color:
                     status == 'suspended'
@@ -43,7 +42,7 @@ class AccountStatusScreen extends StatelessWidget {
               // Status title
               Text(
                 status == 'suspended' ? 'Account Suspended' : 'Account Banned',
-                style: AppTypography.headlineLarge.copyWith(
+                style: AppTypography.textTheme.headlineLarge?.copyWith(
                   color:
                       status == 'suspended'
                           ? AppColorSchemes.warning
@@ -57,14 +56,14 @@ class AccountStatusScreen extends StatelessWidget {
               // Status message
               Text(
                 message,
-                style: AppTypography.bodyLarge,
+                style: AppTypography.textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
 
               const SizedBox(height: 32),
 
               // Contact support button
-              CustomElevatedButton(
+              AnimatedButton(
                 onPressed: () {
                   _showContactSupportDialog(context);
                 },
@@ -76,7 +75,7 @@ class AccountStatusScreen extends StatelessWidget {
               // Logout button
               Consumer<AuthProvider>(
                 builder: (context, authProvider, child) {
-                  return CustomElevatedButton(
+                  return AnimatedButton(
                     onPressed: () async {
                       await authProvider.logout();
                       if (context.mounted) {
@@ -85,10 +84,8 @@ class AccountStatusScreen extends StatelessWidget {
                         ).pushNamedAndRemoveUntil('/login', (route) => false);
                       }
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColorSchemes.surface,
-                      foregroundColor: AppColorSchemes.textPrimary,
-                    ),
+                    backgroundColor: AppColorSchemes.surface,
+                    foregroundColor: AppColorSchemes.textPrimary,
                     child: const Text('Logout'),
                   );
                 },
@@ -116,7 +113,7 @@ class AccountStatusScreen extends StatelessWidget {
                 onPressed: () => Navigator.of(context).pop(),
                 child: const Text('Cancel'),
               ),
-              CustomElevatedButton(
+              AnimatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                   // TODO: Implement contact support functionality

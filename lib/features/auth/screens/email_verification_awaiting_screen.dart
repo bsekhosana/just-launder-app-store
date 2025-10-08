@@ -1,10 +1,18 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
-import '../providers/auth_provider.dart';
+import '../../../design_system/spacing.dart';
+import '../../../design_system/radii.dart';
+import '../../../core/widgets/watermark_background.dart';
+import '../../../core/widgets/animated_auth_screen.dart';
+import '../../../core/widgets/custom_snackbar.dart';
 import '../../../ui/primitives/animated_button.dart';
+import '../providers/auth_provider.dart';
 import '../../navigation/screens/main_navigation_screen.dart';
+import 'login_screen.dart';
 
 /// Email verification awaiting screen for laundrette app
 class EmailVerificationAwaitingScreen extends StatefulWidget {
@@ -18,236 +26,333 @@ class EmailVerificationAwaitingScreen extends StatefulWidget {
 }
 
 class _EmailVerificationAwaitingScreenState
-    extends State<EmailVerificationAwaitingScreen> {
-  bool _isResending = false;
+    extends State<EmailVerificationAwaitingScreen>
+    with WidgetsBindingObserver {
+  Timer? _pollingTimer;
+  Timer? _resendCountdownTimer;
+  bool _isChecking = false;
+  int _pollingCount = 0;
   int _resendCountdown = 0;
-  String? _errorMessage;
+  static const int _maxPollingAttempts = 20; // 20 * 15 seconds = 5 minutes
+  static const int _resendCooldownSeconds = 60;
 
   @override
   void initState() {
     super.initState();
-    _startResendCountdown();
+    WidgetsBinding.instance.addObserver(this);
+    _startPolling();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: AnimatedButton(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.transparent,
-          onPressed: () => Navigator.of(context).pop(),
-          child: Icon(Icons.arrow_back_ios, color: AppColors.primary),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Text(
-                'Verify Your Email',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'We\'ve sent a verification link to\n${widget.email}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 40),
-
-              // Verification status
-              _buildVerificationStatus(),
-
-              if (_errorMessage != null) ...[
-                const SizedBox(height: 16),
-                _buildErrorMessage(),
-              ],
-
-              const Spacer(),
-
-              // Resend button
-              _buildResendButton(),
-
-              const SizedBox(height: 16),
-
-              // Logout button
-              _buildLogoutButton(),
-
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
-    );
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _pollingTimer?.cancel();
+    _resendCountdownTimer?.cancel();
+    super.dispose();
   }
 
-  Widget _buildVerificationStatus() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.outline.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.mark_email_unread_outlined,
-            size: 48,
-            color: AppColors.primary,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Check Your Email',
-            style: AppTypography.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.onSurface,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'We\'ve sent a verification link to your email address. Please check your inbox and click the link to verify your account.',
-            style: AppTypography.textTheme.bodyMedium?.copyWith(
-              color: AppColors.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      // Check verification status when app resumes
+      _checkVerificationStatus();
+    }
   }
 
-  Widget _buildErrorMessage() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.error_outline, color: Colors.red[700], size: 20),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              _errorMessage!,
-              style: TextStyle(
-                color: Colors.red[700],
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  void _startPolling() {
+    _pollingTimer = Timer.periodic(const Duration(seconds: 15), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_pollingCount >= _maxPollingAttempts) {
+        timer.cancel();
+        return;
+      }
+      _pollingCount++;
+      _checkVerificationStatus();
+    });
   }
 
-  Widget _buildResendButton() {
-    return AnimatedButtons.primary(
-      onPressed:
-          _isResending || _resendCountdown > 0
-              ? null
-              : _resendVerificationEmail,
-      isLoading: _isResending,
-      child: Text(
-        _resendCountdown > 0
-            ? 'Resend in ${_resendCountdown}s'
-            : 'Resend Verification Email',
-        style: AppTypography.textTheme.labelLarge?.copyWith(
-          color: AppColors.onPrimary,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
+  Future<void> _checkVerificationStatus() async {
+    if (_isChecking || !mounted) return;
 
-  Widget _buildLogoutButton() {
-    return AnimatedButtons.secondary(
-      onPressed: _logout,
-      child: Text(
-        'Logout',
-        style: AppTypography.textTheme.labelLarge?.copyWith(
-          color: AppColors.onSurface,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
-  Future<void> _resendVerificationEmail() async {
     setState(() {
-      _isResending = true;
-      _errorMessage = null;
+      _isChecking = true;
     });
 
     try {
-      // TODO: Implement actual resend verification email API call
-      await Future.delayed(const Duration(seconds: 1));
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final isVerified = await authProvider.checkEmailVerificationStatus(
+        widget.email,
+      );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Verification email sent successfully'),
-            backgroundColor: AppColors.successGreen,
-          ),
+      if (isVerified && mounted) {
+        _pollingTimer?.cancel();
+        CustomSnackbar.showSuccess(
+          context,
+          message: 'Email verified successfully! Welcome to Just Laundrette.',
         );
 
-        _startResendCountdown();
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        if (mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => const MainNavigationScreen(),
+            ),
+            (route) => false,
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
-        setState(() {
-          _errorMessage =
-              'Failed to resend verification email. Please try again.';
-        });
+        CustomSnackbar.showError(
+          context,
+          message: 'Failed to check verification status. Please try again.',
+        );
       }
     } finally {
       if (mounted) {
         setState(() {
-          _isResending = false;
+          _isChecking = false;
         });
       }
     }
   }
 
-  void _logout() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    await authProvider.logout();
+  Future<void> _resendVerificationEmail() async {
+    if (_resendCountdown > 0) {
+      return; // Prevent multiple requests during countdown
+    }
 
-    if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
-        (route) => false,
-      );
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      await authProvider.resendVerificationEmail(widget.email);
+
+      if (mounted) {
+        CustomSnackbar.showSuccess(
+          context,
+          message: 'Verification email sent! Please check your inbox.',
+        );
+        _pollingCount = 0; // Reset polling counter
+        _startResendCountdown(); // Start 60-second countdown
+      }
+    } catch (e) {
+      if (mounted) {
+        CustomSnackbar.showError(
+          context,
+          message: 'Failed to resend verification email. Please try again.',
+        );
+      }
     }
   }
 
   void _startResendCountdown() {
-    setState(() {
-      _resendCountdown = 60;
-    });
-
-    Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 1));
+    _resendCountdown = _resendCooldownSeconds;
+    _resendCountdownTimer?.cancel();
+    _resendCountdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
         setState(() {
           _resendCountdown--;
         });
-        return _resendCountdown > 0;
+        if (_resendCountdown <= 0) {
+          timer.cancel();
+        }
+      } else {
+        timer.cancel();
       }
-      return false;
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WatermarkBackgroundBuilder.bottomRight(
+      icon: FontAwesomeIcons.envelope,
+      iconColor: AppColors.primary,
+      margin: const EdgeInsets.all(16),
+      opacity: 0.10,
+      iconSizePercentage: 0.45,
+      iconShift: -15.0,
+      child: AnimatedAuthScreen(
+        title: 'Verify Your Email',
+        subtitle: 'We\'ve sent a verification link to ${widget.email}',
+        icon: Padding(
+          padding: EdgeInsets.all(AppSpacing.l),
+          child: Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: AppColors.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.mark_email_unread,
+              color: AppColors.primary,
+              size: 40,
+            ),
+          ),
+        ),
+        showAppBar: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: AppSpacing.xxl),
+
+            // Instructions
+            Container(
+              padding: EdgeInsets.all(AppSpacing.l),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(Radii.lg),
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.info_outline, color: AppColors.primary, size: 32),
+                  SizedBox(height: AppSpacing.m),
+                  Text(
+                    'Check Your Email',
+                    style: AppTypography.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.onSurface,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: AppSpacing.s),
+                  Text(
+                    'Click the verification link in your email to activate your account. This screen will automatically update once verified.',
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: AppSpacing.xl),
+
+            // Status indicator
+            if (_isChecking) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: AppSpacing.s),
+                  Text(
+                    'Checking verification status...',
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: AppSpacing.l),
+            ],
+
+            // Resend button
+            AnimatedButton(
+              isLoading: false,
+              onPressed: _resendCountdown > 0 ? null : _resendVerificationEmail,
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.onPrimary,
+              borderRadius: BorderRadius.circular(Radii.lg),
+              height: 56,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.refresh,
+                    size: 20,
+                    color:
+                        _resendCountdown > 0
+                            ? AppColors.onPrimary.withValues(alpha: 0.6)
+                            : AppColors.onPrimary,
+                  ),
+                  SizedBox(width: AppSpacing.s),
+                  Text(
+                    _resendCountdown > 0
+                        ? 'Resend in ${_resendCountdown}s'
+                        : 'Resend Verification Email',
+                    style: AppTypography.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color:
+                          _resendCountdown > 0
+                              ? AppColors.onPrimary.withValues(alpha: 0.6)
+                              : AppColors.onPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: AppSpacing.l),
+
+            // Logout button
+            Consumer<AuthProvider>(
+              builder: (context, authProvider, child) {
+                return AnimatedButton(
+                  isLoading: authProvider.isLoading,
+                  onPressed: () {
+                    _pollingTimer?.cancel();
+                    _resendCountdownTimer?.cancel();
+                    final navigator = Navigator.of(context);
+                    authProvider.logout().then((_) {
+                      if (mounted) {
+                        navigator.pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                          (Route<dynamic> route) => false,
+                        );
+                      }
+                    });
+                  },
+                  backgroundColor: AppColors.surface,
+                  foregroundColor: AppColors.onSurface,
+                  borderRadius: BorderRadius.circular(Radii.lg),
+                  height: 56,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.logout, size: 20, color: AppColors.onSurface),
+                      SizedBox(width: AppSpacing.s),
+                      Text(
+                        'Logout',
+                        style: AppTypography.textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            SizedBox(height: AppSpacing.xl),
+
+            // Help text
+            Text(
+              'Didn\'t receive the email? Check your spam folder or try resending.',
+              style: AppTypography.textTheme.bodySmall?.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

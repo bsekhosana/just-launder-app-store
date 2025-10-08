@@ -55,7 +55,7 @@ class GlassSurface extends StatelessWidget {
       margin: margin,
       decoration: BoxDecoration(
         color: effectiveBackgroundColor,
-        borderRadius: borderRadius ?? Radii.card,
+        borderRadius: borderRadius ?? BorderRadius.circular(Radii.card),
         border: Border.all(color: effectiveBorderColor, width: borderWidth),
         boxShadow: effectiveShadows,
       ),
@@ -64,7 +64,7 @@ class GlassSurface extends StatelessWidget {
 
     if (enableBlur) {
       content = ClipRRect(
-        borderRadius: borderRadius ?? Radii.card,
+        borderRadius: borderRadius ?? BorderRadius.circular(Radii.card),
         child: BackdropFilter(
           filter: ImageFilter.blur(
             sigmaX: blurIntensity,
@@ -78,7 +78,7 @@ class GlassSurface extends StatelessWidget {
     if (onTap != null) {
       content = InkWell(
         onTap: onTap,
-        borderRadius: borderRadius ?? Radii.card,
+        borderRadius: borderRadius ?? BorderRadius.circular(Radii.card),
         child: content,
       );
     }
@@ -173,7 +173,7 @@ class GlassSurfaces {
       height: height,
       padding: padding ?? const EdgeInsets.all(16),
       margin: margin,
-      borderRadius: Radii.card,
+      borderRadius: BorderRadius.circular(Radii.card),
       blurIntensity: 10.0,
       opacity: 0.08,
       onTap: onTap,
@@ -195,7 +195,7 @@ class GlassSurfaces {
       height: height,
       padding: padding ?? const EdgeInsets.all(24),
       margin: margin,
-      borderRadius: Radii.dialog,
+      borderRadius: BorderRadius.circular(Radii.dialog),
       blurIntensity: 15.0,
       opacity: 0.12,
       onTap: onTap,
@@ -216,7 +216,7 @@ class GlassSurfaces {
       height: height,
       padding: padding,
       margin: margin,
-      borderRadius: Radii.none,
+      borderRadius: BorderRadius.zero,
       blurIntensity: 8.0,
       opacity: 0.06,
       enableBlur: true,
@@ -237,7 +237,7 @@ class GlassSurfaces {
       height: height,
       padding: padding,
       margin: margin,
-      borderRadius: Radii.bottomSheet,
+      borderRadius: BorderRadius.circular(Radii.bottomSheet),
       blurIntensity: 12.0,
       opacity: 0.1,
     );

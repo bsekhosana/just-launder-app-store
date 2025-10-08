@@ -204,9 +204,9 @@ class PasswordGenerator {
 
 /// Password validation result
 class PasswordValidationResult {
-  final bool isValid;
+  bool isValid;
   final List<String> errors;
-  final PasswordStrength strength;
+  PasswordStrength strength;
 
   PasswordValidationResult({
     required this.isValid,

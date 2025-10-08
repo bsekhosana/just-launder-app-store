@@ -201,7 +201,7 @@ class _EnhancedOrdersDashboardScreenState
                                   _loadOrders();
                                 },
                               ),
-                              const Gap.vertical(AppSpacing.s),
+                              const SizedBox(height: AppSpacing.s),
                             ],
                           ),
                         ),
@@ -214,7 +214,7 @@ class _EnhancedOrdersDashboardScreenState
                         duration: AppMotion.normal,
                       ),
                 ),
-                const Gap.vertical(AppSpacing.s),
+                const SizedBox(height: AppSpacing.s),
               ],
               if (_showFilters) ...[
                 Flexible(
@@ -234,7 +234,7 @@ class _EnhancedOrdersDashboardScreenState
                                   });
                                 },
                               ),
-                              const Gap.vertical(AppSpacing.s),
+                              const SizedBox(height: AppSpacing.s),
                               OrderStatsWidget(orders: filteredOrders),
                             ],
                           ),
@@ -248,7 +248,7 @@ class _EnhancedOrdersDashboardScreenState
                         duration: AppMotion.normal,
                       ),
                 ),
-                const Gap.vertical(AppSpacing.s),
+                const SizedBox(height: AppSpacing.s),
               ],
               Expanded(
                 child: TabBarView(
@@ -316,7 +316,7 @@ class _EnhancedOrdersDashboardScreenState
                 .animate()
                 .scale(duration: AppMotion.slow, curve: AppCurves.emphasized)
                 .fadeIn(duration: AppMotion.normal),
-            const Gap.vertical(AppSpacing.l),
+            const SizedBox(height: AppSpacing.l),
             Text(
                   emptyMessage,
                   style: AppTypography.textTheme.bodyLarge?.copyWith(
@@ -373,21 +373,21 @@ class _EnhancedOrdersDashboardScreenState
                     ),
                   ],
                 ),
-                const Gap.vertical(AppSpacing.s),
+                const SizedBox(height: AppSpacing.s),
                 Text(
                   order.branchName,
                   style: AppTypography.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const Gap.vertical(AppSpacing.xs),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   'Order #${order.id}',
                   style: AppTypography.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const Gap.vertical(AppSpacing.m),
+                const SizedBox(height: AppSpacing.m),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -405,7 +405,7 @@ class _EnhancedOrdersDashboardScreenState
                       ),
                   ],
                 ),
-                const Gap.vertical(AppSpacing.s),
+                const SizedBox(height: AppSpacing.s),
                 Row(
                   children: [
                     if (order.tags.isNotEmpty) ...[
@@ -414,7 +414,7 @@ class _EnhancedOrdersDashboardScreenState
                         size: 16,
                         color: colorScheme.onSurfaceVariant,
                       ),
-                      const Gap.horizontal(AppSpacing.xs),
+                      const SizedBox(width: AppSpacing.xs),
                       Text(
                         '${order.tags.length} tags',
                         style: AppTypography.textTheme.bodySmall?.copyWith(

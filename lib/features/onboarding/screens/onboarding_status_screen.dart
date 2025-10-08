@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/onboarding_provider.dart';
 import '../data/models/onboarding_status_model.dart';
-import '../../../core/widgets/app_card.dart';
-import '../../../core/widgets/custom_elevated_button.dart';
-import '../../../core/widgets/custom_icon.dart';
+import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/animated_button.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 
@@ -28,10 +27,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColorSchemes.background,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Onboarding Status'),
-        backgroundColor: AppColorSchemes.background,
+        backgroundColor: AppColors.background,
         elevation: 0,
       ),
       body: Consumer<OnboardingProvider>(
@@ -45,10 +44,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const CustomIcon(
-                    icon: Icons.error_outline,
+                  const Icon(
+                    Icons.error_outline,
                     size: 64,
-                    color: AppColorSchemes.error,
+                    color: AppColors.error,
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -62,7 +61,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
-                  CustomElevatedButton(
+                  AnimatedButton(
                     onPressed: () {
                       provider.loadOnboardingStatus();
                     },
@@ -84,21 +83,20 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Status overview
-                AppCard(
+                CardsX.elevated(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          CustomIcon(
-                            icon:
-                                status.isCompleted
-                                    ? Icons.check_circle
-                                    : Icons.pending,
+                          Icon(
+                            status.isCompleted
+                                ? Icons.check_circle
+                                : Icons.pending,
                             color:
                                 status.isCompleted
-                                    ? AppColorSchemes.success
-                                    : AppColorSchemes.warning,
+                                    ? AppColors.success
+                                    : AppColors.warning,
                             size: 24,
                           ),
                           const SizedBox(width: 12),
@@ -120,11 +118,11 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                       const SizedBox(height: 8),
                       LinearProgressIndicator(
                         value: status.progress,
-                        backgroundColor: AppColorSchemes.surface,
+                        backgroundColor: AppColors.surface,
                         valueColor: AlwaysStoppedAnimation<Color>(
                           status.isCompleted
-                              ? AppColorSchemes.success
-                              : AppColorSchemes.primary,
+                              ? AppColors.success
+                              : AppColors.primary,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -148,7 +146,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
                 // Action buttons
                 if (!status.isCompleted) ...[
-                  CustomElevatedButton(
+                  AnimatedButton(
                     onPressed: () {
                       _showGoToWebDialog(context);
                     },
@@ -157,18 +155,8 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                   const SizedBox(height: 12),
                 ],
 
-                if (status.isCompleted && status.summary != null) ...[
-                  CustomElevatedButton(
-                    onPressed: () {
-                      _showSummaryDialog(context, status.summary!);
-                    },
-                    child: const Text('View Summary'),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-
                 if (status.isCompleted) ...[
-                  CustomElevatedButton(
+                  AnimatedButton(
                     onPressed: () {
                       context.read<OnboardingProvider>().submitOnboarding();
                     },
@@ -186,10 +174,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   Widget _buildStepCard(OnboardingStepModel step) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: AppCard(
+      child: CardsX.elevated(
         child: Row(
           children: [
-            CustomIcon(
+            Icon(
               icon:
                   step.isCompleted
                       ? Icons.check_circle
@@ -198,10 +186,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                       : Icons.radio_button_unchecked,
               color:
                   step.isCompleted
-                      ? AppColorSchemes.success
+                      ? AppColors.success
                       : step.isCurrent
-                      ? AppColorSchemes.primary
-                      : AppColorSchemes.textSecondary,
+                      ? AppColors.primary
+                      : AppColors.textSecondary,
               size: 24,
             ),
             const SizedBox(width: 12),
@@ -243,7 +231,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                 onPressed: () => Navigator.of(context).pop(),
                 child: const Text('Cancel'),
               ),
-              CustomElevatedButton(
+              AnimatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                   // Open web browser or in-app web view
@@ -294,7 +282,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
               ),
             ),
             actions: [
-              CustomElevatedButton(
+              AnimatedButton(
                 onPressed: () => Navigator.of(context).pop(),
                 child: const Text('Close'),
               ),

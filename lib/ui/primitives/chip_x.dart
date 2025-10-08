@@ -6,6 +6,7 @@ import '../../design_system/motion.dart';
 import '../../design_system/typography.dart';
 import '../../design_system/icons.dart';
 import '../../design_system/elevations.dart';
+import '../../design_system/spacing_utils.dart';
 
 /// Enhanced chip widget with selection states and animations
 /// Provides smooth micro-interactions and visual feedback
@@ -192,7 +193,7 @@ class _ChipXState extends State<ChipX> with SingleTickerProviderStateMixin {
             decoration: BoxDecoration(
               color:
                   _backgroundColorAnimation.value ?? effectiveBackgroundColor,
-              borderRadius: widget.borderRadius ?? Radii.chip,
+              borderRadius: widget.borderRadius ?? BorderRadius.circular(Radii.chip),
               border: Border.all(
                 color: _borderColorAnimation.value ?? effectiveBorderColor,
                 width: widget.borderWidth,

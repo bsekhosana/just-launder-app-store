@@ -49,6 +49,7 @@ class TenantBranchRemoteDataSource {
   static Map<String, String> get _headers => {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'X-App-Type': 'laundrette', // Mandatory app type for all API calls
     if (_authToken != null) 'Authorization': 'Bearer $_authToken',
     if (_deviceId != null) 'X-Device-ID': _deviceId!,
     if (_deviceName != null) 'X-Device-Name': _deviceName!,
@@ -178,43 +179,62 @@ class TenantBranchRemoteDataSource {
   LaundretteBranch _mapToLaundretteBranch(Map<String, dynamic> json) {
     return LaundretteBranch(
       id: json['id'].toString(),
-      laundretteId: json['tenant_id'].toString(),
       name: json['name'] as String,
-      description: json['description'] as String?,
-      imageUrl: json['image_url'] as String?,
-      address: json['address']?['address'] as String? ?? '',
-      city: json['address']?['city'] as String? ?? '',
-      postcode: json['address']?['postcode'] as String? ?? '',
-      country: json['address']?['country'] as String? ?? 'South Africa',
-      latitude: (json['address']?['latitude'] as num?)?.toDouble() ?? 0.0,
-      longitude: (json['address']?['longitude'] as num?)?.toDouble() ?? 0.0,
-      status: _mapBranchStatus(json['is_active']),
-      isOpen: json['is_active'] == 1 || json['is_active'] == true,
-      operatingHours: _mapOperatingHours(json['working_hours']),
-      bagPricing: _mapBagPricing(json['bag_pricing']),
-      servicePricing: _mapServicePricing(json['service_pricing']),
-      autoAcceptOrders: json['auto_accept_orders'] == true,
-      supportsPriorityDelivery: json['supports_priority_delivery'] == true,
-      phoneNumber: json['phone'] as String?,
-      email: json['email'] as String?,
-      maxConcurrentOrders: json['max_concurrent_orders'] as int? ?? 10,
-      currentOrderCount: json['current_order_count'] as int? ?? 0,
-      settings: json['settings'] as Map<String, dynamic>? ?? {},
+      description: json['description'] as String? ?? '',
+      address:
+          json['address']?['address'] as String? ??
+          json['address'] as String? ??
+          '',
+      city:
+          json['address']?['city'] as String? ?? json['city'] as String? ?? '',
+      postcode:
+          json['address']?['postcode'] as String? ??
+          json['postcode'] as String? ??
+          '',
+      phone: json['phone'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      status: _mapBranchStatus(json['is_active'] ?? json['status']),
+      services: (json['services'] as List<dynamic>?)?.cast<String>() ?? [],
+      operatingHours: _mapOperatingHours(
+        json['working_hours'] ?? json['operating_hours'],
+      ),
+      latitude:
+          (json['address']?['latitude'] as num?)?.toDouble() ??
+          (json['latitude'] as num?)?.toDouble() ??
+          0.0,
+      longitude:
+          (json['address']?['longitude'] as num?)?.toDouble() ??
+          (json['longitude'] as num?)?.toDouble() ??
+          0.0,
+      images: (json['images'] as List<dynamic>?)?.cast<String>() ?? [],
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
 
   /// Map branch status
-  BranchStatus _mapBranchStatus(dynamic isActive) {
-    if (isActive == 1 || isActive == true) {
+  BranchStatus _mapBranchStatus(dynamic status) {
+    if (status == 1 || status == true) {
       return BranchStatus.active;
+    } else if (status == 0 || status == false) {
+      return BranchStatus.inactive;
+    } else if (status is String) {
+      switch (status.toLowerCase()) {
+        case 'active':
+          return BranchStatus.active;
+        case 'inactive':
+          return BranchStatus.inactive;
+        case 'maintenance':
+          return BranchStatus.maintenance;
+        default:
+          return BranchStatus.active;
+      }
     }
-    return BranchStatus.inactive;
+    return BranchStatus.active;
   }
 
   /// Map operating hours
-  Map<String, String> _mapOperatingHours(dynamic workingHours) {
+  Map<String, dynamic> _mapOperatingHours(dynamic workingHours) {
     if (workingHours == null || workingHours is! List) {
       return {
         'monday': '08:00-18:00',

@@ -1,97 +1,78 @@
-/// Onboarding status model for tenant app
-class OnboardingStatusModel {
+import 'package:equatable/equatable.dart';
+
+class OnboardingStatusModel extends Equatable {
+  final String id;
+  final String tenantId;
   final bool isCompleted;
-  final String currentStep;
-  final List<OnboardingStepModel> steps;
-  final Map<String, dynamic>? summary;
+  final Map<String, dynamic> progress;
+  final DateTime? completedAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   const OnboardingStatusModel({
+    required this.id,
+    required this.tenantId,
     required this.isCompleted,
-    required this.currentStep,
-    required this.steps,
-    this.summary,
+    required this.progress,
+    this.completedAt,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory OnboardingStatusModel.fromJson(Map<String, dynamic> json) {
     return OnboardingStatusModel(
-      isCompleted: json['is_completed'] as bool,
-      currentStep: json['current_step'] as String,
-      steps:
-          (json['steps'] as List<dynamic>)
-              .map(
-                (step) =>
-                    OnboardingStepModel.fromJson(step as Map<String, dynamic>),
-              )
-              .toList(),
-      summary: json['summary'] as Map<String, dynamic>?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'is_completed': isCompleted,
-      'current_step': currentStep,
-      'steps': steps.map((step) => step.toJson()).toList(),
-      'summary': summary,
-    };
-  }
-
-  @override
-  String toString() {
-    return 'OnboardingStatusModel(isCompleted: $isCompleted, currentStep: $currentStep, steps: ${steps.length})';
-  }
-}
-
-/// Individual onboarding step model
-class OnboardingStepModel {
-  final String id;
-  final String name;
-  final String description;
-  final String status; // 'pending', 'in_progress', 'completed'
-  final bool isRequired;
-  final String? icon;
-  final Map<String, dynamic>? data;
-
-  const OnboardingStepModel({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.status,
-    required this.isRequired,
-    this.icon,
-    this.data,
-  });
-
-  factory OnboardingStepModel.fromJson(Map<String, dynamic> json) {
-    return OnboardingStepModel(
       id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      status: json['status'] as String,
-      isRequired: json['is_required'] as bool,
-      icon: json['icon'] as String?,
-      data: json['data'] as Map<String, dynamic>?,
+      tenantId: json['tenant_id'] as String,
+      isCompleted: json['is_completed'] as bool,
+      progress: json['progress'] as Map<String, dynamic>,
+      completedAt: json['completed_at'] != null 
+          ? DateTime.parse(json['completed_at'] as String)
+          : null,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
-      'description': description,
-      'status': status,
-      'is_required': isRequired,
-      'icon': icon,
-      'data': data,
+      'tenant_id': tenantId,
+      'is_completed': isCompleted,
+      'progress': progress,
+      'completed_at': completedAt?.toIso8601String(),
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
     };
   }
 
-  bool get isCompleted => status == 'completed';
-  bool get isInProgress => status == 'in_progress';
-  bool get isPending => status == 'pending';
+  OnboardingStatusModel copyWith({
+    String? id,
+    String? tenantId,
+    bool? isCompleted,
+    Map<String, dynamic>? progress,
+    DateTime? completedAt,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return OnboardingStatusModel(
+      id: id ?? this.id,
+      tenantId: tenantId ?? this.tenantId,
+      isCompleted: isCompleted ?? this.isCompleted,
+      progress: progress ?? this.progress,
+      completedAt: completedAt ?? this.completedAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 
   @override
-  String toString() {
-    return 'OnboardingStepModel(id: $id, name: $name, status: $status)';
-  }
+  List<Object?> get props => [
+        id,
+        tenantId,
+        isCompleted,
+        progress,
+        completedAt,
+        createdAt,
+        updatedAt,
+      ];
 }

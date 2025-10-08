@@ -100,13 +100,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
         if (mounted) {
           // Navigate to OTP verification screen
-          NavigationService.push(
-            context,
-            ReusableOtpScreen(
-              email: _emailController.text.trim(),
-              purpose: 'profile_edit',
-              onOtpVerified: _handleOtpVerified,
-              onResendOtp: _resendOtp,
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder:
+                  (context) => ReusableOtpScreen(
+                    email: _emailController.text.trim(),
+                    purpose: 'profile_edit',
+                    onOtpVerified: _handleOtpVerified,
+                    onResendOtp: _resendOtp,
+                  ),
             ),
           );
         }
@@ -125,8 +127,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (mounted) {
         CustomSnackbar.showError(
-          context,
-          message: 'Failed to send verification code. Please try again.',
+          'Failed to send verification code. Please try again.',
         );
       }
     } finally {
@@ -139,13 +140,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void _navigateToOtpVerification() {
-    NavigationService.push(
-      context,
-      ReusableOtpScreen(
-        email: _emailController.text.trim(),
-        purpose: 'profile_edit',
-        onOtpVerified: _handleOtpVerified,
-        onResendOtp: _resendOtp,
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (context) => ReusableOtpScreen(
+              email: _emailController.text.trim(),
+              purpose: 'profile_edit',
+              onOtpVerified: _handleOtpVerified,
+              onResendOtp: _resendOtp,
+            ),
       ),
     );
   }
@@ -183,7 +186,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-      final success = await authProvider.updateProfile(
+      final success = await authProvider.updateProfileWithOtp(
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
         email: _emailController.text.trim(),
@@ -198,19 +201,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         LogHelper.auth('Profile updated successfully');
 
         if (mounted) {
-          CustomSnackbar.showSuccess(
-            context,
-            message: 'Profile updated successfully!',
-          );
-          NavigationService.pop(context);
+          CustomSnackbar.showSuccess('Profile updated successfully!');
+          Navigator.of(context).pop();
         }
       } else {
         if (mounted) {
           CustomSnackbar.showError(
-            context,
-            message:
-                authProvider.error ??
-                'Failed to update profile. Please try again.',
+            authProvider.error ?? 'Failed to update profile. Please try again.',
           );
         }
       }
@@ -218,10 +215,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       LogHelper.error('Failed to update profile: $e');
 
       if (mounted) {
-        CustomSnackbar.showError(
-          context,
-          message: 'Failed to update profile. Please try again.',
-        );
+        CustomSnackbar.showError('Failed to update profile. Please try again.');
       }
     } finally {
       if (mounted) {

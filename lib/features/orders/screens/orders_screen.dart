@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../design_system/motion.dart';
 import '../../../design_system/icons.dart';
 import '../../../ui/primitives/animated_button.dart';
@@ -163,7 +164,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                                   });
                                 },
                               ),
-                              const Gap.vertical(AppSpacing.s),
+                              const SizedBox(height: AppSpacing.s),
                               OrderStatsWidget(orders: filteredOrders),
                             ],
                           ),
@@ -177,7 +178,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                         duration: AppMotion.normal,
                       ),
                 ),
-                const Gap.vertical(AppSpacing.s),
+                const SizedBox(height: AppSpacing.s),
               ],
               Expanded(
                 child: TabBarView(
@@ -238,7 +239,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                 .animate()
                 .scale(duration: AppMotion.slow, curve: AppCurves.emphasized)
                 .fadeIn(duration: AppMotion.normal),
-            const Gap.vertical(AppSpacing.l),
+            const SizedBox(height: AppSpacing.l),
             Text(
                   emptyMessage,
                   style: AppTypography.textTheme.bodyLarge?.copyWith(
@@ -295,62 +296,67 @@ class _OrdersScreenState extends State<OrdersScreen>
                     ),
                   ],
                 ),
-                const Gap.vertical(AppSpacing.s),
+                const SizedBox(height: AppSpacing.s),
                 Text(
                   order.branchName,
                   style: AppTypography.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const Gap.vertical(AppSpacing.xs),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   'Order #${order.id}',
                   style: AppTypography.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const Gap.vertical(AppSpacing.m),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '£${order.total.toStringAsFixed(2)}',
-                      style: AppTypography.textTheme.titleLarge?.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
+                const SizedBox(height: AppSpacing.m),
+                // Price
+                Text(
+                  '£${order.total.toStringAsFixed(2)}',
+                  style: AppTypography.textTheme.titleLarge?.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                // Action buttons as footer (if pending approval)
+                if (order.isPendingApproval) ...[
+                  const SizedBox(height: AppSpacing.l),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AnimatedButtons.secondary(
+                          onPressed: () => _declineOrder(order.id),
+                          height: 44,
+                          child: Text(
+                            'Decline',
+                            style: AppTypography.textTheme.labelMedium
+                                ?.copyWith(
+                                  color: AppColors.error,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ),
                       ),
-                    ),
-                    if (order.isPendingApproval) ...[
-                      Row(
-                        children: [
-                          AnimatedButtons.secondary(
-                            onPressed: () => _approveOrder(order.id),
-                            child: Text(
-                              'Approve',
-                              style: AppTypography.textTheme.labelMedium
-                                  ?.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
+                      const SizedBox(width: AppSpacing.s),
+                      Expanded(
+                        child: AnimatedButtons.primary(
+                          onPressed: () => _approveOrder(order.id),
+                          height: 44,
+                          child: Text(
+                            'Approve',
+                            style: AppTypography.textTheme.labelMedium
+                                ?.copyWith(
+                                  color: AppColors.onPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
-                          const Gap.horizontal(AppSpacing.s),
-                          AnimatedButtons.secondary(
-                            onPressed: () => _declineOrder(order.id),
-                            child: Text(
-                              'Decline',
-                              style: AppTypography.textTheme.labelMedium
-                                  ?.copyWith(
-                                    color: AppColors.error,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
-                  ],
-                ),
+                  ),
+                ],
               ],
             ),
           ),

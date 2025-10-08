@@ -28,7 +28,7 @@ class ConnectionStatusWidget extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      color: AppColorSchemes.error,
+      color: AppColors.error,
       child: Row(
         children: [
           const Icon(Icons.wifi_off, color: Colors.white, size: 20),
@@ -48,7 +48,7 @@ class ConnectionStatusWidget extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      color: AppColorSchemes.success,
+      color: AppColors.success,
       child: Row(
         children: [
           const Icon(Icons.wifi, color: Colors.white, size: 20),

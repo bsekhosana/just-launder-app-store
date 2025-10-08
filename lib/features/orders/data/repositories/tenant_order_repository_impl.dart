@@ -1,13 +1,7 @@
+import '../../domain/models/tenant_order_model.dart';
 import '../../domain/repositories/tenant_order_repository.dart';
-import '../models/tenant_order_model.dart';
-import '../datasources/tenant_order_remote_data_source.dart';
 
-/// Implementation of tenant order repository
 class TenantOrderRepositoryImpl implements TenantOrderRepository {
-  final TenantOrderRemoteDataSource remoteDataSource;
-
-  TenantOrderRepositoryImpl({required this.remoteDataSource});
-
   @override
   Future<List<TenantOrderModel>> getOrders({
     String? status,
@@ -18,20 +12,16 @@ class TenantOrderRepositoryImpl implements TenantOrderRepository {
     int page = 1,
     int limit = 20,
   }) async {
-    return await remoteDataSource.getOrders(
-      status: status,
-      priority: priority,
-      paymentStatus: paymentStatus,
-      startDate: startDate,
-      endDate: endDate,
-      page: page,
-      limit: limit,
-    );
+    // Mock implementation - return empty list for now
+    await Future.delayed(const Duration(milliseconds: 500));
+    return [];
   }
 
   @override
   Future<TenantOrderModel> getOrderDetails(String orderId) async {
-    return await remoteDataSource.getOrderDetails(orderId);
+    // Mock implementation
+    await Future.delayed(const Duration(milliseconds: 500));
+    throw UnimplementedError('getOrderDetails not implemented');
   }
 
   @override
@@ -40,20 +30,18 @@ class TenantOrderRepositoryImpl implements TenantOrderRepository {
     TenantOrderStatus status, {
     String? notes,
   }) async {
-    return await remoteDataSource.updateOrderStatus(
-      orderId,
-      status,
-      notes: notes,
-    );
+    // Mock implementation
+    await Future.delayed(const Duration(milliseconds: 500));
+    throw UnimplementedError('updateOrderStatus not implemented');
   }
 
   @override
-  Future<TenantOrderModel> assignToDriver(
-    String orderId,
-    String driverId,
-  ) async {
-    return await remoteDataSource.assignToDriver(orderId, driverId);
+  Future<TenantOrderModel> assignToDriver(String orderId, String driverId) async {
+    // Mock implementation
+    await Future.delayed(const Duration(milliseconds: 500));
+    throw UnimplementedError('assignToDriver not implemented');
   }
+
 
   @override
   Future<Map<String, dynamic>> getOrderAnalytics({
@@ -61,11 +49,9 @@ class TenantOrderRepositoryImpl implements TenantOrderRepository {
     DateTime? endDate,
     String? branchId,
   }) async {
-    return await remoteDataSource.getOrderAnalytics(
-      startDate: startDate,
-      endDate: endDate,
-      branchId: branchId,
-    );
+    // Mock implementation
+    await Future.delayed(const Duration(milliseconds: 500));
+    return {};
   }
 
   @override
@@ -74,48 +60,9 @@ class TenantOrderRepositoryImpl implements TenantOrderRepository {
     DateTime? endDate,
     String? branchId,
   }) async {
-    return await remoteDataSource.getOrderStatistics(
-      startDate: startDate,
-      endDate: endDate,
-      branchId: branchId,
-    );
-  }
-
-  @override
-  Future<OrderTagModel> addOrderTag(
-    String orderId,
-    OrderTagType type,
-    String value, {
-    String? description,
-  }) async {
-    return await remoteDataSource.addOrderTag(
-      orderId,
-      type,
-      value,
-      description: description,
-    );
-  }
-
-  @override
-  Future<void> removeOrderTag(String orderId, String tagId) async {
-    return await remoteDataSource.removeOrderTag(orderId, tagId);
-  }
-
-  @override
-  Future<List<OrderTagModel>> getOrderTags(String orderId) async {
-    return await remoteDataSource.getOrderTags(orderId);
-  }
-
-  @override
-  Future<List<OrderStatusHistoryModel>> getOrderStatusHistory(
-    String orderId,
-  ) async {
-    return await remoteDataSource.getOrderStatusHistory(orderId);
-  }
-
-  @override
-  Future<List<OrderAssignmentModel>> getOrderAssignments(String orderId) async {
-    return await remoteDataSource.getOrderAssignments(orderId);
+    // Mock implementation
+    await Future.delayed(const Duration(milliseconds: 500));
+    return {};
   }
 
   @override
@@ -125,11 +72,47 @@ class TenantOrderRepositoryImpl implements TenantOrderRepository {
     double? longitude,
     double? radius,
   }) async {
-    return await remoteDataSource.getAvailableDrivers(
-      branchId: branchId,
-      latitude: latitude,
-      longitude: longitude,
-      radius: radius,
-    );
+    // Mock implementation
+    await Future.delayed(const Duration(milliseconds: 500));
+    return [];
+  }
+
+  @override
+  Future<OrderTagModel> addOrderTag(
+    String orderId,
+    OrderTagType type,
+    String value, {
+    String? description,
+  }) async {
+    // Mock implementation
+    await Future.delayed(const Duration(milliseconds: 500));
+    throw UnimplementedError('addOrderTag not implemented');
+  }
+
+  @override
+  Future<void> removeOrderTag(String orderId, String tagId) async {
+    // Mock implementation
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
+
+  @override
+  Future<List<OrderTagModel>> getOrderTags(String orderId) async {
+    // Mock implementation
+    await Future.delayed(const Duration(milliseconds: 500));
+    return [];
+  }
+
+  @override
+  Future<List<OrderStatusHistoryModel>> getOrderStatusHistory(String orderId) async {
+    // Mock implementation
+    await Future.delayed(const Duration(milliseconds: 500));
+    return [];
+  }
+
+  @override
+  Future<List<OrderAssignmentModel>> getOrderAssignments(String orderId) async {
+    // Mock implementation
+    await Future.delayed(const Duration(milliseconds: 500));
+    return [];
   }
 }

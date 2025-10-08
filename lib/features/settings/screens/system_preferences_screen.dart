@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../design_system/motion.dart';
 import '../../../design_system/icons.dart';
 import '../../../ui/primitives/animated_button.dart';
@@ -72,22 +73,22 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
                 .animate()
                 .fadeIn(duration: AppMotion.normal)
                 .slideY(begin: 0.1, end: 0.0),
-            const Gap.vertical(AppSpacing.l),
+            const SizedBox(height: AppSpacing.l),
             _buildBusinessSettings()
                 .animate()
                 .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
                 .slideY(begin: 0.1, end: 0.0),
-            const Gap.vertical(AppSpacing.l),
+            const SizedBox(height: AppSpacing.l),
             _buildDataSettings()
                 .animate()
                 .fadeIn(delay: AppMotion.normal, duration: AppMotion.normal)
                 .slideY(begin: 0.1, end: 0.0),
-            const Gap.vertical(AppSpacing.l),
+            const SizedBox(height: AppSpacing.l),
             _buildSecuritySettings()
                 .animate()
                 .fadeIn(delay: AppMotion.slow, duration: AppMotion.normal)
                 .slideY(begin: 0.1, end: 0.0),
-            const Gap.vertical(AppSpacing.l),
+            const SizedBox(height: AppSpacing.l),
             _buildActionButtons()
                 .animate()
                 .fadeIn(delay: AppMotion.slower, duration: AppMotion.normal)
@@ -114,7 +115,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildLanguageSelector(),
             const SizedBox(height: 16),
             _buildCurrencySelector(),
@@ -164,7 +165,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildBusinessHoursSelector(),
             const SizedBox(height: 16),
             _buildSwitchSetting(
@@ -212,7 +213,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildSwitchSetting(
               'Data Backup',
               'Automatically backup your data',
@@ -261,7 +262,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildSwitchSetting(
               'Two-Factor Authentication',
               'Add an extra layer of security to your account',
@@ -405,7 +406,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
         Row(
           children: [
             Icon(icon, color: AppColors.primary, size: 20),
-            const Gap.horizontal(AppSpacing.xs),
+            const SizedBox(width: AppSpacing.xs),
             Text(
               title,
               style: AppTypography.textTheme.titleSmall?.copyWith(
@@ -415,7 +416,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
             ),
           ],
         ),
-        const Gap.vertical(AppSpacing.xs),
+        const SizedBox(height: AppSpacing.xs),
         DropdownButtonFormField<String>(
           value: value,
           onChanged: onChanged,
@@ -468,7 +469,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
       child: Row(
         children: [
           Icon(icon, color: AppColors.primary, size: 20),
-          const Gap.horizontal(AppSpacing.s),
+          const SizedBox(width: AppSpacing.s),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -515,7 +516,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Row(
               children: [
                 Expanded(
@@ -525,7 +526,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(AppIcons.save, color: AppColors.onPrimary),
-                        const Gap.horizontal(AppSpacing.xs),
+                        const SizedBox(width: AppSpacing.xs),
                         Text(
                           'Save Settings',
                           style: AppTypography.textTheme.labelMedium?.copyWith(
@@ -537,7 +538,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
                     ),
                   ),
                 ),
-                const Gap.horizontal(AppSpacing.s),
+                const SizedBox(width: AppSpacing.s),
                 Expanded(
                   child: AnimatedButtons.secondary(
                     onPressed: _resetToDefaults,
@@ -545,7 +546,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.restore, color: AppColors.warning),
-                        const Gap.horizontal(AppSpacing.xs),
+                        const SizedBox(width: AppSpacing.xs),
                         Text(
                           'Reset to Defaults',
                           style: AppTypography.textTheme.labelMedium?.copyWith(
@@ -559,7 +560,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             SizedBox(
               width: double.infinity,
               child: AnimatedButtons.secondary(
@@ -568,7 +569,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(AppIcons.download, color: AppColors.primary),
-                    const Gap.horizontal(AppSpacing.xs),
+                    const SizedBox(width: AppSpacing.xs),
                     Text(
                       'Export Settings',
                       style: AppTypography.textTheme.labelMedium?.copyWith(

@@ -2,11 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
-import '../../../design_system/motion.dart';
+import '../../../design_system/spacing.dart';
 import '../../../ui/primitives/animated_button.dart';
+import '../../../core/widgets/watermark_background.dart';
+import '../../../core/widgets/animated_auth_screen.dart';
+import '../../../core/widgets/custom_snackbar.dart';
 import '../providers/auth_provider.dart';
 import 'reset_password_screen.dart';
 
@@ -32,7 +35,8 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   bool _isLoading = false;
   bool _isResending = false;
-  int _resendCountdown = 60;
+  int _resendCountdown = 0;
+  String? _errorMessage;
   Timer? _countdownTimer;
 
   @override
@@ -54,11 +58,11 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   @override
   void dispose() {
     _countdownTimer?.cancel();
-    for (final controller in _otpControllers) {
+    for (var controller in _otpControllers) {
       controller.dispose();
     }
-    for (final node in _focusNodes) {
-      node.dispose();
+    for (var focusNode in _focusNodes) {
+      focusNode.dispose();
     }
     super.dispose();
   }
@@ -66,68 +70,109 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   void _startResendCountdown() {
     _countdownTimer?.cancel();
     setState(() => _resendCountdown = 60);
-
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
-        setState(() {
-          if (_resendCountdown > 0) {
-            _resendCountdown--;
-          } else {
-            _resendCountdown = 0;
-            timer.cancel();
-          }
-        });
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_resendCountdown > 0) {
+        setState(() => _resendCountdown--);
       } else {
         timer.cancel();
       }
     });
   }
 
-  String _getOTP() {
-    return _otpControllers.map((controller) => controller.text).join();
+  void _handlePasteOnFirstField() async {
+    final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
+    if (clipboardData?.text != null) {
+      final text = clipboardData!.text!.replaceAll(RegExp(r'[^0-9]'), '');
+      if (text.length >= 6) {
+        for (int i = 0; i < 6; i++) {
+          _otpControllers[i].text = text[i];
+        }
+        _verifyOTP();
+      }
+    }
+  }
+
+  void _onDigitChanged(String value, int index) {
+    if (value.isNotEmpty) {
+      if (index < 5) {
+        _focusNodes[index + 1].requestFocus();
+      } else {
+        _focusNodes[index].unfocus();
+        _verifyOTP();
+      }
+    } else if (index > 0) {
+      _focusNodes[index - 1].requestFocus();
+    }
   }
 
   Future<void> _verifyOTP() async {
-    final otp = _getOTP();
+    final otp = _otpControllers.map((controller) => controller.text).join();
+
     if (otp.length != 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter the complete 6-digit code'),
-          backgroundColor: AppColors.errorRed,
-        ),
-      );
+      setState(() => _errorMessage = 'Please enter a valid 6-digit code');
       return;
     }
 
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.verifyOTP(otp);
 
-      if (mounted) {
-        if (widget.isPasswordReset) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder:
-                  (context) =>
-                      ResetPasswordScreen(email: widget.email, otp: otp),
-            ),
+      if (widget.isPasswordReset) {
+        // Verify OTP with backend before navigating to reset password screen
+        final success = await authProvider.verifyOTP(widget.email, otp);
+
+        if (mounted) {
+          if (success) {
+            // OTP is valid, navigate to reset password screen
+            CustomSnackbar.showSuccess(
+              context,
+              message: 'Code verified successfully',
+            );
+
+            await Future.delayed(const Duration(milliseconds: 500));
+
+            if (mounted) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          ResetPasswordScreen(email: widget.email, otp: otp),
+                ),
+              );
+            }
+          } else {
+            // OTP is invalid or expired
+            final errorMessage =
+                authProvider.error ?? 'Invalid or expired code';
+            setState(() => _errorMessage = errorMessage);
+          }
+        }
+      } else {
+        // Verify OTP for email verification
+        final success = await authProvider.checkEmailVerificationStatus(
+          widget.email,
+        );
+
+        if (success && mounted) {
+          CustomSnackbar.showSuccess(
+            context,
+            message: 'Email verified successfully',
           );
+          Navigator.of(context).pushReplacementNamed('/main');
         } else {
-          // Handle registration OTP verification
-          Navigator.of(context).pushReplacementNamed('/onboarding');
+          setState(() => _errorMessage = 'Verification failed');
         }
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Invalid OTP: ${e.toString()}'),
-            backgroundColor: AppColors.errorRed,
-          ),
-        );
-      }
+      setState(() => _errorMessage = e.toString());
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -136,29 +181,30 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   }
 
   Future<void> _resendOTP() async {
+    if (_resendCountdown > 0) return;
+
     setState(() => _isResending = true);
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.sendPasswordResetEmail(widget.email);
+
+      if (widget.isPasswordReset) {
+        await authProvider.sendPasswordResetEmail(widget.email);
+      } else {
+        await authProvider.resendVerificationEmail(widget.email);
+      }
+
       _startResendCountdown();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Verification code sent successfully'),
-            backgroundColor: AppColors.successGreen,
-          ),
+        CustomSnackbar.showSuccess(
+          context,
+          message: 'Verification code sent again',
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: AppColors.errorRed,
-          ),
-        );
+        CustomSnackbar.showError(context, message: 'Error: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -167,116 +213,113 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     }
   }
 
-  void _onOTPChanged(int index, String value) {
-    if (value.length == 1) {
-      if (index < 5) {
-        _focusNodes[index + 1].requestFocus();
-      } else {
-        _focusNodes[index].unfocus();
-        _verifyOTP();
-      }
-    } else if (value.isEmpty && index > 0) {
-      _focusNodes[index - 1].requestFocus();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: AnimatedButton(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.transparent,
-          onPressed: () {
-            if (widget.isPasswordReset) {
-              // For password reset flow, go back to forgot password screen
-              Navigator.of(context).pop();
-            } else {
-              // For registration flow, go back to previous screen
-              Navigator.of(context).pop();
-            }
-          },
-          child: Icon(Icons.arrow_back_ios, color: AppColors.primary),
+    return WatermarkBackgroundBuilder.bottomRight(
+      icon: FontAwesomeIcons.shieldHalved,
+      iconColor: AppColors.primary,
+      margin: const EdgeInsets.all(16),
+      opacity: 0.10,
+      iconSizePercentage: 0.45,
+      iconShift: -15.0,
+      child: AnimatedAuthScreen(
+        title: widget.isPasswordReset ? 'Verify Reset Code' : 'Verify Code',
+        subtitle:
+            widget.isPasswordReset
+                ? 'We\'ve sent a 6-digit reset code to ${widget.email}'
+                : 'We\'ve sent a 6-digit code to ${widget.email}',
+        icon: Padding(
+          padding: EdgeInsets.all(AppSpacing.l),
+          child: Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: AppColors.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.security, color: AppColors.primary, size: 40),
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
+        showAppBar: true,
+        child: GestureDetector(
+          onTap: () {
+            // Dismiss keyboard when tapping outside text fields
+            FocusScope.of(context).unfocus();
+          },
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 20),
-              Text(
-                'Verify Your Email',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'We\'ve sent a 6-digit verification code to\n${widget.email}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 40),
+              // OTP Input Fields
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(6, (index) {
                   return SizedBox(
-                    width: 50,
-                    height: 65,
-                    child: TextFormField(
+                    width: 45,
+                    height: 60,
+                    child: TextField(
                       controller: _otpControllers[index],
                       focusNode: _focusNodes[index],
-                      textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
                       maxLength: 1,
-                      style: TextStyle(
-                        fontSize: 24,
+                      style: AppTypography.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey[800], // Dark grey text
+                        color: AppColors.primary,
                       ),
                       decoration: InputDecoration(
                         counterText: '',
+                        filled: true,
+                        fillColor: AppColors.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: AppColors.outline,
+                          borderSide: BorderSide(
+                            color:
+                                _errorMessage != null
+                                    ? AppColors.errorRed
+                                    : AppColors.outline,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                             color: AppColors.primary,
                             width: 2,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: AppColors.outline,
+                          borderSide: BorderSide(
+                            color:
+                                _errorMessage != null
+                                    ? AppColors.errorRed
+                                    : AppColors.outline,
                           ),
                         ),
-                        filled: true,
-                        fillColor: AppColors.surface,
                       ),
+                      onChanged: (value) => _onDigitChanged(value, index),
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      onChanged: (value) => _onOTPChanged(index, value),
                     ),
                   );
                 }),
               ),
-              const SizedBox(height: 32),
+
+              if (_errorMessage != null) ...[
+                SizedBox(height: AppSpacing.m),
+                Text(
+                  _errorMessage!,
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                    color: AppColors.errorRed,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+
+              SizedBox(height: AppSpacing.xl),
+
+              // Verify Button
               AnimatedButtons.primary(
                 onPressed: _isLoading ? null : _verifyOTP,
                 isLoading: _isLoading,
-                width: double.infinity,
-                height: 50,
                 child: Text(
                   'Verify Code',
                   style: AppTypography.textTheme.labelLarge?.copyWith(
@@ -285,97 +328,44 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+
+              SizedBox(height: AppSpacing.l),
+
+              // Resend Code
               Center(
-                child: AnimatedSwitcher(
-                  duration: AppMotion.normal,
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: ScaleTransition(scale: animation, child: child),
-                    );
-                  },
-                  child:
-                      _resendCountdown > 0
-                          ? Container(
-                            key: const ValueKey('countdown'),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryContainer,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: AppColors.primary.withOpacity(0.3),
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Resend code in',
-                                  style: AppTypography.textTheme.bodySmall
-                                      ?.copyWith(
-                                        color: AppColors.onPrimaryContainer,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                ),
-                                const SizedBox(width: 12),
-                                SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: Stack(
-                                    children: [
-                                      CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        value: (60 - _resendCountdown) / 60,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              AppColors.primary,
-                                            ),
-                                        backgroundColor: AppColors.primary
-                                            .withOpacity(0.2),
-                                      ),
-                                      Center(
-                                        child: Text(
-                                          '${_resendCountdown}',
-                                          style: AppTypography
-                                              .textTheme
-                                              .bodySmall
-                                              ?.copyWith(
-                                                color: AppColors.primary,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 10,
-                                              ),
-                                        ).animate().scale(
-                                          duration: AppMotion.fast,
-                                          curve: AppCurves.emphasized,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                          : Container(
-                            key: const ValueKey('resend'),
-                            child:
-                                AnimatedButtons.text(
-                                  onPressed: _isResending ? null : _resendOTP,
-                                  isLoading: _isResending,
-                                  child: Text(
-                                    'Resend Code',
-                                    style: AppTypography.textTheme.labelMedium
-                                        ?.copyWith(
-                                          color: AppColors.primary,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                  ),
-                                ).animate().fadeIn().scale(),
-                          ),
+                child: TextButton(
+                  onPressed:
+                      _resendCountdown > 0 || _isResending ? null : _resendOTP,
+                  child: Text(
+                    _isResending
+                        ? 'Sending...'
+                        : _resendCountdown > 0
+                        ? 'Resend code in ${_resendCountdown}s'
+                        : 'Resend code',
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color:
+                          _resendCountdown > 0 || _isResending
+                              ? AppColors.onSurfaceVariant
+                              : AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: AppSpacing.l),
+
+              // Back to Login Link
+              Center(
+                child: AnimatedButtons.text(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    'Back to Login',
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -383,37 +373,5 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         ),
       ),
     );
-  }
-
-  void _handlePasteOnFirstField() async {
-    try {
-      final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
-      if (clipboardData?.text != null) {
-        final pastedText = clipboardData!.text!.replaceAll(
-          RegExp(r'[^0-9]'),
-          '',
-        );
-        if (pastedText.length >= 6) {
-          // Fill all fields with the pasted OTP
-          for (int i = 0; i < 6; i++) {
-            _otpControllers[i].text = pastedText[i];
-          }
-          // Focus on the last field
-          _focusNodes[5].requestFocus();
-          // Auto-verify if all fields are filled
-          _verifyOTP();
-        } else if (pastedText.isNotEmpty) {
-          // Fill available fields
-          for (int i = 0; i < pastedText.length && i < 6; i++) {
-            _otpControllers[i].text = pastedText[i];
-          }
-          // Focus on the next empty field
-          final nextIndex = pastedText.length < 6 ? pastedText.length : 5;
-          _focusNodes[nextIndex].requestFocus();
-        }
-      }
-    } catch (e) {
-      // Handle clipboard access errors silently
-    }
   }
 }

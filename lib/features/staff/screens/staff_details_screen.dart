@@ -65,7 +65,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
               ),
             ),
           ),
-          const Gap.horizontal(AppSpacing.s),
+          const SizedBox(width: AppSpacing.s),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
@@ -121,13 +121,13 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildProfileCard(),
-          const Gap.vertical(AppSpacing.l),
+          const SizedBox(height: AppSpacing.l),
           _buildStatusCard(),
-          const Gap.vertical(AppSpacing.l),
+          const SizedBox(height: AppSpacing.l),
           _buildContactCard(),
-          const Gap.vertical(AppSpacing.l),
+          const SizedBox(height: AppSpacing.l),
           _buildPerformanceCard(),
-          const Gap.vertical(AppSpacing.l),
+          const SizedBox(height: AppSpacing.l),
           _buildActionButtons(),
         ],
       ),
@@ -153,7 +153,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
                 ),
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Text(
               widget.staff.fullName,
               style: AppTypography.textTheme.titleLarge?.copyWith(
@@ -161,14 +161,14 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             Text(
               widget.staff.email,
               style: AppTypography.textTheme.bodyLarge?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             ChipsX.status(
               label: widget.staff.roleDisplayText,
               status: _getRoleChipStatus(widget.staff.role),
@@ -195,7 +195,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -211,7 +211,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -229,7 +229,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -269,7 +269,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildContactRow('Email', widget.staff.email, AppIcons.email),
             if (widget.staff.phone != null)
               _buildContactRow('Phone', widget.staff.phone!, AppIcons.phone),
@@ -287,7 +287,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
       child: Row(
         children: [
           Icon(icon, size: 20, color: colorScheme.onSurfaceVariant),
-          const Gap.horizontal(AppSpacing.s),
+          const SizedBox(width: AppSpacing.s),
           Text(
             '$label: ',
             style: AppTypography.textTheme.bodyMedium?.copyWith(
@@ -326,11 +326,11 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Row(
               children: [
                 Icon(AppIcons.star, color: AppColors.warning, size: 24),
-                const Gap.horizontal(AppSpacing.s),
+                const SizedBox(width: AppSpacing.s),
                 Text(
                   'Rating: $rating',
                   style: AppTypography.textTheme.titleMedium?.copyWith(
@@ -340,13 +340,13 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             LinearProgressIndicator(
               value: rating / 5.0,
               backgroundColor: colorScheme.outline.withOpacity(0.2),
               valueColor: AlwaysStoppedAnimation<Color>(AppColors.warning),
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             if (widget.staff.metadata['department'] != null)
               Text(
                 'Department: ${widget.staff.metadata['department']}',
@@ -383,7 +383,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Wrap(
               spacing: AppSpacing.s,
               runSpacing: AppSpacing.s,
@@ -481,7 +481,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
               fontWeight: FontWeight.bold,
             ),
           ),
-          const Gap.vertical(AppSpacing.m),
+          const SizedBox(height: AppSpacing.m),
           ...StaffPermission.values.map(
             (permission) => _buildPermissionItem(permission),
           ),
@@ -505,7 +505,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
               color: hasPermission ? AppColors.success : AppColors.error,
               size: 20,
             ),
-            const Gap.horizontal(AppSpacing.s),
+            const SizedBox(width: AppSpacing.s),
             Expanded(
               child: Text(
                 _getPermissionDisplayText(permission),
@@ -537,7 +537,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
               fontWeight: FontWeight.bold,
             ),
           ),
-          const Gap.vertical(AppSpacing.m),
+          const SizedBox(height: AppSpacing.m),
           _buildActivityItem(
             'Last Login',
             widget.staff.lastLoginDisplayText,
@@ -583,7 +583,7 @@ class _StaffDetailsScreenState extends State<StaffDetailsScreen>
               ),
               child: Icon(icon, color: AppColors.primary, size: 16),
             ),
-            const Gap.horizontal(AppSpacing.m),
+            const SizedBox(width: AppSpacing.m),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

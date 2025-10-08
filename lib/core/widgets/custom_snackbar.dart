@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../design_system/theme.dart';
+import '../../design_system/color_schemes.dart';
+import '../../design_system/spacing.dart';
+import '../../design_system/radii.dart';
+import '../utils/log_helper.dart';
 
 /// Custom snackbar widget with consistent styling and various types
 class CustomSnackbar {
@@ -111,8 +114,7 @@ class CustomSnackbar {
     Color? textColor,
     IconData? icon,
   }) {
-    print('CustomSnackbar: Showing snackbar with message: $message');
-    final theme = Theme.of(context);
+    LogHelper.debug('CustomSnackbar: Showing snackbar with message: $message');
     final snackbarConfig = _getSnackbarConfig(type);
 
     // Show animated snackbar
@@ -207,93 +209,6 @@ class _SnackbarConfig {
     required this.textColor,
     required this.icon,
   });
-}
-
-/// Custom snackbar widget for more complex layouts
-class CustomSnackbarWidget extends StatelessWidget {
-  final String message;
-  final SnackbarType type;
-  final String? actionLabel;
-  final VoidCallback? onAction;
-  final Color? backgroundColor;
-  final Color? textColor;
-  final IconData? icon;
-  final Widget? customIcon;
-
-  const CustomSnackbarWidget({
-    super.key,
-    required this.message,
-    this.type = SnackbarType.info,
-    this.actionLabel,
-    this.onAction,
-    this.backgroundColor,
-    this.textColor,
-    this.icon,
-    this.customIcon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final config = CustomSnackbar._getSnackbarConfig(type);
-
-    return Container(
-      padding: EdgeInsets.all(AppSpacing.l),
-      decoration: BoxDecoration(
-        color: backgroundColor ?? config.backgroundColor,
-        borderRadius: BorderRadius.circular(AppRadii.m),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          if (customIcon != null)
-            customIcon!
-          else
-            Icon(
-              icon ?? config.icon,
-              color: textColor ?? config.textColor,
-              size: 20,
-            ),
-          SizedBox(width: AppSpacing.s),
-          Expanded(
-            child: Text(
-              message,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: textColor ?? config.textColor,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          if (actionLabel != null && onAction != null) ...[
-            SizedBox(width: AppSpacing.s),
-            TextButton(
-              onPressed: onAction,
-              style: TextButton.styleFrom(
-                foregroundColor: textColor ?? config.textColor,
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.s,
-                  vertical: AppSpacing.xs,
-                ),
-              ),
-              child: Text(
-                actionLabel!,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: textColor ?? config.textColor,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
 }
 
 /// Animated snackbar widget with slide up/down animation
@@ -410,7 +325,7 @@ class _AnimatedSnackbarState extends State<_AnimatedSnackbar>
             ),
             decoration: BoxDecoration(
               color: widget.backgroundColor,
-              borderRadius: BorderRadius.circular(AppRadii.m),
+              borderRadius: BorderRadius.circular(Radii.md),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),

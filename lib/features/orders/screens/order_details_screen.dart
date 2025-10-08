@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../ui/primitives/animated_button.dart';
 import '../../../ui/primitives/card_x.dart';
 import '../providers/order_provider.dart';
@@ -62,7 +63,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 ),
               ),
             ),
-            const Gap.horizontal(AppSpacing.xs),
+            const SizedBox(width: AppSpacing.xs),
             AnimatedButtons.secondary(
               onPressed: () => _declineOrder(),
               child: Text(
@@ -73,7 +74,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 ),
               ),
             ),
-            const Gap.horizontal(AppSpacing.s),
+            const SizedBox(width: AppSpacing.s),
           ],
         ],
       ),
@@ -148,7 +149,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             Row(
               children: [
                 _buildStatusItem(
@@ -156,7 +157,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   widget.order.priorityDisplayText,
                   _getPriorityColor(widget.order.priority),
                 ),
-                const Gap.horizontal(AppSpacing.l),
+                const SizedBox(width: AppSpacing.l),
                 _buildStatusItem(
                   'Payment',
                   widget.order.paymentStatusDisplayText,
@@ -164,7 +165,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             Row(
               children: [
                 _buildStatusItem(
@@ -172,7 +173,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   '£${widget.order.total.toStringAsFixed(2)}',
                   AppColors.primary,
                 ),
-                const Gap.horizontal(AppSpacing.l),
+                const SizedBox(width: AppSpacing.l),
                 _buildStatusItem(
                   'Created',
                   _formatDateTime(widget.order.createdAt),
@@ -198,7 +199,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             color: colorScheme.onSurfaceVariant,
           ),
         ),
-        const Gap.vertical(AppSpacing.xs),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           value,
           style: AppTypography.textTheme.titleMedium?.copyWith(
@@ -226,7 +227,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildInfoRow('Name', widget.order.customerName),
             _buildInfoRow('Phone', widget.order.customerPhone),
             if (widget.order.pickupAddress != null)

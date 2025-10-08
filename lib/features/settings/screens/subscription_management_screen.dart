@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../design_system/motion.dart';
 // Removed unused imports
 import '../../../ui/primitives/card_x.dart';
@@ -58,17 +59,17 @@ class _SubscriptionManagementScreenState
                     .animate()
                     .fadeIn(duration: AppMotion.normal)
                     .slideY(begin: 0.1, end: 0.0),
-                const Gap.vertical(AppSpacing.l),
+                const SizedBox(height: AppSpacing.l),
                 _buildPlanComparison()
                     .animate()
                     .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
                     .slideY(begin: 0.1, end: 0.0),
-                const Gap.vertical(AppSpacing.l),
+                const SizedBox(height: AppSpacing.l),
                 _buildBillingHistory()
                     .animate()
                     .fadeIn(delay: AppMotion.normal, duration: AppMotion.normal)
                     .slideY(begin: 0.1, end: 0.0),
-                const Gap.vertical(AppSpacing.l),
+                const SizedBox(height: AppSpacing.l),
                 _buildUpgradeOptions(subscription)
                     .animate()
                     .fadeIn(delay: AppMotion.slow, duration: AppMotion.normal)
@@ -97,7 +98,7 @@ class _SubscriptionManagementScreenState
                   color: _getPlanColor(subscription.type),
                   size: 24,
                 ),
-                const Gap.horizontal(AppSpacing.s),
+                const SizedBox(width: AppSpacing.s),
                 Text(
                   'Current Plan: ${subscription.type.name.toUpperCase()}',
                   style: AppTypography.textTheme.titleLarge?.copyWith(
@@ -107,9 +108,9 @@ class _SubscriptionManagementScreenState
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildPlanDetails(subscription),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildUsageStats(subscription),
           ],
         ),
@@ -195,13 +196,13 @@ class _SubscriptionManagementScreenState
               fontWeight: FontWeight.bold,
             ),
           ),
-          const Gap.vertical(AppSpacing.s),
+          const SizedBox(height: AppSpacing.s),
           _buildUsageBar(
             'Branches',
             2,
             subscription.getFeature(SubscriptionFeatures.maxBranches),
           ),
-          const Gap.vertical(AppSpacing.xs),
+          const SizedBox(height: AppSpacing.xs),
           _buildUsageBar(
             'Staff',
             5,
@@ -237,7 +238,7 @@ class _SubscriptionManagementScreenState
             ),
           ],
         ),
-        const Gap.vertical(AppSpacing.xs),
+        const SizedBox(height: AppSpacing.xs),
         LinearProgressIndicator(
           value: percentage,
           backgroundColor: AppColors.surfaceVariant.withOpacity(0.3),

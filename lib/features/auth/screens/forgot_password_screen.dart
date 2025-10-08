@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
-import '../../../design_system/radii.dart';
-import '../../../design_system/elevations.dart';
 import '../../../ui/primitives/animated_button.dart';
 import '../../../ui/primitives/text_field_x.dart';
+import '../../../core/widgets/watermark_background.dart';
+import '../../../core/widgets/animated_auth_screen.dart';
+import '../../../core/widgets/custom_snackbar.dart';
 import '../providers/auth_provider.dart';
 import 'otp_verification_screen.dart';
 
@@ -36,27 +37,42 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.sendPasswordResetEmail(_emailController.text.trim());
+      final success = await authProvider.sendPasswordResetEmail(
+        _emailController.text.trim(),
+      );
 
       if (mounted) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder:
-                (context) => OTPVerificationScreen(
-                  email: _emailController.text.trim(),
-                  isPasswordReset: true,
-                ),
-          ),
-        );
+        if (success) {
+          // Show success message
+          CustomSnackbar.showSuccess(
+            context,
+            message: 'OTP code sent to your email address',
+          );
+
+          // Navigate to OTP verification screen
+          await Future.delayed(const Duration(milliseconds: 500));
+
+          if (mounted) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder:
+                    (context) => OTPVerificationScreen(
+                      email: _emailController.text.trim(),
+                      isPasswordReset: true,
+                    ),
+              ),
+            );
+          }
+        } else {
+          // Show error message from provider using CustomSnackbar
+          final errorMessage =
+              authProvider.error ?? 'Failed to send reset email';
+          CustomSnackbar.showError(context, message: errorMessage);
+        }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: AppColors.errorRed,
-          ),
-        );
+        CustomSnackbar.showError(context, message: 'Error: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -67,102 +83,105 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: AnimatedButton(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.transparent,
-          onPressed: () => Navigator.of(context).pop(),
-          child: Icon(Icons.arrow_back_ios, color: AppColors.primary),
+    return WatermarkBackgroundBuilder.bottomRight(
+      icon: FontAwesomeIcons.key,
+      iconColor: AppColors.primary,
+      margin: const EdgeInsets.all(16),
+      opacity: 0.10,
+      iconSizePercentage: 0.45,
+      iconShift: -15.0,
+      child: AnimatedAuthScreen(
+        title: 'Reset Your Password',
+        subtitle:
+            'Enter your email address and we\'ll send you a link to reset your password',
+        icon: Padding(
+          padding: EdgeInsets.all(AppSpacing.l),
+          child: Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: AppColors.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.lock_reset, color: AppColors.primary, size: 40),
+          ),
         ),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+        showAppBar: true,
+        child: GestureDetector(
+          onTap: () {
+            // Dismiss keyboard when tapping outside text fields
+            FocusScope.of(context).unfocus();
+          },
           child: Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Center(
-                  child: Hero(
-                    tag: 'app_icon',
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: Radii.l,
-                        boxShadow: Shadows.low,
-                      ),
-                      child: ClipRRect(
-                        borderRadius: Radii.l,
-                        child: Image.asset(
-                          'assets/images/app_icon.png',
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const Gap.vertical(AppSpacing.xxl),
-                Text(
-                  'Forgot Password?',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const Gap.vertical(AppSpacing.s),
-                Text(
-                  'Enter your email address and we\'ll send you a verification code to reset your password.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 40),
+                // Email Field
                 TextFieldsX.email(
                   controller: _emailController,
                   labelText: 'Email Address',
                   hintText: 'Enter your email address',
                 ),
-                const SizedBox(height: 32),
+
+                SizedBox(height: AppSpacing.xl),
+
+                // Send OTP button
                 AnimatedButtons.primary(
-                  onPressed: _isLoading ? null : _sendResetEmail,
                   isLoading: _isLoading,
-                  width: double.infinity,
-                  height: 50,
-                  child: Text(
-                    'Send Reset Code',
-                    style: AppTypography.textTheme.labelLarge?.copyWith(
-                      color: AppColors.onPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Center(
-                  child: AnimatedButtons.text(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text(
-                      'Back to Login',
-                      style: AppTypography.textTheme.labelMedium?.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w600,
+                  onPressed: _isLoading ? null : _sendResetEmail,
+                  height: 56,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.sms, size: 20, color: AppColors.onPrimary),
+                      SizedBox(width: AppSpacing.s),
+                      Text(
+                        'Send OTP Code',
+                        style: AppTypography.textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.onPrimary,
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
+
+                SizedBox(height: AppSpacing.xl),
+
+                // Back to login
+                _buildBackToLogin(),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildBackToLogin() {
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Remember your password? ',
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+          GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Text(
+              'Sign In',
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

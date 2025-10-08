@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../design_system/motion.dart';
 import '../../../design_system/icons.dart';
 import '../../../ui/primitives/animated_button.dart';
@@ -124,7 +125,7 @@ class _StaffScreenState extends State<StaffScreen> {
                         curve: AppCurves.emphasized,
                       )
                       .fadeIn(duration: AppMotion.normal),
-                  const Gap.vertical(AppSpacing.l),
+                  const SizedBox(height: AppSpacing.l),
                   Text(
                         'No staff members found',
                         style: AppTypography.textTheme.bodyLarge?.copyWith(
@@ -139,7 +140,7 @@ class _StaffScreenState extends State<StaffScreen> {
                         delay: AppMotion.fast,
                         duration: AppMotion.normal,
                       ),
-                  const Gap.vertical(AppSpacing.s),
+                  const SizedBox(height: AppSpacing.s),
                   Text(
                         'Add your first staff member to get started',
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
@@ -223,7 +224,7 @@ class _StaffScreenState extends State<StaffScreen> {
                             ),
                           ),
                 ),
-                const Gap.horizontal(AppSpacing.m),
+                const SizedBox(width: AppSpacing.m),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,14 +236,14 @@ class _StaffScreenState extends State<StaffScreen> {
                           color: colorScheme.onSurface,
                         ),
                       ),
-                      const Gap.vertical(AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         staffMember.roleDisplayText,
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      const Gap.vertical(AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         staffMember.email,
                         style: AppTypography.textTheme.bodySmall?.copyWith(
@@ -262,7 +263,7 @@ class _StaffScreenState extends State<StaffScreen> {
                               ? ChipStatus.success
                               : ChipStatus.error,
                     ),
-                    const Gap.vertical(AppSpacing.s),
+                    const SizedBox(height: AppSpacing.s),
                     if (staffMember.hourlyRate != null &&
                         staffMember.hourlyRate! > 0)
                       Text(

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../../../data/models/laundrette_order.dart';
-import '../../../data/models/laundrette_branch.dart';
+import '../../branches/data/models/laundrette_branch.dart';
 import '../../../data/models/staff_member.dart';
 
 class AnalyticsProvider with ChangeNotifier {

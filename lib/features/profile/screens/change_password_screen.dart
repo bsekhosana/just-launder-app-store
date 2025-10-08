@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:just_laundrette_app/design_system/color_schemes.dart';
+import 'package:just_laundrette_app/design_system/spacing.dart';
+import 'package:just_laundrette_app/design_system/typography.dart';
 import 'package:provider/provider.dart';
 import '../../../design_system/theme.dart';
 import '../../../core/widgets/animated_auth_screen.dart';
@@ -48,20 +51,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     final user = authProvider.currentUser;
 
     if (user == null) {
-      CustomSnackbar.showError(
-        context,
-        message: 'User not found. Please log in again.',
-      );
+      CustomSnackbar.showError('User not found. Please log in again.');
       return;
     }
 
-    NavigationService.push(
-      context,
-      ReusableOtpScreen(
-        email: user.email,
-        purpose: 'password_change',
-        onOtpVerified: _handleOtpVerified,
-        onResendOtp: _resendOtp,
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (context) => ReusableOtpScreen(
+              email: user.email,
+              purpose: 'password_change',
+              onOtpVerified: _handleOtpVerified,
+              onResendOtp: _resendOtp,
+            ),
       ),
     );
   }
@@ -120,13 +122,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         LogHelper.auth('Password changed successfully');
 
         if (mounted) {
-          CustomSnackbar.showSuccess(
-            context,
-            message: 'Password changed successfully!',
-          );
+          CustomSnackbar.showSuccess('Password changed successfully!');
 
           // Navigate back to settings
-          NavigationService.pop(context);
+          Navigator.of(context).pop();
         }
       } else {
         throw Exception('Failed to change password');
@@ -136,8 +135,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
       if (mounted) {
         CustomSnackbar.showError(
-          context,
-          message: 'Failed to change password. Please try again.',
+          'Failed to change password. Please try again.',
         );
       }
     } finally {
@@ -191,18 +189,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         child: AnimatedAuthScreen(
           title: 'Change Password',
           subtitle: 'Update your account password',
-          icon: Padding(
-            padding: EdgeInsets.all(AppSpacing.l),
-            child: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: AppColors.primaryContainer,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.lock, color: AppColors.primary, size: 40),
-            ),
-          ),
           showAppBar: true,
           child: Form(
             key: _formKey,

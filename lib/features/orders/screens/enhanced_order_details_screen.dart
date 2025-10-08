@@ -89,7 +89,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 ),
               ),
             ),
-            const Gap.horizontal(AppSpacing.xs),
+            const SizedBox(width: AppSpacing.xs),
             AnimatedButton(
               onPressed: () => _updateOrderStatus(TenantOrderStatus.cancelled),
               child: Text(
@@ -100,7 +100,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 ),
               ),
             ),
-            const Gap.horizontal(AppSpacing.s),
+            const SizedBox(width: AppSpacing.s),
           ],
         ],
         bottom: PreferredSize(
@@ -164,13 +164,13 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildOrderStatusCard(),
-          const Gap.vertical(AppSpacing.l),
+          const SizedBox(height: AppSpacing.l),
           _buildCustomerInfoCard(),
-          const Gap.vertical(AppSpacing.l),
+          const SizedBox(height: AppSpacing.l),
           _buildPricingCard(),
-          const Gap.vertical(AppSpacing.l),
+          const SizedBox(height: AppSpacing.l),
           _buildDriverInfoCard(),
-          const Gap.vertical(AppSpacing.l),
+          const SizedBox(height: AppSpacing.l),
           _buildActionButtons(),
         ],
       ),
@@ -202,7 +202,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             Row(
               children: [
                 _buildStatusItem(
@@ -210,7 +210,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                   widget.order.priorityDisplayText,
                   _getPriorityColor(widget.order.priority),
                 ),
-                const Gap.horizontal(AppSpacing.l),
+                const SizedBox(width: AppSpacing.l),
                 _buildStatusItem(
                   'Payment',
                   widget.order.paymentStatusDisplayText,
@@ -218,7 +218,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             Row(
               children: [
                 _buildStatusItem(
@@ -226,7 +226,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                   '£${widget.order.total.toStringAsFixed(2)}',
                   AppColors.primary,
                 ),
-                const Gap.horizontal(AppSpacing.l),
+                const SizedBox(width: AppSpacing.l),
                 _buildStatusItem(
                   'Created',
                   _formatDateTime(widget.order.createdAt),
@@ -252,7 +252,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
             color: colorScheme.onSurfaceVariant,
           ),
         ),
-        const Gap.vertical(AppSpacing.xs),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           value,
           style: AppTypography.textTheme.titleMedium?.copyWith(
@@ -280,7 +280,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildInfoRow('Name', widget.order.customerName),
             _buildInfoRow('Phone', widget.order.customerPhone),
             _buildInfoRow('Email', widget.order.customerEmail),
@@ -317,7 +317,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildPricingRow('Subtotal', widget.order.subtotal),
             _buildPricingRow('Delivery Fee', widget.order.deliveryFee),
             const Divider(),
@@ -381,7 +381,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             if (widget.order.driverId != null) ...[
               _buildInfoRow('Name', widget.order.driverName ?? 'Not assigned'),
               _buildInfoRow(
@@ -396,7 +396,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                   fontStyle: FontStyle.italic,
                 ),
               ),
-              const Gap.vertical(AppSpacing.s),
+              const SizedBox(height: AppSpacing.s),
               AnimatedButton(
                 onPressed: _assignDriver,
                 child: Text(
@@ -430,7 +430,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Wrap(
               spacing: AppSpacing.s,
               runSpacing: AppSpacing.s,
@@ -572,7 +572,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
               fontWeight: FontWeight.bold,
             ),
           ),
-          const Gap.vertical(AppSpacing.m),
+          const SizedBox(height: AppSpacing.m),
           if (widget.order.orderItems.isEmpty)
             Center(
               child: Text(
@@ -618,14 +618,14 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             Text(
               'Weight: ${item.weight}kg',
               style: AppTypography.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-            const Gap.vertical(AppSpacing.s),
+            const SizedBox(height: AppSpacing.s),
             Text(
               'Services: ${item.services.join(', ')}',
               style: AppTypography.textTheme.bodyMedium?.copyWith(
@@ -653,7 +653,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
               fontWeight: FontWeight.bold,
             ),
           ),
-          const Gap.vertical(AppSpacing.m),
+          const SizedBox(height: AppSpacing.m),
           if (widget.order.statusHistory.isEmpty)
             Center(
               child: Text(
@@ -689,7 +689,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
               ),
               child: Icon(AppIcons.clock, color: AppColors.primary, size: 16),
             ),
-            const Gap.horizontal(AppSpacing.m),
+            const SizedBox(width: AppSpacing.m),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -702,7 +702,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                     ),
                   ),
                   if (history.notes != null) ...[
-                    const Gap.vertical(AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       history.notes!,
                       style: AppTypography.textTheme.bodySmall?.copyWith(
@@ -710,7 +710,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                       ),
                     ),
                   ],
-                  const Gap.vertical(AppSpacing.xs),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     _formatDateTime(history.statusChangedAt),
                     style: AppTypography.textTheme.bodySmall?.copyWith(
@@ -756,7 +756,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
               ),
             ],
           ),
-          const Gap.vertical(AppSpacing.m),
+          const SizedBox(height: AppSpacing.m),
           if (widget.order.tags.isEmpty)
             Center(
               child: Text(

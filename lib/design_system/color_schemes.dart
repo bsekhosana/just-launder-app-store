@@ -50,92 +50,68 @@ class AppColors {
   static const Color onSuccessContainer = Color(0xFF064E3B); // Dark green
 
   // Warning Colors
-  static const Color warning = Color(0xFFF5A524); // Orange
+  static const Color warning = Color(0xFFF59E0B); // Orange
   static const Color onWarning = Colors.white;
   static const Color warningContainer = Color(0xFFFEF3C7); // Light orange
   static const Color onWarningContainer = Color(0xFF92400E); // Dark orange
 
-  // Neutral Colors
-  static const Color outline = Color(0xFFE2E8F0); // Light border
-  static const Color outlineVariant = Color(0xFFF1F5F9); // Very light border
-  static const Color shadow = Color(0xFF000000); // Black shadow
-  static const Color scrim = Color(0xFF000000); // Black overlay
-
-  // Glass Effect Colors
-  static const Color glassSurface = Color(0x1AFFFFFF); // 10% white
-  static const Color glassBorder = Color(0x33FFFFFF); // 20% white
-  static const Color glassOverlay = Color(0x80000000); // 50% black
-
-  // Status Colors
+  // Info Colors
   static const Color info = Color(0xFF3B82F6); // Blue
   static const Color onInfo = Colors.white;
   static const Color infoContainer = Color(0xFFDBEAFE); // Light blue
+  static const Color onInfoContainer = Color(0xFF1E40AF); // Dark blue
 
-  // Surface Tint (for Material 3)
-  static const Color surfaceTint = primary;
+  // Outline Colors
+  static const Color outline = Color(0xFFD1D5DB); // Light grey
+  static const Color outlineVariant = Color(0xFFE5E7EB); // Very light grey
 
-  // Legacy Colors (for backward compatibility)
-  static const Color lightGrey = Color(0xFFF1F5F9);
+  // Shadow Colors
+  static const Color shadow = Color(0xFF000000);
+  static const Color scrim = Color(0xFF000000);
+
+  // Additional UI Colors
+  static const Color lightGrey = Color(0xFFF8FAFC);
   static const Color mediumGrey = Color(0xFF64748B);
   static const Color darkGrey = Color(0xFF1B1B1B);
-  static const Color backgroundGrey = Color(0xFFF8FAFC);
-  static const Color primaryBlue = primary;
-  static const Color successGreen = success;
-  static const Color errorRed = error;
-  static const Color warningOrange = warning;
+  static const Color successGreen = Color(0xFF20B26C);
+  static const Color errorRed = Color(0xFFE54D2E);
+  static const Color warningOrange = Color(0xFFF59E0B);
+  static const Color textPrimary = Color(0xFF1B1B1B);
+  static const Color primaryBlue = Color(0xFF3B82F6);
+
+  // Additional UI Colors
+  static const Color surfaceTint = Color(0xFFfb6406);
+  static const Color glassSurface = Color(0xCCFFFFFF); // White with 80% opacity
+
+  // Legacy color names for backward compatibility
+  // static const Color accent = Color(0xFFF59E0B); // Already defined above
 }
 
-/// Dark theme colors (for future implementation)
-class AppColorsDark {
-  // Primary Colors
-  static const Color primary = Color(0xFF60A5FA); // Light blue
-  static const Color onPrimary = Color(0xFF1E3A8A); // Dark blue
-  static const Color primaryContainer = Color(0xFF1E3A8A); // Dark blue
-  static const Color onPrimaryContainer = Color(0xFFDBEAFE); // Light blue
-
-  // Secondary Colors
-  static const Color secondary = Color(0xFF34D399); // Light green
-  static const Color onSecondary = Color(0xFF064E3B); // Dark green
-  static const Color secondaryContainer = Color(0xFF064E3B); // Dark green
-  static const Color onSecondaryContainer = Color(0xFFD1FAE5); // Light green
-
-  // Surface Colors
-  static const Color surface = Color(0xFF1B1B1B); // Dark grey
-  static const Color onSurface = Color(0xFFF8FAFC); // Light grey
-  static const Color surfaceVariant = Color(0xFF374151); // Medium dark grey
-  static const Color onSurfaceVariant = Color(0xFF9CA3AF); // Light grey
-
-  // Background Colors
-  static const Color background = Color(0xFF111827); // Very dark grey
-  static const Color onBackground = Color(0xFFF8FAFC); // Light grey
-
-  // Error Colors
-  static const Color error = Color(0xFFF87171); // Light red
-  static const Color onError = Color(0xFF991B1B); // Dark red
-  static const Color errorContainer = Color(0xFF991B1B); // Dark red
-  static const Color onErrorContainer = Color(0xFFFEE2E2); // Light red
-}
-
-/// Utility class for color operations
-class ColorUtils {
-  /// Get color with opacity
-  static Color withOpacity(Color color, double opacity) {
-    return color.withOpacity(opacity);
-  }
-
-  /// Get color with alpha
-  static Color withAlpha(Color color, int alpha) {
-    return color.withAlpha(alpha);
-  }
-
-  /// Get glass effect color
-  static Color getGlassColor(Color baseColor, double opacity) {
-    return baseColor.withOpacity(opacity);
-  }
-
-  /// Get surface color with elevation
-  static Color getSurfaceColor(Color baseColor, double elevation) {
-    final double opacity = (elevation * 0.05).clamp(0.0, 0.12);
-    return baseColor.withOpacity(opacity);
-  }
+/// Material 3 color scheme for the app
+class AppColorSchemes {
+  static const Color primary = Color(0xFFfb6406);
+  static const Color primaryContainer = Color(0xFFFFE4D1);
+  static const Color secondary = Color(0xFF625b71);
+  static const Color secondaryContainer = Color(0xFFe8def8);
+  static const Color tertiary = Color(0xFF7d5260);
+  static const Color tertiaryContainer = Color(0xFFffd8e4);
+  static const Color error = Color(0xFFba1a1a);
+  static const Color errorContainer = Color(0xFFffdad6);
+  static const Color background = Color(0xFFfefbff);
+  static const Color onBackground = Color(0xFF1a1c18);
+  static const Color surface = Color(0xFFfefbff);
+  static const Color onSurface = Color(0xFF1a1c18);
+  static const Color surfaceVariant = Color(0xFFe7e0ec);
+  static const Color onSurfaceVariant = Color(0xFF49454f);
+  static const Color outline = Color(0xFF79747e);
+  static const Color onInverseSurface = Color(0xFFf4eff4);
+  static const Color inverseSurface = Color(0xFF313033);
+  static const Color inversePrimary = Color(0xFFffb59c);
+  static const Color shadow = Color(0xFF000000);
+  static const Color surfaceTint = Color(0xFFfb6406);
+  static const Color outlineVariant = Color(0xFFcac4d0);
+  static const Color scrim = Color(0xFF000000);
+  static const Color warning = Color(0xFFFF9800);
+  static const Color textPrimary = Color(0xFF212121);
+  static const Color success = Color(0xFF20B26C);
 }

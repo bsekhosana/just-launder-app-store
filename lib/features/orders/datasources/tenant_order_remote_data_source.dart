@@ -291,6 +291,7 @@ class TenantOrderRemoteDataSource {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
+      'X-App-Type': 'laundrette', // Mandatory app type for all API calls
     };
   }
 }

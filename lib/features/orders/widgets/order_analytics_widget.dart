@@ -47,9 +47,9 @@ class OrderAnalyticsWidget extends StatelessWidget {
                 _buildTimePeriodSelector(),
               ],
             ),
-            const Gap.vertical(AppSpacing.l),
+            const SizedBox(height: AppSpacing.l),
             _buildAnalyticsGrid(),
-            const Gap.vertical(AppSpacing.l),
+            const SizedBox(height: AppSpacing.l),
             _buildChartsSection(),
           ],
         ),
@@ -161,7 +161,7 @@ class OrderAnalyticsWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Gap.vertical(AppSpacing.s),
+                const SizedBox(height: AppSpacing.s),
                 Text(
                   value,
                   style: AppTypography.textTheme.titleLarge?.copyWith(
@@ -169,7 +169,7 @@ class OrderAnalyticsWidget extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Gap.vertical(AppSpacing.xs),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   title,
                   style: AppTypography.textTheme.bodySmall?.copyWith(
@@ -198,9 +198,9 @@ class OrderAnalyticsWidget extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const Gap.vertical(AppSpacing.m),
+        const SizedBox(height: AppSpacing.m),
         _buildStatusDistributionChart(),
-        const Gap.vertical(AppSpacing.l),
+        const SizedBox(height: AppSpacing.l),
         Text(
           'Revenue Trends',
           style: AppTypography.textTheme.titleMedium?.copyWith(
@@ -208,7 +208,7 @@ class OrderAnalyticsWidget extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const Gap.vertical(AppSpacing.m),
+        const SizedBox(height: AppSpacing.m),
         _buildRevenueTrendChart(),
       ],
     );
@@ -271,7 +271,7 @@ class OrderAnalyticsWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Gap.horizontal(AppSpacing.s),
+                      const SizedBox(width: AppSpacing.s),
                       Text(
                         '$count',
                         style: AppTypography.textTheme.bodySmall?.copyWith(

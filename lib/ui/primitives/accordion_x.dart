@@ -6,6 +6,7 @@ import '../../design_system/radii.dart';
 import '../../design_system/motion.dart';
 import '../../design_system/icons.dart';
 import '../../design_system/elevations.dart';
+import '../../design_system/spacing_utils.dart';
 import 'animated_button.dart';
 
 /// Modern accordion widget with smooth animations
@@ -101,7 +102,7 @@ class _AccordionXState extends State<AccordionX>
     return Container(
       decoration: BoxDecoration(
         color: effectiveBackgroundColor,
-        borderRadius: Radii.card,
+        borderRadius: BorderRadius.circular(Radii.card),
         boxShadow: Shadows.card,
       ),
       child: Column(
@@ -111,14 +112,14 @@ class _AccordionXState extends State<AccordionX>
             color: Colors.transparent,
             child: InkWell(
               onTap: _toggle,
-              borderRadius: Radii.card,
+              borderRadius: BorderRadius.circular(Radii.card),
               child: Container(
                 padding: widget.padding ?? SpacingUtils.all(AppSpacing.l),
                 child: Row(
                   children: [
                     if (widget.showIcon && widget.icon != null) ...[
                       Icon(widget.icon, color: effectiveTitleColor, size: 20),
-                      const Gap.horizontal(AppSpacing.s),
+                      const SizedBox(width: AppSpacing.s),
                     ],
                     Expanded(
                       child: Text(
@@ -195,7 +196,7 @@ class DemoAccountItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.s),
       decoration: BoxDecoration(
         color: colorScheme.surfaceVariant.withOpacity(0.3),
-        borderRadius: Radii.m,
+        borderRadius: BorderRadius.circular(Radii.m),
         border: Border.all(
           color: colorScheme.outline.withOpacity(0.2),
           width: 1,
@@ -207,7 +208,7 @@ class DemoAccountItem extends StatelessWidget {
           Row(
             children: [
               Icon(AppIcons.branch, size: 16, color: AppColors.primary),
-              const Gap.horizontal(AppSpacing.xs),
+              const SizedBox(width: AppSpacing.xs),
               Text(
                 accountType,
                 style: AppTypography.textTheme.labelLarge?.copyWith(
@@ -217,7 +218,7 @@ class DemoAccountItem extends StatelessWidget {
               ),
             ],
           ),
-          const Gap.vertical(AppSpacing.s),
+          const SizedBox(height: AppSpacing.s),
           // Email Row (Right aligned)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -237,7 +238,7 @@ class DemoAccountItem extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const Gap.horizontal(AppSpacing.xs),
+                  const SizedBox(width: AppSpacing.xs),
                   AnimatedButton(
                     onPressed: onEmailCopy,
                     backgroundColor: AppColors.primary.withOpacity(0.1),
@@ -250,14 +251,14 @@ class DemoAccountItem extends StatelessWidget {
                     tooltip: 'Copy email',
                     width: 32,
                     height: 32,
-                    borderRadius: Radii.circular,
+                    borderRadius: BorderRadius.circular(Radii.lg),
                     padding: EdgeInsets.zero,
                   ),
                 ],
               ),
             ],
           ),
-          const Gap.vertical(AppSpacing.xs),
+          const SizedBox(height: AppSpacing.xs),
           // Password Row (Right aligned)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -277,7 +278,7 @@ class DemoAccountItem extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const Gap.horizontal(AppSpacing.xs),
+                  const SizedBox(width: AppSpacing.xs),
                   AnimatedButton(
                     onPressed: onPasswordCopy,
                     backgroundColor: AppColors.primary.withOpacity(0.1),
@@ -290,7 +291,7 @@ class DemoAccountItem extends StatelessWidget {
                     tooltip: 'Copy password',
                     width: 32,
                     height: 32,
-                    borderRadius: Radii.circular,
+                    borderRadius: BorderRadius.circular(Radii.lg),
                     padding: EdgeInsets.zero,
                   ),
                 ],

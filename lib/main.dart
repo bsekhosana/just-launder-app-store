@@ -8,6 +8,7 @@ import 'features/orders/providers/order_provider.dart';
 import 'features/staff/providers/staff_provider.dart';
 import 'features/staff/providers/staff_management_provider.dart';
 import 'features/orders/providers/tenant_order_provider.dart';
+import 'features/orders/data/repositories/tenant_order_repository_impl.dart';
 import 'features/analytics/providers/analytics_provider.dart';
 import 'features/settings/providers/settings_provider.dart';
 import 'features/onboarding/providers/onboarding_provider.dart';
@@ -27,13 +28,17 @@ class JustLaundretteApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()..initialize()),
         ChangeNotifierProvider(create: (_) => LaundretteProfileProvider()),
         ChangeNotifierProvider(create: (_) => BranchProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
         ChangeNotifierProvider(create: (_) => StaffProvider()),
         ChangeNotifierProvider(create: (_) => StaffManagementProvider()),
-        ChangeNotifierProvider(create: (_) => TenantOrderProvider()),
+        ChangeNotifierProvider(
+          create:
+              (_) =>
+                  TenantOrderProvider(repository: TenantOrderRepositoryImpl()),
+        ),
         ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
@@ -68,23 +73,15 @@ class AppWrapper extends StatefulWidget {
 
 class _AppWrapperState extends State<AppWrapper> {
   @override
-  void initState() {
-    super.initState();
-    // Initialize authentication state
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      authProvider.checkAuthStatus();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: true);
 
+    // Show loading screen while initializing authentication
     if (authProvider.isInitializing) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    // Show main navigation if authenticated, otherwise show login
     if (authProvider.isAuthenticated) {
       return const MainNavigationScreen();
     }

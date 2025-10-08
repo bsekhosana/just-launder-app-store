@@ -4,8 +4,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../design_system/motion.dart';
 import '../../../ui/primitives/card_x.dart';
+import '../../../ui/primitives/animated_button.dart';
+import '../../../core/widgets/custom_snackbar.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../profile/providers/laundrette_profile_provider.dart';
 import '../../../data/models/subscription.dart';
@@ -91,7 +94,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ]),
 
-                      const Gap.vertical(AppSpacing.l),
+                      const SizedBox(height: AppSpacing.l),
 
                       _buildSettingsSection('Security', [
                         _buildToggleItem(
@@ -117,7 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ]),
 
-                      const Gap.vertical(AppSpacing.l),
+                      const SizedBox(height: AppSpacing.l),
 
                       _buildSettingsSection('App Settings', [
                         _buildToggleItem(
@@ -152,7 +155,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ]),
 
-                      const Gap.vertical(AppSpacing.l),
+                      const SizedBox(height: AppSpacing.l),
 
                       _buildSettingsSection('Subscription', [
                         _buildSettingsItem(
@@ -171,7 +174,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           _buildSubscriptionInfo(subscription),
                       ]),
 
-                      const Gap.vertical(AppSpacing.l),
+                      const SizedBox(height: AppSpacing.l),
 
                       _buildSettingsSection('Support', [
                         _buildSettingsItem(
@@ -194,11 +197,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ]),
 
-                      const Gap.vertical(AppSpacing.l),
+                      const SizedBox(height: AppSpacing.l),
 
                       _buildLogoutSection(authProvider),
 
-                      const Gap.vertical(AppSpacing.xl),
+                      const SizedBox(height: AppSpacing.xl),
                     ],
                   ),
                 ),
@@ -245,7 +248,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Gap.vertical(AppSpacing.s),
+                      const SizedBox(height: AppSpacing.s),
                       Text(
                         'Member since: ${_formatDate(profile?.createdAt ?? DateTime.now())}',
                         style: AppTypography.textTheme.bodyMedium?.copyWith(
@@ -262,7 +265,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
-            const Gap.vertical(AppSpacing.l),
+            const SizedBox(height: AppSpacing.l),
             Row(
               children: [
                 Icon(
@@ -270,7 +273,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: Colors.white.withOpacity(0.8),
                   size: 20,
                 ),
-                const Gap.horizontal(AppSpacing.s),
+                const SizedBox(width: AppSpacing.s),
                 Icon(
                   Icons.dark_mode,
                   color: Colors.white.withOpacity(0.8),
@@ -315,7 +318,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const Gap.vertical(AppSpacing.s),
+        const SizedBox(height: AppSpacing.s),
         CardsX.elevated(child: Column(children: children)),
       ],
     );
@@ -413,7 +416,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Row(
         children: [
           Icon(Icons.star, color: AppColors.success, size: 20),
-          const Gap.horizontal(AppSpacing.s),
+          const SizedBox(width: AppSpacing.s),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -463,10 +466,121 @@ class _SettingsScreenState extends State<SettingsScreen> {
             color: AppColors.error.withOpacity(0.7),
           ),
         ),
-        onTap: () async {
-          await authProvider.logout();
-        },
+        onTap: () => _showLogoutConfirmation(authProvider),
       ),
+    );
+  }
+
+  void _showLogoutConfirmation(AuthProvider authProvider) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
+              ),
+            ),
+            padding: SpacingUtils.all(AppSpacing.xl),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Drag handle
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: AppSpacing.l),
+                  decoration: BoxDecoration(
+                    color: AppColors.onSurfaceVariant.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+
+                // Icon
+                Container(
+                  padding: SpacingUtils.all(AppSpacing.l),
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.logout, color: AppColors.error, size: 32),
+                ),
+
+                const SizedBox(height: AppSpacing.l),
+
+                // Title
+                Text(
+                  'Logout',
+                  style: AppTypography.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.onSurface,
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.s),
+
+                // Message
+                Text(
+                  'Are you sure you want to logout? You will need to sign in again to access your account.',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                // Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: AnimatedButtons.secondary(
+                        onPressed: () => Navigator.of(context).pop(),
+                        height: 52,
+                        child: Text(
+                          'Cancel',
+                          style: AppTypography.textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.m),
+                    Expanded(
+                      child: AnimatedButton(
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+                          await authProvider.logout();
+                          if (mounted) {
+                            CustomSnackbar.showSuccess(
+                              context,
+                              message: 'Logged out successfully',
+                            );
+                          }
+                        },
+                        height: 52,
+                        backgroundColor: AppColors.error,
+                        foregroundColor: AppColors.onPrimary,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Text(
+                          'Logout',
+                          style: AppTypography.textTheme.labelLarge?.copyWith(
+                            color: AppColors.onPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: AppSpacing.m),
+              ],
+            ),
+          ),
     );
   }
 

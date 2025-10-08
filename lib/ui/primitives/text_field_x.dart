@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:just_laundrette_app/design_system/spacing_utils.dart';
 import '../../design_system/spacing.dart';
 import '../../design_system/typography.dart';
 import '../../design_system/motion.dart';
@@ -260,6 +261,7 @@ class _TextFieldXState extends State<TextFieldX>
                     color: colorScheme.onSurface,
                   ),
                   decoration: InputDecoration(
+                    filled: false,
                     hintText: widget.hintText,
                     hintStyle: AppTypography.inputHint.copyWith(
                       color: colorScheme.onSurfaceVariant,

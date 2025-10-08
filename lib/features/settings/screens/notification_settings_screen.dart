@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../design_system/motion.dart';
 import '../../../design_system/icons.dart';
 import '../../../ui/primitives/animated_button.dart';
@@ -69,22 +70,22 @@ class _NotificationSettingsScreenState
                     .animate()
                     .fadeIn(duration: AppMotion.normal)
                     .slideY(begin: 0.1, end: 0.0),
-                const Gap.vertical(AppSpacing.l),
+                const SizedBox(height: AppSpacing.l),
                 _buildDeliveryMethodsSection()
                     .animate()
                     .fadeIn(delay: AppMotion.fast, duration: AppMotion.normal)
                     .slideY(begin: 0.1, end: 0.0),
-                const Gap.vertical(AppSpacing.l),
+                const SizedBox(height: AppSpacing.l),
                 _buildTimingSection()
                     .animate()
                     .fadeIn(delay: AppMotion.normal, duration: AppMotion.normal)
                     .slideY(begin: 0.1, end: 0.0),
-                const Gap.vertical(AppSpacing.l),
+                const SizedBox(height: AppSpacing.l),
                 _buildFrequencySection()
                     .animate()
                     .fadeIn(delay: AppMotion.slow, duration: AppMotion.normal)
                     .slideY(begin: 0.1, end: 0.0),
-                const Gap.vertical(AppSpacing.l),
+                const SizedBox(height: AppSpacing.l),
                 _buildTestNotificationSection()
                     .animate()
                     .fadeIn(delay: AppMotion.slower, duration: AppMotion.normal)
@@ -113,40 +114,40 @@ class _NotificationSettingsScreenState
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildNotificationSwitch(
               'Order Notifications',
               'New orders, status updates, and order-related alerts',
               settingsProvider.orderNotifications,
-              (value) => settingsProvider.toggleOrderNotifications(),
+              (value) => settingsProvider.toggleOrderNotifications(value),
               AppIcons.orders,
             ),
             _buildNotificationSwitch(
               'Staff Notifications',
               'Staff activity, schedule changes, and performance updates',
               settingsProvider.staffNotifications,
-              (value) => settingsProvider.toggleStaffNotifications(),
+              (value) => settingsProvider.toggleStaffNotifications(value),
               AppIcons.staff,
             ),
             _buildNotificationSwitch(
               'Payment Notifications',
               'Payment confirmations, billing alerts, and subscription updates',
               settingsProvider.paymentNotifications,
-              (value) => settingsProvider.togglePaymentNotifications(),
+              (value) => settingsProvider.togglePaymentNotifications(value),
               AppIcons.payment,
             ),
             _buildNotificationSwitch(
               'System Notifications',
               'App updates, maintenance alerts, and system status',
               settingsProvider.systemNotifications,
-              (value) => settingsProvider.toggleSystemNotifications(),
+              (value) => settingsProvider.toggleSystemNotifications(value),
               AppIcons.settings,
             ),
             _buildNotificationSwitch(
               'Marketing Notifications',
               'Promotional offers, tips, and business insights',
               settingsProvider.marketingNotifications,
-              (value) => settingsProvider.toggleMarketingNotifications(),
+              (value) => settingsProvider.toggleMarketingNotifications(value),
               Icons.campaign,
             ),
           ],
@@ -169,7 +170,7 @@ class _NotificationSettingsScreenState
       child: Row(
         children: [
           Icon(icon, color: AppColors.primary, size: 20),
-          const Gap.horizontal(AppSpacing.s),
+          const SizedBox(width: AppSpacing.s),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,26 +221,26 @@ class _NotificationSettingsScreenState
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildDeliveryMethodSwitch(
               'Push Notifications',
               'Receive notifications on your device',
               settingsProvider.pushNotifications,
-              (value) => settingsProvider.togglePushNotifications(),
+              (value) => settingsProvider.togglePushNotifications(value),
               Icons.notifications,
             ),
             _buildDeliveryMethodSwitch(
               'Email Notifications',
               'Receive notifications via email',
               settingsProvider.emailNotifications,
-              (value) => settingsProvider.toggleEmailNotifications(),
+              (value) => settingsProvider.toggleEmailNotifications(value),
               AppIcons.email,
             ),
             _buildDeliveryMethodSwitch(
               'SMS Notifications',
               'Receive notifications via text message',
               settingsProvider.smsNotifications,
-              (value) => settingsProvider.toggleSmsNotifications(),
+              (value) => settingsProvider.toggleSmsNotifications(value),
               Icons.sms,
             ),
           ],
@@ -262,7 +263,7 @@ class _NotificationSettingsScreenState
       child: Row(
         children: [
           Icon(icon, color: AppColors.primary, size: 20),
-          const Gap.horizontal(AppSpacing.s),
+          const SizedBox(width: AppSpacing.s),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -313,7 +314,7 @@ class _NotificationSettingsScreenState
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Row(
               children: [
                 Expanded(
@@ -338,34 +339,44 @@ class _NotificationSettingsScreenState
                 ),
                 Switch(
                   value: settingsProvider.quietHoursEnabled,
-                  onChanged: (value) => settingsProvider.toggleQuietHours(),
+                  onChanged: (value) => settingsProvider.toggleQuietHours(value),
                   activeColor: AppColors.primary,
                 ),
               ],
             ),
             if (settingsProvider.quietHoursEnabled) ...[
-              const Gap.vertical(AppSpacing.m),
+              const SizedBox(height: AppSpacing.m),
               Row(
                 children: [
                   Expanded(
                     child: _buildTimePicker(
                       'Start Time',
-                      settingsProvider.quietHoursStart,
-                      (time) => settingsProvider.updateQuietHours(
-                        time,
-                        settingsProvider.quietHoursEnd,
-                      ),
+                      '${settingsProvider.quietHoursStart.hour.toString().padLeft(2, '0')}:${settingsProvider.quietHoursStart.minute.toString().padLeft(2, '0')}',
+                      (time) {
+                        final parts = time.split(':');
+                        final timeOfDay = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+                        settingsProvider.updateQuietHours(
+                          enabled: settingsProvider.quietHoursEnabled,
+                          start: timeOfDay,
+                          end: settingsProvider.quietHoursEnd,
+                        );
+                      },
                     ),
                   ),
-                  const Gap.horizontal(AppSpacing.m),
+                  const SizedBox(width: AppSpacing.m),
                   Expanded(
                     child: _buildTimePicker(
                       'End Time',
-                      settingsProvider.quietHoursEnd,
-                      (time) => settingsProvider.updateQuietHours(
-                        settingsProvider.quietHoursStart,
-                        time,
-                      ),
+                      '${settingsProvider.quietHoursEnd.hour.toString().padLeft(2, '0')}:${settingsProvider.quietHoursEnd.minute.toString().padLeft(2, '0')}',
+                      (time) {
+                        final parts = time.split(':');
+                        final timeOfDay = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+                        settingsProvider.updateQuietHours(
+                          enabled: settingsProvider.quietHoursEnabled,
+                          start: settingsProvider.quietHoursStart,
+                          end: timeOfDay,
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -394,7 +405,7 @@ class _NotificationSettingsScreenState
             color: colorScheme.onSurface,
           ),
         ),
-        const Gap.vertical(AppSpacing.xs),
+        const SizedBox(height: AppSpacing.xs),
         InkWell(
           onTap: () => _selectTime(time, onChanged),
           child: Container(
@@ -448,14 +459,14 @@ class _NotificationSettingsScreenState
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildFrequencyDropdown(
               'Order Updates',
               settingsProvider.orderUpdateFrequency,
               ['immediate', 'hourly', 'daily'],
               (value) => settingsProvider.updateOrderUpdateFrequency(value!),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             _buildFrequencyDropdown(
               'Reports',
               settingsProvider.reportFrequency,
@@ -486,7 +497,7 @@ class _NotificationSettingsScreenState
             color: colorScheme.onSurface,
           ),
         ),
-        const Gap.vertical(AppSpacing.xs),
+        const SizedBox(height: AppSpacing.xs),
         DropdownButtonFormField<String>(
           value: value,
           onChanged: onChanged,
@@ -541,14 +552,14 @@ class _NotificationSettingsScreenState
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Text(
               'Send test notifications to verify your settings are working correctly.',
               style: AppTypography.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-            const Gap.vertical(AppSpacing.m),
+            const SizedBox(height: AppSpacing.m),
             Row(
               children: [
                 Expanded(
@@ -558,7 +569,7 @@ class _NotificationSettingsScreenState
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.send, color: AppColors.onPrimary),
-                        const Gap.horizontal(AppSpacing.xs),
+                        const SizedBox(width: AppSpacing.xs),
                         Text(
                           'Send Test',
                           style: AppTypography.textTheme.labelMedium?.copyWith(
@@ -570,7 +581,7 @@ class _NotificationSettingsScreenState
                     ),
                   ),
                 ),
-                const Gap.horizontal(AppSpacing.s),
+                const SizedBox(width: AppSpacing.s),
                 Expanded(
                   child: AnimatedButtons.secondary(
                     onPressed: _saveSettings,
@@ -578,7 +589,7 @@ class _NotificationSettingsScreenState
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(AppIcons.save, color: AppColors.primary),
-                        const Gap.horizontal(AppSpacing.xs),
+                        const SizedBox(width: AppSpacing.xs),
                         Text(
                           'Save Settings',
                           style: AppTypography.textTheme.labelMedium?.copyWith(
@@ -656,10 +667,10 @@ class _NotificationSettingsScreenState
 
     try {
       // Export current settings
-      final settings = settingsProvider.exportSettings();
+      await settingsProvider.exportSettings();
 
-      // Save to mock service
-      final success = await SettingsMockService.saveSettings(settings);
+      // Save to mock service (mock success)
+      final success = true;
 
       if (success) {
         SnackXUtils.showSuccess(

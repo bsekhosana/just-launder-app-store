@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/spacing_utils.dart';
 import '../../../ui/primitives/card_x.dart';
 import '../../../data/models/laundrette_order.dart';
 
@@ -28,7 +29,7 @@ class OrderStatsWidget extends StatelessWidget {
                 color: colorScheme.onSurface,
               ),
             ),
-            const Gap.vertical(AppSpacing.l),
+            const SizedBox(height: AppSpacing.l),
             Row(
               children: [
                 Expanded(
