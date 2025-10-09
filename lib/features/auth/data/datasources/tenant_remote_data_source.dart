@@ -236,7 +236,7 @@ class TenantRemoteDataSource {
   Future<Map<String, dynamic>> logout() async {
     try {
       final response = await http.post(
-        Uri.parse('$apiBaseUrl/v1/tenant/logout'),
+        Uri.parse('$apiBaseUrl/tenant/logout'),
         headers: _headers,
       );
 
@@ -253,10 +253,15 @@ class TenantRemoteDataSource {
   /// Get onboarding status
   Future<Map<String, dynamic>> getOnboardingStatus() async {
     try {
-      final response = await http.get(
-        Uri.parse('$apiBaseUrl/v1/tenant/onboarding/status'),
-        headers: _headers,
-      );
+      final url = '$apiBaseUrl/tenant/onboarding/status';
+      print('🔍 Full URL: $url');
+      print('🔍 API Base URL: $apiBaseUrl');
+      print('🔍 Has Auth Token: ${_authToken != null}');
+
+      final response = await http.get(Uri.parse(url), headers: _headers);
+
+      print('🔍 Response Status: ${response.statusCode}');
+      print('🔍 Response Body: ${response.body}');
 
       return _handleResponse(response);
     } on SocketException {
@@ -272,7 +277,7 @@ class TenantRemoteDataSource {
   Future<Map<String, dynamic>> getOnboardingProgress() async {
     try {
       final response = await http.get(
-        Uri.parse('$apiBaseUrl/v1/tenant/onboarding/status'),
+        Uri.parse('$apiBaseUrl/tenant/onboarding/status'),
         headers: _headers,
       );
 
@@ -411,12 +416,12 @@ class TenantRemoteDataSource {
       };
 
       LogHelper.api(
-        'Making profile update request to $apiBaseUrl/v1/tenant/profile',
+        'Making profile update request to $apiBaseUrl/tenant/profile',
       );
       LogHelper.api('Profile update payload: ${jsonEncode(data)}');
 
       final response = await http.put(
-        Uri.parse('$apiBaseUrl/v1/tenant/profile'),
+        Uri.parse('$apiBaseUrl/tenant/profile'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_authToken',
@@ -451,11 +456,11 @@ class TenantRemoteDataSource {
       final data = <String, dynamic>{'type': type};
 
       LogHelper.api(
-        'Making send profile OTP request to $apiBaseUrl/v1/tenant/profile/send-otp',
+        'Making send profile OTP request to $apiBaseUrl/tenant/profile/send-otp',
       );
 
       final response = await http.post(
-        Uri.parse('$apiBaseUrl/v1/tenant/profile/send-otp'),
+        Uri.parse('$apiBaseUrl/tenant/profile/send-otp'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_authToken',
