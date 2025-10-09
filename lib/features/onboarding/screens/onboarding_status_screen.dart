@@ -25,8 +25,7 @@ class OnboardingStatusScreen extends StatefulWidget {
 
 class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   Timer? _pollingTimer;
-  static const int _pollingIntervalSeconds =
-      5; // Temporarily reduced for debugging
+  static const int _pollingIntervalSeconds = 15;
 
   @override
   void initState() {
