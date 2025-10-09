@@ -54,7 +54,7 @@ dependencies:
   url_launcher: ^6.3.1
   
   # Biometric authentication
-  local_auth: ^2.3.0
+  # local_auth: ^2.3.0  # Temporarily disabled due to Swift concurrency issue
 
 dev_dependencies:
   flutter_test:
