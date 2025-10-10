@@ -183,7 +183,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               duration: AppMotion.fast,
               curve: AppCurves.standard,
               begin: const Offset(1.0, 1.0),
-              end: Offset(isSelected ? 1.05 : 1.0, isSelected ? 1.05 : 1.0), // Scale up selected item
+              end: Offset(
+                isSelected ? 1.05 : 1.0,
+                isSelected ? 1.05 : 1.0,
+              ), // Scale up selected item
             ),
             const SizedBox(height: AppSpacing.xs),
             Flexible(

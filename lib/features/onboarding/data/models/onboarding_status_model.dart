@@ -48,7 +48,7 @@ class OnboardingStatusModel extends Equatable {
           OnboardingStep._parseBool(json['onboarding_completed']) ?? false,
       currentStep: _parseCurrentStep(json['current_step']),
       completedSteps: completedStepsList,
-      totalSteps: json['total_steps'] as int? ?? 7,
+      totalSteps: json['total_steps'] as int? ?? 5,
       progressPercentage:
           (json['progress_percentage'] as num?)?.toDouble() ?? 0.0,
       steps:
@@ -90,31 +90,42 @@ class OnboardingStatusModel extends Equatable {
   ];
 
   /// Helper method to parse current step from various types (int, string)
+  /// This method is used for fallback only - the actual current step should be determined
+  /// dynamically based on the steps fetched from the backend
   static int _parseCurrentStep(dynamic value) {
     if (value == null) return 1;
     if (value is int) return value;
     if (value is String) {
-      // Map step IDs to step numbers
-      switch (value) {
-        case 'personal_info':
-          return 1;
-        case 'business_info':
-          return 2;
-        case 'business_documents':
-          return 3;
-        case 'bank_details':
-          return 4;
-        case 'subscription':
-          return 5;
-        case 'branches':
-          return 6;
-        case 'service_items':
-          return 7;
-        default:
-          return 1;
-      }
+      // For string step IDs, return 1 as fallback
+      // The actual current step will be determined dynamically in the UI
+      return 1;
     }
     return 1;
+  }
+
+  /// Get the current step index based on the current step ID from backend
+  /// This dynamically finds the step index in the steps array
+  int get currentStepIndex {
+    // Find the first step that is not completed
+    for (int i = 0; i < steps.length; i++) {
+      if (!completedSteps.contains(steps[i].id)) {
+        return i;
+      }
+    }
+    // If all steps are completed, return the last step
+    return steps.length - 1;
+  }
+
+  /// Get the current step ID from backend (the step that needs to be completed next)
+  String? get currentStepId {
+    // Find the first step that is not completed
+    for (final step in steps) {
+      if (!completedSteps.contains(step.id)) {
+        return step.id;
+      }
+    }
+    // If all steps are completed, return null
+    return null;
   }
 }
 

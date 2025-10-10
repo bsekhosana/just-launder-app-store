@@ -1,11 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:just_laundrette_app/design_system/spacing.dart';
-import 'package:just_laundrette_app/design_system/typography.dart';
-import '../../design_system/color_schemes.dart';
 import '../../design_system/theme.dart';
-import '../../design_system/radii.dart';
 import '../widgets/animated_auth_screen.dart';
 import '../widgets/watermark_background.dart';
 import '../widgets/custom_snackbar.dart';
@@ -140,7 +136,7 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
       setState(() {
         _errorMessage = e.toString();
       });
-      CustomSnackbar.showError(_errorMessage!);
+      CustomSnackbar.showError(context, message: _errorMessage!);
     } finally {
       if (mounted) {
         setState(() {
@@ -181,16 +177,19 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
     try {
       final success = await widget.onResendOtp();
       if (success) {
-        CustomSnackbar.showSuccess('Verification code sent again');
+        CustomSnackbar.showSuccess(
+          context,
+          message: 'Verification code sent again',
+        );
         _startResendCountdown();
         _clearOtpFields();
       } else {
         _errorMessage = 'Failed to resend verification code.';
-        CustomSnackbar.showError(_errorMessage!);
+        CustomSnackbar.showError(context, message: _errorMessage!);
       }
     } catch (e) {
       _errorMessage = 'Error: ${e.toString()}';
-      CustomSnackbar.showError(_errorMessage!);
+      CustomSnackbar.showError(context, message: _errorMessage!);
     } finally {
       if (mounted) {
         setState(() {
@@ -248,6 +247,18 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
       child: AnimatedAuthScreen(
         title: _getTitle(),
         subtitle: _getSubtitle(),
+        icon: Padding(
+          padding: const EdgeInsets.all(AppSpacing.l),
+          child: Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: AppColors.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.sms, color: AppColors.primary, size: 40),
+          ),
+        ),
         showAppBar: true,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -258,7 +269,7 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
             _buildOtpInput(),
 
             if (_errorMessage != null) ...[
-              SizedBox(height: AppSpacing.lg),
+              SizedBox(height: AppSpacing.l),
               _buildErrorMessage(),
             ],
 
@@ -292,7 +303,7 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
             maxLength: 1,
-            style: AppTypography.headlineSmall?.copyWith(
+            style: AppTypography.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: Colors.grey[800], // Dark grey text
             ),
@@ -301,15 +312,15 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
               filled: true,
               fillColor: AppColors.surface,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(Radii.md),
+                borderRadius: BorderRadius.circular(AppRadii.m),
                 borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(Radii.md),
+                borderRadius: BorderRadius.circular(AppRadii.m),
                 borderSide: BorderSide(color: AppColors.primary, width: 2),
               ),
               errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(Radii.md),
+                borderRadius: BorderRadius.circular(AppRadii.m),
                 borderSide: BorderSide(color: AppColors.error),
               ),
             ),
@@ -341,20 +352,20 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
 
   Widget _buildErrorMessage() {
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.m),
       decoration: BoxDecoration(
         color: AppColors.error.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(Radii.md),
+        borderRadius: BorderRadius.circular(AppRadii.m),
         border: Border.all(color: AppColors.error.withOpacity(0.3)),
       ),
       child: Row(
         children: [
           Icon(Icons.error_outline, color: AppColors.error, size: 20),
-          SizedBox(width: AppSpacing.sm),
+          SizedBox(width: AppSpacing.s),
           Expanded(
             child: Text(
               _errorMessage!,
-              style: AppTypography.bodyMedium?.copyWith(
+              style: AppTypography.textTheme.bodyMedium?.copyWith(
                 color: AppColors.error,
                 fontWeight: FontWeight.w500,
               ),
@@ -371,16 +382,16 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
       onPressed: _isLoading ? null : _verifyOtp,
       backgroundColor: AppColors.primary,
       foregroundColor: AppColors.onPrimary,
-      borderRadius: BorderRadius.circular(Radii.lg),
+      borderRadius: BorderRadius.circular(AppRadii.l),
       height: 56,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.verified, size: 20, color: AppColors.onPrimary),
-          SizedBox(width: AppSpacing.sm),
+          SizedBox(width: AppSpacing.s),
           Text(
             'Verify Code',
-            style: AppTypography.labelLarge?.copyWith(
+            style: AppTypography.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.onPrimary,
             ),
@@ -395,15 +406,15 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
       children: [
         Text(
           'Didn\'t receive the code?',
-          style: AppTypography.bodyMedium?.copyWith(
+          style: AppTypography.textTheme.bodyMedium?.copyWith(
             color: AppColors.onSurfaceVariant,
           ),
         ),
-        SizedBox(height: AppSpacing.sm),
+        SizedBox(height: AppSpacing.s),
         if (_resendCountdown > 0)
           Text(
             'Resend code in ${_resendCountdown}s',
-            style: AppTypography.bodyMedium?.copyWith(
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
               color: AppColors.onSurfaceVariant,
             ),
           )
@@ -413,16 +424,16 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
             isLoading: _isResending,
             backgroundColor: AppColors.surface,
             foregroundColor: AppColors.primary,
-            borderRadius: BorderRadius.circular(Radii.lg),
+            borderRadius: BorderRadius.circular(AppRadii.l),
             height: 48,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.refresh, size: 18, color: AppColors.primary),
-                SizedBox(width: AppSpacing.sm),
+                SizedBox(width: AppSpacing.s),
                 Text(
                   'Resend Code',
-                  style: AppTypography.labelMedium?.copyWith(
+                  style: AppTypography.textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.primary,
                   ),

@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../design_system/theme.dart';
-import '../../../core/widgets/animated_auth_screen.dart';
+import '../../../design_system/color_schemes.dart';
+import '../../../design_system/typography.dart';
 import '../../../core/widgets/watermark_background.dart';
 import '../../../ui/primitives/text_field_x.dart';
 import '../../../ui/primitives/animated_button.dart';
 import '../../../core/widgets/custom_snackbar.dart';
-import '../../../core/services/navigation_service.dart';
 import '../../../core/widgets/reusable_otp_screen.dart';
 import '../../../core/utils/log_helper.dart';
 import '../../auth/providers/auth_provider.dart';
 
-/// Edit Profile screen for updating user information
+/// Edit Profile screen for updating tenant information
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
 
@@ -21,6 +20,7 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
+  
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -47,32 +47,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   void _loadUserData() {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final user = authProvider.currentUser;
+    final tenant = authProvider.currentTenant;
 
-    if (user != null) {
-      _firstNameController.text = user.firstName;
-      _lastNameController.text = user.lastName;
-      _emailController.text = user.email;
-      _mobileController.text = user.mobile ?? '';
+    if (tenant != null) {
+      _firstNameController.text = tenant.firstName;
+      _lastNameController.text = tenant.lastName;
+      _emailController.text = tenant.email;
+      _mobileController.text = tenant.mobile;
     }
   }
 
   void _checkForChanges() {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final user = authProvider.currentUser;
+    final tenant = authProvider.currentTenant;
 
-    if (user != null) {
+    if (tenant != null) {
       setState(() {
-        _isEmailChanged = _emailController.text.trim() != user.email;
-        _isMobileChanged = _mobileController.text.trim() != (user.mobile ?? '');
+        _isEmailChanged = _emailController.text.trim() != tenant.email;
+        _isMobileChanged = _mobileController.text.trim() != tenant.mobile;
       });
     }
   }
 
   Future<void> _handleSaveProfile() async {
     if (!_formKey.currentState!.validate()) return;
-
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     // Check if email or mobile changed - require OTP verification
     if (_isEmailChanged || _isMobileChanged) {
@@ -91,24 +89,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final tenant = authProvider.currentTenant;
 
-      // Send OTP first
-      final success = await authProvider.sendProfileOtp(type: 'email');
+      if (tenant == null) {
+        throw Exception('Tenant not found');
+      }
+
+      // Send OTP for profile changes
+      final success = await authProvider.sendProfileOtp(type: 'profile_change');
 
       if (success) {
-        LogHelper.auth('OTP sent for profile edit');
+        LogHelper.auth('OTP sent for profile changes');
 
         if (mounted) {
-          // Navigate to OTP verification screen
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder:
-                  (context) => ReusableOtpScreen(
-                    email: _emailController.text.trim(),
-                    purpose: 'profile_edit',
-                    onOtpVerified: _handleOtpVerified,
-                    onResendOtp: _resendOtp,
-                  ),
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ReusableOtpScreen(
+                  email: tenant.email,
+              purpose: 'profile_edit',
+              onOtpVerified: _handleOtpVerified,
+              onResendOtp: _resendOtp,
+                ),
             ),
           );
         }
@@ -116,18 +117,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (mounted) {
           CustomSnackbar.showError(
             context,
-            message:
-                authProvider.error ??
-                'Failed to send verification code. Please try again.',
+            message: 'Failed to send verification code. Please try again.',
           );
         }
       }
     } catch (e) {
-      LogHelper.error('Failed to send OTP for profile edit: $e');
-
+      LogHelper.error('Error sending OTP for profile changes: $e');
       if (mounted) {
         CustomSnackbar.showError(
-          'Failed to send verification code. Please try again.',
+          context,
+          message: 'Failed to send verification code. Please try again.',
         );
       }
     } finally {
@@ -139,41 +138,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  void _navigateToOtpVerification() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder:
-            (context) => ReusableOtpScreen(
-              email: _emailController.text.trim(),
-              purpose: 'profile_edit',
-              onOtpVerified: _handleOtpVerified,
-              onResendOtp: _resendOtp,
-            ),
-      ),
-    );
-  }
-
   Future<void> _handleOtpVerified(String otp) async {
-    LogHelper.auth('OTP verified for profile edit: $otp');
-
-    // Proceed with profile update with OTP
+    LogHelper.auth('OTP verified for profile changes: $otp');
     await _updateProfile(otp: otp);
   }
 
   Future<bool> _resendOtp() async {
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
-      final success = await authProvider.sendProfileOtp(type: 'email');
-
-      if (!success) {
-        throw Exception(authProvider.error ?? 'Failed to send OTP');
-      }
-
-      LogHelper.auth('OTP resent for profile edit');
-      return true;
+      final success = await authProvider.sendProfileOtp(type: 'profile_change');
+      
+      LogHelper.auth('OTP resent for profile changes');
+      return success;
     } catch (e) {
-      LogHelper.error('Failed to resend OTP for profile edit: $e');
+      LogHelper.error('Failed to resend OTP for profile changes: $e');
       return false;
     }
   }
@@ -186,14 +164,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-      final success = await authProvider.updateProfileWithOtp(
+      final success = await authProvider.updateProfile(
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
         email: _emailController.text.trim(),
-        mobile:
-            _mobileController.text.trim().isNotEmpty
-                ? _mobileController.text.trim()
-                : null,
+        mobile: _mobileController.text.trim().isNotEmpty ? _mobileController.text.trim() : null,
         otp: otp,
       );
 
@@ -201,21 +176,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         LogHelper.auth('Profile updated successfully');
 
         if (mounted) {
-          CustomSnackbar.showSuccess('Profile updated successfully!');
+          CustomSnackbar.showSuccess(
+            context,
+            message: 'Profile updated successfully',
+          );
           Navigator.of(context).pop();
         }
       } else {
         if (mounted) {
           CustomSnackbar.showError(
-            authProvider.error ?? 'Failed to update profile. Please try again.',
+            context,
+            message: authProvider.error ?? 'Failed to update profile. Please try again.',
           );
         }
       }
     } catch (e) {
-      LogHelper.error('Failed to update profile: $e');
-
+      LogHelper.error('Error updating profile: $e');
       if (mounted) {
-        CustomSnackbar.showError('Failed to update profile. Please try again.');
+        CustomSnackbar.showError(
+          context,
+          message: 'Failed to update profile. Please try again.',
+        );
       }
     } finally {
       if (mounted) {
@@ -228,112 +209,143 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: WatermarkBackground(
+    return WatermarkBackgroundBuilder.bottomRight(
         icon: Icons.person,
-        iconColor: AppColors.primary,
+      iconColor: AppColors.primary.withOpacity(0.15),
+      iconSizePercentage: 0.35,
+      iconShift: -15.0,
         margin: const EdgeInsets.all(16),
-        opacity: 0.10,
-        iconSizePercentage: 0.45,
-        iconShift: -15.0,
-        child: AnimatedAuthScreen(
-          title: 'Edit Profile',
-          subtitle: 'Update your personal information',
-          icon: Padding(
-            padding: EdgeInsets.all(AppSpacing.l),
+      respectSafeArea: false,
             child: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: AppColors.primaryContainer,
-                shape: BoxShape.circle,
+        color: Colors.white,
+        child: Scaffold(
+          extendBodyBehindAppBar: true,
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: AppColors.onSurface),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: Text(
+              'Edit Profile',
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: AppColors.onSurface,
+                fontWeight: FontWeight.w600,
               ),
-              child: Icon(Icons.person, color: AppColors.primary, size: 40),
             ),
           ),
-          showAppBar: true,
-          child: Form(
+          body: SafeArea(
+            child: Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: AppSpacing.xxl),
-
-                // First Name
+                    const SizedBox(height: 40),
+                    
+                    // Header Icon
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.person,
+                        size: 40,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    Text(
+                      'Update Your Profile',
+                      style: AppTypography.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.onSurface,
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 8),
+                    
+                    Text(
+                      'Keep your information up to date',
+                      style: AppTypography.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 32),
+                    
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          children: [
                 TextFieldX(
                   controller: _firstNameController,
                   labelText: 'First Name',
                   hintText: 'Enter your first name',
-                  prefixIcon: Icons.person_outline,
-                  textInputAction: TextInputAction.next,
+                              prefixIcon: Icons.person,
                   onChanged: (_) => _checkForChanges(),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'First name is required';
+                                  return 'Please enter your first name';
                     }
                     return null;
                   },
                 ),
 
-                SizedBox(height: AppSpacing.l),
+                            const SizedBox(height: 16),
 
-                // Last Name
                 TextFieldX(
                   controller: _lastNameController,
                   labelText: 'Last Name',
                   hintText: 'Enter your last name',
-                  prefixIcon: Icons.person_outline,
-                  textInputAction: TextInputAction.next,
+                              prefixIcon: Icons.person,
                   onChanged: (_) => _checkForChanges(),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Last name is required';
+                                  return 'Please enter your last name';
                     }
                     return null;
                   },
                 ),
 
-                SizedBox(height: AppSpacing.l),
+                            const SizedBox(height: 16),
 
-                // Email
                 TextFieldX(
                   controller: _emailController,
                   labelText: 'Email Address',
                   hintText: 'Enter your email address',
-                  prefixIcon: Icons.email_outlined,
+                              prefixIcon: Icons.email,
                   keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
                   onChanged: (_) => _checkForChanges(),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Email is required';
+                                  return 'Please enter your email address';
                     }
-                    if (!RegExp(
-                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                    ).hasMatch(value)) {
+                                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                       return 'Please enter a valid email address';
                     }
                     return null;
                   },
                 ),
 
-                SizedBox(height: AppSpacing.l),
+                            const SizedBox(height: 16),
 
-                // Mobile
                 TextFieldX(
                   controller: _mobileController,
                   labelText: 'Mobile Number',
                   hintText: 'Enter your mobile number',
-                  prefixIcon: Icons.phone_outlined,
+                              prefixIcon: Icons.phone,
                   keyboardType: TextInputType.phone,
-                  textInputAction: TextInputAction.done,
                   onChanged: (_) => _checkForChanges(),
                   validator: (value) {
                     if (value != null && value.trim().isNotEmpty) {
-                      if (!RegExp(
-                        r'^\+?[1-9]\d{1,14}$',
-                      ).hasMatch(value.replaceAll(' ', ''))) {
+                                  if (value.length < 10) {
                         return 'Please enter a valid mobile number';
                       }
                     }
@@ -341,18 +353,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   },
                 ),
 
-                SizedBox(height: AppSpacing.xl),
+                            const SizedBox(height: 32),
 
-                // OTP requirement notice
                 if (_isEmailChanged || _isMobileChanged) ...[
                   Container(
-                    padding: EdgeInsets.all(AppSpacing.m),
+                                padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryContainer.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(AppRadii.m),
+                                  color: AppColors.primary.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: AppColors.primary.withOpacity(0.3),
-                        width: 1,
                       ),
                     ),
                     child: Row(
@@ -362,42 +372,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           color: AppColors.primary,
                           size: 20,
                         ),
-                        SizedBox(width: AppSpacing.s),
+                                    const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'Changing email or mobile number requires verification. You will receive an OTP to confirm the changes.',
+                                        'Changing your email or mobile number requires verification',
                             style: AppTypography.textTheme.bodySmall?.copyWith(
-                              color: AppColors.onSurfaceVariant,
+                                          color: AppColors.primary,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: AppSpacing.l),
+                              const SizedBox(height: 16),
                 ],
 
-                // Save button
-                AnimatedButton(
-                  isLoading: _isLoading,
-                  onPressed: _isLoading ? null : _handleSaveProfile,
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.onPrimary,
-                  borderRadius: BorderRadius.circular(AppRadii.l),
-                  height: 56,
-                  child: Text(
-                    'Save Changes',
-                    style: AppTypography.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.onPrimary,
+                            AnimatedButton(
+                              onPressed: _isLoading ? null : _handleSaveProfile,
+                              isLoading: _isLoading,
+                              height: 56,
+                              child: Text(
+                                'Save Changes',
+                                style: AppTypography.textTheme.titleMedium?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-
-                SizedBox(height: AppSpacing.xl),
-              ],
+              ),
             ),
-          ),
         ),
       ),
     );

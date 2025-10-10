@@ -96,8 +96,11 @@ class WatermarkBackground extends StatelessWidget {
 
     // Fallbacks remain
     if (icon is IconDataSolid) {
-      return FaIcon(icon as IconDataSolid,
-          size: responsiveIconSize, color: iconColor);
+      return FaIcon(
+        icon as IconDataSolid,
+        size: responsiveIconSize,
+        color: iconColor,
+      );
     }
 
     return Icon(Icons.help_outline, size: responsiveIconSize, color: iconColor);

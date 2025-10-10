@@ -15,6 +15,9 @@ import '../../../data/models/subscription.dart';
 import 'subscription_management_screen.dart';
 import 'notification_settings_screen.dart';
 import 'system_preferences_screen.dart';
+import '../../../core/services/navigation_service.dart';
+import '../../profile/screens/edit_profile_screen.dart';
+import '../../profile/screens/change_password_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -78,13 +81,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           'Edit Profile',
                           'Update your business information',
                           Icons.edit,
-                          () => _showEditProfileDialog(),
+                          () => Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                          ),
                         ),
                         _buildSettingsItem(
                           'Change Password',
                           'Update your account password',
                           Icons.lock,
-                          () => _showChangePasswordDialog(),
+                          () => Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
+                          ),
                         ),
                         _buildSettingsItem(
                           'Language',
@@ -581,48 +588,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: AppSpacing.m),
               ],
             ),
-          ),
+      ),
     );
   }
 
   // Dialog methods
-  void _showEditProfileDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Edit Profile'),
-            content: const Text(
-              'Edit profile functionality will be implemented soon.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-    );
-  }
-
-  void _showChangePasswordDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Change Password'),
-            content: const Text(
-              'Change password functionality will be implemented soon.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-    );
-  }
 
   void _showLanguageDialog() {
     showDialog(

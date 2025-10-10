@@ -18,6 +18,7 @@ import 'features/onboarding/screens/onboarding_status_screen.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/email_verification_awaiting_screen.dart';
 import 'features/auth/screens/onboarding_screen.dart';
+import 'core/services/auth_handler_service.dart';
 
 void main() {
   runApp(const JustLaundretteApp());
@@ -74,6 +75,16 @@ class AppWrapper extends StatefulWidget {
 }
 
 class _AppWrapperState extends State<AppWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the auth handler service
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      AuthHandlerService().initialize(authProvider, context);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: true);

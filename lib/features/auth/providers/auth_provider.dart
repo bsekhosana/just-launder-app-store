@@ -135,6 +135,29 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Force logout (for handling 401 errors)
+  Future<void> forceLogout() async {
+    try {
+      LogHelper.auth('Force logout triggered - clearing authentication state');
+      
+      // Clear authentication state
+      _isAuthenticated = false;
+      _currentTenant = null;
+      _pendingEmail = null;
+      _pendingOTP = null;
+      _clearError();
+      
+      // Clear stored data
+      await _localDataSource.clearAll();
+      await TenantRemoteDataSource.clearAuthToken();
+      
+      LogHelper.auth('Force logout completed');
+      notifyListeners();
+    } catch (e) {
+      LogHelper.error('Error during force logout: $e');
+    }
+  }
+
   /// Logout
   Future<void> logout() async {
     try {
@@ -409,6 +432,23 @@ class AuthProvider extends ChangeNotifier {
     } finally {
       _setLoading(false);
     }
+  }
+
+  /// Update tenant profile (wrapper for updateProfileWithOtp)
+  Future<bool> updateProfile({
+    required String firstName,
+    required String lastName,
+    required String email,
+    String? mobile,
+    String? otp,
+  }) async {
+    return await updateProfileWithOtp(
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      mobile: mobile,
+      otp: otp,
+    );
   }
 
   /// Send OTP for profile changes

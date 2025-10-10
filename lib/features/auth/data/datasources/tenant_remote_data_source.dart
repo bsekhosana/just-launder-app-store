@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/tenant_model.dart';
 import '../models/api_response_model.dart';
-import '../../../onboarding/data/models/onboarding_status_model.dart';
+import 'tenant_local_data_source.dart';
 import '../../../../core/utils/log_helper.dart';
+import '../../../../core/services/auth_handler_service.dart';
 
 /// Remote data source for tenant authentication API calls
 class TenantRemoteDataSource {
@@ -324,6 +324,14 @@ class TenantRemoteDataSource {
           'message': jsonData['message'],
         };
       } else {
+        // Handle authentication errors (401) - clear auth state and redirect to login
+        if (statusCode == 401) {
+          LogHelper.auth(
+            '401 Unauthorized detected - clearing authentication state',
+          );
+          _handleUnauthorized();
+        }
+
         // Handle specific error cases
         String errorMessage = _getErrorMessage(statusCode, jsonData);
 
@@ -342,6 +350,38 @@ class TenantRemoteDataSource {
         'error': errorMessage,
         'statusCode': statusCode,
       };
+    }
+  }
+
+  /// Handle unauthorized access by clearing authentication state
+  static void _handleUnauthorized() async {
+    try {
+      LogHelper.auth('Handling unauthorized access - clearing auth state');
+
+      // Use the global auth handler service
+      final authHandler = AuthHandlerService();
+      if (authHandler.isInitialized) {
+        await authHandler.handleUnauthorized();
+      } else {
+        LogHelper.auth(
+          'AuthHandlerService not initialized - falling back to manual cleanup',
+        );
+
+        // Fallback: Clear the static auth token
+        _authToken = null;
+
+        // Clear stored token from SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('auth_token');
+
+        // Clear all authentication data from local storage
+        final localDataSource = TenantLocalDataSource();
+        await localDataSource.clearAll();
+      }
+
+      LogHelper.auth('Authentication state cleared successfully');
+    } catch (e) {
+      LogHelper.error('Error clearing authentication state: $e');
     }
   }
 

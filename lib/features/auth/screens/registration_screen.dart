@@ -24,19 +24,33 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _businessNameController = TextEditingController();
+
+  // Tenant Type Selection
+  String? _selectedTenantType;
+  final List<Map<String, String>> _tenantTypes = [
+    {'value': 'tenant', 'label': 'Business Tenant'},
+    {'value': 'private_tenant', 'label': 'Private Tenant'},
+  ];
+
+  // Personal Details
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _mobileController = TextEditingController();
+
+  // Authentication
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
   bool _isLoading = false;
   bool _agreeToTerms = false;
 
   @override
   void dispose() {
-    _businessNameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _mobileController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -44,6 +58,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_selectedTenantType == null) {
+      CustomSnackbar.showError(
+        context,
+        message: 'Please select your tenant type',
+      );
+      return;
+    }
     if (!_agreeToTerms) {
       CustomSnackbar.showError(
         context,
@@ -57,18 +78,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final success = await authProvider.register(
-        tenantType: 'business',
-        firstName: _businessNameController.text.trim().split(' ').first,
-        lastName:
-            _businessNameController.text.trim().split(' ').length > 1
-                ? _businessNameController.text
-                    .trim()
-                    .split(' ')
-                    .skip(1)
-                    .join(' ')
-                : '',
+        tenantType: _selectedTenantType!,
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
         email: _emailController.text.trim(),
-        mobile: _phoneController.text.trim(),
+        mobile: _mobileController.text.trim(),
         password: _passwordController.text,
         passwordConfirmation: _confirmPasswordController.text,
         termsAccepted: true,
@@ -81,9 +95,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             // Navigate to email verification screen
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
-                builder: (context) => EmailVerificationAwaitingScreen(
-                  email: tenant.email,
-                ),
+                builder:
+                    (context) =>
+                        EmailVerificationAwaitingScreen(email: tenant.email),
               ),
               (route) => false,
             );
@@ -138,90 +152,209 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Business Name Field
-                TextFieldsX.standard(
-                  controller: _businessNameController,
-                  labelText: 'Business Name',
-                  hintText: 'Enter your business name',
-                  prefixIcon: AppIcons.branch,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your business name';
-                    }
-                    if (value.length < 2) {
-                      return 'Business name must be at least 2 characters';
-                    }
-                    return null;
-                  },
+                // Tenant Type Selection
+                Container(
+                  padding: EdgeInsets.all(AppSpacing.m),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.outline.withOpacity(0.2),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                          SizedBox(width: AppSpacing.s),
+                          Text(
+                            'Personal Details',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleMedium?.copyWith(
+                              color: AppColors.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: AppSpacing.m),
+
+                      // Tenant Type Dropdown
+                      DropdownButtonFormField<String>(
+                        value: _selectedTenantType,
+                        decoration: InputDecoration(
+                          labelText: 'Tenant Type',
+                          hintText: 'Select your tenant type',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          prefixIcon: Icon(Icons.business),
+                        ),
+                        items:
+                            _tenantTypes.map((type) {
+                              return DropdownMenuItem<String>(
+                                value: type['value'],
+                                child: Text(type['label']!),
+                              );
+                            }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedTenantType = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select your tenant type';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      SizedBox(height: AppSpacing.m),
+
+                      // First Name and Last Name Row
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFieldsX.standard(
+                              controller: _firstNameController,
+                              labelText: 'First Name',
+                              hintText: 'Enter your first name',
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your first name';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(width: AppSpacing.s),
+                          Expanded(
+                            child: TextFieldsX.standard(
+                              controller: _lastNameController,
+                              labelText: 'Last Name',
+                              hintText: 'Enter your last name',
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your last name';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: AppSpacing.m),
+
+                      // Mobile Number
+                      TextFieldsX.standard(
+                        controller: _mobileController,
+                        labelText: 'Mobile Number',
+                        hintText: 'Enter your mobile number',
+                        prefixIcon: AppIcons.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your mobile number';
+                          }
+                          if (value.length < 10) {
+                            return 'Please enter a valid mobile number';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
                 ),
 
                 SizedBox(height: AppSpacing.l),
 
-                // Email Field
-                TextFieldsX.email(
-                  controller: _emailController,
-                  labelText: 'Email Address',
-                  hintText: 'Enter your email address',
-                ),
+                // Authentication Section
+                Container(
+                  padding: EdgeInsets.all(AppSpacing.m),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppColors.outline.withOpacity(0.2),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.lock, color: AppColors.primary, size: 20),
+                          SizedBox(width: AppSpacing.s),
+                          Text(
+                            'Authentication',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleMedium?.copyWith(
+                              color: AppColors.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: AppSpacing.m),
 
-                SizedBox(height: AppSpacing.l),
+                      // Email Field
+                      TextFieldsX.email(
+                        controller: _emailController,
+                        labelText: 'Email Address',
+                        hintText: 'Enter your email address',
+                      ),
 
-                // Phone Field
-                TextFieldsX.standard(
-                  controller: _phoneController,
-                  labelText: 'Phone Number',
-                  hintText: 'Enter your phone number',
-                  prefixIcon: AppIcons.phone,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your phone number';
-                    }
-                    if (value.length < 10) {
-                      return 'Please enter a valid phone number';
-                    }
-                    return null;
-                  },
-                ),
+                      SizedBox(height: AppSpacing.m),
 
-                SizedBox(height: AppSpacing.l),
+                      // Password Field
+                      TextFieldsX.password(
+                        controller: _passwordController,
+                        labelText: 'Password',
+                        hintText: 'Enter your password',
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a password';
+                          }
+                          if (value.length < 8) {
+                            return 'Password must be at least 8 characters';
+                          }
+                          if (!RegExp(
+                            r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)',
+                          ).hasMatch(value)) {
+                            return 'Password must contain uppercase, lowercase, and number';
+                          }
+                          return null;
+                        },
+                      ),
 
-                // Password Field
-                TextFieldsX.password(
-                  controller: _passwordController,
-                  labelText: 'Password',
-                  hintText: 'Enter your password',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
-                    }
-                    if (value.length < 8) {
-                      return 'Password must be at least 8 characters';
-                    }
-                    if (!RegExp(
-                      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)',
-                    ).hasMatch(value)) {
-                      return 'Password must contain uppercase, lowercase, and number';
-                    }
-                    return null;
-                  },
-                ),
+                      SizedBox(height: AppSpacing.m),
 
-                SizedBox(height: AppSpacing.l),
-
-                // Confirm Password Field
-                TextFieldsX.password(
-                  controller: _confirmPasswordController,
-                  labelText: 'Confirm Password',
-                  hintText: 'Confirm your password',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
-                    }
-                    if (value != _passwordController.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  },
+                      // Confirm Password Field
+                      TextFieldsX.password(
+                        controller: _confirmPasswordController,
+                        labelText: 'Confirm Password',
+                        hintText: 'Confirm your password',
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please confirm your password';
+                          }
+                          if (value != _passwordController.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
                 ),
 
                 SizedBox(height: AppSpacing.xl),
