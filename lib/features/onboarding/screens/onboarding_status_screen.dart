@@ -109,20 +109,33 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WatermarkBackgroundBuilder.bottomRight(
-      icon: FontAwesomeIcons.store,
-      iconColor: AppColors.primary.withOpacity(0.15),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-        ),
-        body: SafeArea(
-          child: Consumer<OnboardingProvider>(
-            builder: (context, provider, child) {
-              if (provider.isLoading && provider.onboardingStatus == null) {
+    return Consumer<OnboardingProvider>(
+      builder: (context, provider, child) {
+        // Get current step icon for watermark
+        IconData watermarkIcon = FontAwesomeIcons.store; // Default
+        if (provider.onboardingStatus != null && provider.onboardingStatus!.steps.isNotEmpty) {
+          final currentStep = provider.onboardingStatus!.steps.firstWhere(
+            (step) => step.id == provider.onboardingStatus!.currentStepId,
+            orElse: () => provider.onboardingStatus!.steps.first,
+          );
+          watermarkIcon = _getIconForStep(currentStep.icon);
+        }
+
+        return WatermarkBackgroundBuilder.bottomRight(
+          icon: watermarkIcon,
+          iconColor: AppColors.primary.withOpacity(0.25), // Increased opacity
+          child: Scaffold(
+            backgroundColor: Colors.white,
+      appBar: AppBar(
+              backgroundColor: Colors.transparent,
+        elevation: 0,
+              automaticallyImplyLeading: false,
+            ),
+            body: SafeArea(
+              child: Builder(
+                builder: (context) {
+                  final innerProvider = context.watch<OnboardingProvider>();
+                  if (innerProvider.isLoading && innerProvider.onboardingStatus == null) {
                 // Only show full screen loader on initial load
                 return const Center(
                   child: CircularProgressIndicator(
@@ -131,52 +144,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                     ),
                   ),
                 );
-              }
+          }
 
-              if (provider.error != null) {
-                return Padding(
-                  padding: const EdgeInsets.all(AppSpacing.xl),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: AppColors.error,
-                      ),
-                      const SizedBox(height: AppSpacing.l),
-                      Text(
-                        'Error loading onboarding status',
-                        style: AppTypography.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.onSurface,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: AppSpacing.s),
-                      Text(
-                        provider.error!,
-                        style: AppTypography.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.onSurfaceVariant,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
-                      AnimatedButton(
-                        onPressed: () {
-                          provider.loadOnboardingStatus();
-                        },
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.onPrimary,
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              final status = provider.onboardingStatus;
-              if (status == null) {
+                  final status = innerProvider.onboardingStatus;
+          if (status == null) {
                 return Padding(
                   padding: const EdgeInsets.all(AppSpacing.xl),
                   child: Center(
@@ -188,20 +159,26 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                     ),
                   ),
                 );
-              }
+          }
 
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Header Section
-                    _buildHeader(status),
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.all(AppSpacing.xl),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Header Section
+                        _buildHeader(status),
 
-                    const SizedBox(height: AppSpacing.xxl),
+                        const SizedBox(height: AppSpacing.xxl),
 
-                    // Progress Carousel Card
-                    _buildProgressCarousel(status),
+                        // Error Section (if any)
+                        if (innerProvider.error != null) ...[
+                          _buildErrorSection(innerProvider.error!),
+                          const SizedBox(height: AppSpacing.l),
+                        ],
+
+                        // Progress Carousel Card
+                        _buildProgressCarousel(status),
 
                     const SizedBox(height: AppSpacing.xl),
 
@@ -210,8 +187,8 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
                     const SizedBox(height: AppSpacing.xl),
 
-                    // Action Buttons
-                    _buildActionButtons(status, provider),
+                        // Action Buttons
+                        _buildActionButtons(status, innerProvider),
 
                     const SizedBox(height: AppSpacing.xl),
 
@@ -248,11 +225,85 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
             },
           ),
         ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildErrorSection(String error) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.m),
+      decoration: BoxDecoration(
+        color: AppColors.error.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.error.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.error_outline,
+            color: AppColors.error,
+            size: 20,
+          ),
+          const SizedBox(width: AppSpacing.s),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Connection Error',
+                  style: AppTypography.textTheme.labelLarge?.copyWith(
+                    color: AppColors.error,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  _getHumanReadableError(error),
+                  style: AppTypography.textTheme.bodySmall?.copyWith(
+                    color: AppColors.error,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
+  String _getHumanReadableError(String error) {
+    if (error.contains('ClientException') || error.contains('Failed to fetch')) {
+      return 'Unable to connect to the server. Please check your internet connection and try again.';
+    } else if (error.contains('SocketException')) {
+      return 'Network connection failed. Please ensure you have internet access.';
+    } else if (error.contains('TimeoutException')) {
+      return 'Request timed out. The server is taking too long to respond.';
+    } else if (error.contains('401') || error.contains('Unauthorized')) {
+      return 'Your session has expired. Please log in again.';
+    } else if (error.contains('500') || error.contains('Internal server error')) {
+      return 'Server error occurred. Please try again later.';
+    } else {
+      return 'Something went wrong. Please try again.';
+    }
+  }
+
   Widget _buildHeader(OnboardingStatusModel status) {
+    // Get current step icon for header
+    IconData headerIcon = FontAwesomeIcons.clipboardList; // Default
+    if (status.steps.isNotEmpty) {
+      final currentStep = status.steps.firstWhere(
+        (step) => step.id == status.currentStepId,
+        orElse: () => status.steps.first,
+      );
+      headerIcon = _getIconForStep(currentStep.icon);
+    }
+
     return Column(
       children: [
         // Header Icon
@@ -263,7 +314,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
             shape: BoxShape.circle,
           ),
           child: Icon(
-            FontAwesomeIcons.clipboardList,
+            headerIcon,
             color: AppColors.primary,
             size: 32,
           ),
@@ -282,7 +333,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         const SizedBox(height: AppSpacing.s),
 
         // Subtitle
-        Text(
+                      Text(
           status.isCompleted
               ? 'Your account is ready to use'
               : 'Complete these steps to get started with Just Laundrette',
@@ -372,7 +423,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                     const SizedBox(height: AppSpacing.xs),
 
                     // Step Description
-                    Text(
+                      Text(
                       step.description,
                       style: AppTypography.textTheme.bodySmall?.copyWith(
                         color: AppColors.onSurfaceVariant,
@@ -380,10 +431,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
             ),
           );
         },
@@ -395,10 +446,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     return CardsX.elevated(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.l),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
               'Progress Overview',
               style: AppTypography.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -635,9 +686,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
               ),
             ),
             padding: const EdgeInsets.all(AppSpacing.l),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                              children: [
                 // Drag handle
                 Container(
                   width: 40,
@@ -665,10 +716,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                 const SizedBox(height: AppSpacing.l),
 
                 // Title
-                Text(
+                                Text(
                   'Logout',
                   style: AppTypography.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.bold,
                     color: AppColors.onSurface,
                   ),
                 ),
@@ -687,13 +738,13 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                 // Buttons
                 Row(
                   children: [
-                    Expanded(
+                                Expanded(
                       child: AnimatedButton(
                         onPressed: () => Navigator.of(context).pop(),
                         backgroundColor: AppColors.surfaceVariant,
                         foregroundColor: AppColors.onSurfaceVariant,
                         height: 48,
-                        child: Text(
+                                  child: Text(
                           'Cancel',
                           style: AppTypography.textTheme.labelLarge?.copyWith(
                             color: AppColors.onSurfaceVariant,
@@ -741,7 +792,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
         // Navigate back to login screen
         Navigator.of(
-          context,
+      context,
         ).pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (e) {
