@@ -124,12 +124,16 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
         return WatermarkBackgroundBuilder.bottomRight(
           icon: watermarkIcon,
-          iconColor: AppColors.primary.withOpacity(0.15), // Reduced opacity for subtle watermark
+          iconColor: AppColors.primary.withOpacity(
+            0.15,
+          ), // Reduced opacity for subtle watermark
           iconSizePercentage: 0.35, // Make watermark larger
           iconShift: -15.0, // Add slight rotation like other auth screens
-          margin: const EdgeInsets.all(16), // Add margin like other auth screens
+          margin: const EdgeInsets.all(
+            16,
+          ), // Add margin like other auth screens
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.transparent,
       appBar: AppBar(
               backgroundColor: Colors.transparent,
         elevation: 0,
@@ -351,7 +355,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     );
 
     return Container(
-      height: 240,
+      height: 280, // Increased height to prevent cut-off
       child: PageView.builder(
         controller: _pageController,
         itemCount: status.steps.length,
@@ -362,7 +366,27 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
-            child: CardsX.elevated(
+            child: CardX(
+              variant: CardVariant.elevated,
+              shadows: isCompleted 
+                  ? [
+                      BoxShadow(
+                        color: Colors.green.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                        spreadRadius: 2,
+                      ),
+                    ]
+                  : isCurrent 
+                  ? [
+                      BoxShadow(
+                        color: Colors.blue.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                        spreadRadius: 2,
+                      ),
+                    ]
+                  : null, // Use default shadows for other steps
               child: Padding(
                 padding: const EdgeInsets.all(AppSpacing.m),
                 child: Column(
@@ -377,7 +401,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                             isCompleted
                                 ? AppColors.success.withOpacity(0.1)
                                 : isCurrent
-                                ? AppColors.primary.withOpacity(0.1)
+                                ? Colors.blue.withOpacity(0.15) // Light blue background for current step
                                 : AppColors.surfaceVariant,
                         shape: BoxShape.circle,
                       ),
@@ -393,7 +417,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                                   _getIconForStep(step.icon),
                                   color:
                                       isCurrent
-                                          ? AppColors.primary
+                                          ? Colors.blue.withOpacity(0.7) // Light blue for current step
                                           : AppColors.onSurfaceVariant,
                                   size: 20,
                                 ),
@@ -410,7 +434,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                             isCompleted
                                 ? AppColors.success
                                 : isCurrent
-                                ? AppColors.primary
+                                ? Colors.blue.withOpacity(0.8) // Light blue for current step title
                                 : AppColors.onSurface,
                       ),
                       textAlign: TextAlign.center,
