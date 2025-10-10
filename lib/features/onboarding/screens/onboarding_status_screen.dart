@@ -124,22 +124,16 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
         return WatermarkBackgroundBuilder.bottomRight(
           icon: watermarkIcon,
-          iconColor: AppColors.primary.withOpacity(
-            0.25, // Increased opacity for better visibility
-          ),
-          iconSizePercentage: 0.4, // Increased size for better visibility
-          iconShift: -15.0, // Add slight rotation like other auth screens
-          margin: const EdgeInsets.all(
-            20, // Increased margin for better positioning
-          ),
-          respectSafeArea: false, // Disable SafeArea to ensure watermark is fully visible
+          iconColor: AppColors.primary.withOpacity(0.12),
+          iconSizePercentage: 0.38,
+          iconShift: -15.0,
+          margin: const EdgeInsets.all(16),
+          respectSafeArea: false, // let the overlay fill the whole viewport
           child: Container(
-            color:
-                Colors
-                    .white, // White background to prevent splash screen showing
+            color: Colors.white, // White background to prevent splash screen showing
             child: Scaffold(
-              backgroundColor:
-                  Colors.transparent, // Transparent to show watermark
+              extendBodyBehindAppBar: true, // keeps overlay visible "under" the app bar area
+              backgroundColor: Colors.transparent, // Transparent to show watermark
               appBar: AppBar(
                 backgroundColor: Colors.transparent,
                 elevation: 0,
@@ -355,124 +349,118 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   }
 
   Widget _buildProgressCarousel(OnboardingStatusModel status) {
-    // Initialize or update PageController
     _pageController ??= PageController(
       initialPage: status.currentStepIndex,
-      viewportFraction: 0.8,
+      viewportFraction: 0.86,
     );
 
-    return Container(
-      height: 280, // Increased height to show full shadows
-      padding: const EdgeInsets.symmetric(vertical: 20), // Add vertical padding for shadows
+    const double cardHeight = 210;      // actual card content height
+    const double shadowAllowance = 28;  // extra vertical space for soft shadow glow
+
+    return SizedBox(
+      height: cardHeight + shadowAllowance, // leave room so shadows aren't cut
       child: PageView.builder(
         controller: _pageController,
+        clipBehavior: Clip.none,          // don't clip shadows
+        padEnds: false,
+        allowImplicitScrolling: true,
         itemCount: status.steps.length,
         itemBuilder: (context, index) {
           final step = status.steps[index];
           final isCompleted = status.completedSteps.contains(step.id);
           final isCurrent = step.id == status.currentStepId;
 
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
-            child: CardX(
-              variant: CardVariant.elevated,
-              shadows:
-                  isCompleted
-                      ? [
-                        BoxShadow(
-                          color: Colors.green.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
+            child: Align(                       // keep card centered vertically
+              alignment: Alignment.center,
+              child: SizedBox(
+                height: cardHeight,             // stable card height
+                child: CardX(
+                  variant: CardVariant.elevated,
+                  shadows: isCompleted
+                      ? [BoxShadow(
+                          color: Colors.green.withOpacity(0.28),
+                          blurRadius: 14,
+                          offset: const Offset(0, 8),
                           spreadRadius: 2,
-                        ),
-                      ]
+                        )]
                       : isCurrent
-                      ? [
-                        BoxShadow(
-                          color: Colors.blue.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                          spreadRadius: 2,
+                          ? [BoxShadow(
+                              color: Colors.blue.withOpacity(0.24),
+                              blurRadius: 14,
+                              offset: const Offset(0, 8),
+                              spreadRadius: 2,
+                            )]
+                          : null,
+                  child: Padding(
+                    // keep compact padding
+                    padding: const EdgeInsets.all(AppSpacing.s),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Step Icon
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color:
+                                isCompleted
+                                    ? AppColors.success.withOpacity(0.1)
+                                    : isCurrent
+                                    ? Colors.blue.withOpacity(0.15) // Light blue background for current step
+                                    : AppColors.surfaceVariant,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child:
+                                isCompleted
+                                    ? const Icon(
+                                      Icons.check,
+                                      color: AppColors.success,
+                                      size: 24,
+                                    )
+                                    : Icon(
+                                      _getIconForStep(step.icon),
+                                      color:
+                                          isCurrent
+                                              ? Colors.blue.withOpacity(0.7) // Light blue for current step
+                                              : AppColors.onSurfaceVariant,
+                                      size: 20,
+                                    ),
+                          ),
                         ),
-                      ]
-                      : null, // Use default shadows for other steps
-              child: Padding(
-                padding: const EdgeInsets.all(
-                  AppSpacing.xs,
-                ), // Further reduced to make room for shadows
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Step Icon
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color:
-                            isCompleted
-                                ? AppColors.success.withOpacity(0.1)
-                                : isCurrent
-                                ? Colors.blue.withOpacity(
-                                  0.15,
-                                ) // Light blue background for current step
-                                : AppColors.surfaceVariant,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child:
-                            isCompleted
-                                ? const Icon(
-                                  Icons.check,
-                                  color: AppColors.success,
-                                  size: 24,
-                                )
-                                : Icon(
-                                  _getIconForStep(step.icon),
-                                  color:
-                                      isCurrent
-                                          ? Colors.blue.withOpacity(
-                                            0.7,
-                                          ) // Light blue for current step
-                                          : AppColors.onSurfaceVariant,
-                                  size: 20,
-                                ),
-                      ),
+                        const SizedBox(height: AppSpacing.xs), // Reduced from AppSpacing.s to AppSpacing.xs
+                        // Step Title
+                        Text(
+                          step.title,
+                          style: AppTypography.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color:
+                                isCompleted
+                                    ? AppColors.success
+                                    : isCurrent
+                                    ? Colors.blue.withOpacity(0.8) // Light blue for current step title
+                                    : AppColors.onSurface,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4), // Reduced spacing between title and description
+                        // Step Description
+                        Text(
+                          step.description,
+                          style: AppTypography.textTheme.bodySmall?.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
-                    const SizedBox(
-                      height: AppSpacing.xs,
-                    ), // Reduced from AppSpacing.s to AppSpacing.xs
-                    // Step Title
-                    Text(
-                      step.title,
-                      style: AppTypography.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color:
-                            isCompleted
-                                ? AppColors.success
-                                : isCurrent
-                                ? Colors.blue.withOpacity(
-                                  0.8,
-                                ) // Light blue for current step title
-                                : AppColors.onSurface,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(
-                      height: 4,
-                    ), // Reduced spacing between title and description
-                    // Step Description
-                    Text(
-                      step.description,
-                      style: AppTypography.textTheme.bodySmall?.copyWith(
-                        color: AppColors.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

@@ -82,29 +82,25 @@ class WatermarkBackground extends StatelessWidget {
 
   /// Build icon widget supporting both Material and FontAwesome icons
   Widget _buildIcon(BuildContext context) {
-    // Calculate responsive icon size based on screen width percentage
-    final responsiveIconSize = _calculateResponsiveIconSize(context);
+    final responsiveIconSize = _calculateResponsiveIconSize(context) * 0.8;
 
     if (icon is IconData) {
-      return Icon(
-        icon as IconData,
-        size: responsiveIconSize * 0.8,
-        color: iconColor,
-      );
-    } else if (icon is IconDataSolid) {
-      return FaIcon(
-        icon as IconDataSolid,
-        size: responsiveIconSize * 0.8,
-        color: iconColor,
-      );
-    } else {
-      // Fallback to Material icon
-      return Icon(
-        Icons.help_outline,
-        size: responsiveIconSize * 0.8,
-        color: iconColor,
-      );
+      // Detect FontAwesome by its fontPackage
+      final IconData d = icon as IconData;
+      final isFontAwesome = d.fontPackage == 'font_awesome_flutter';
+      if (isFontAwesome) {
+        return FaIcon(d, size: responsiveIconSize, color: iconColor);
+      }
+      return Icon(d, size: responsiveIconSize, color: iconColor);
     }
+
+    // Fallbacks remain
+    if (icon is IconDataSolid) {
+      return FaIcon(icon as IconDataSolid,
+          size: responsiveIconSize, color: iconColor);
+    }
+
+    return Icon(Icons.help_outline, size: responsiveIconSize, color: iconColor);
   }
 
   /// Calculate responsive icon size based on screen width percentage
