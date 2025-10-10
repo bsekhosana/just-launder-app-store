@@ -26,6 +26,7 @@ class OnboardingStatusScreen extends StatefulWidget {
 class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   Timer? _pollingTimer;
   static const int _pollingIntervalSeconds = 15;
+  PageController? _pageController;
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   @override
   void dispose() {
     _pollingTimer?.cancel();
+    _pageController?.dispose();
     super.dispose();
   }
 
@@ -62,6 +64,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
           print(
             '📊 Polling: Status updated - Completed: ${provider.onboardingStatus!.isCompleted}, Progress: ${provider.onboardingStatus!.progressPercentage}%, Steps: ${provider.onboardingStatus!.completedSteps.length}/${provider.onboardingStatus!.totalSteps}',
           );
+
+          // Center carousel on current step after refresh
+          _centerCarouselOnCurrentStep(provider.onboardingStatus!);
         } else {
           print('❌ Polling: No onboarding status data received');
         }
@@ -87,6 +92,19 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         }
       },
     );
+  }
+
+  void _centerCarouselOnCurrentStep(OnboardingStatusModel status) {
+    if (_pageController != null && _pageController!.hasClients) {
+      final currentStepIndex = status.currentStepIndex;
+      if (currentStepIndex != _pageController!.page?.round()) {
+        _pageController!.animateToPage(
+          currentStepIndex,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
   }
 
   @override
@@ -278,19 +296,21 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   }
 
   Widget _buildProgressCarousel(OnboardingStatusModel status) {
+    // Initialize or update PageController
+    _pageController ??= PageController(
+      initialPage: status.currentStepIndex,
+      viewportFraction: 0.8,
+    );
+
     return Container(
       height: 240,
       child: PageView.builder(
-        controller: PageController(
-          initialPage: status.currentStep - 1,
-          viewportFraction: 0.8,
-        ),
+        controller: _pageController,
         itemCount: status.steps.length,
         itemBuilder: (context, index) {
           final step = status.steps[index];
           final isCompleted = status.completedSteps.contains(step.id);
-          final isCurrent =
-              !isCompleted && status.completedSteps.length == index;
+          final isCurrent = step.id == status.currentStepId;
 
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
@@ -497,6 +517,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                       print(
                         '🔄 Manual refresh: Status - Completed: ${provider.onboardingStatus!.isCompleted}, Progress: ${provider.onboardingStatus!.progressPercentage}%, Steps: ${provider.onboardingStatus!.completedSteps.length}/${provider.onboardingStatus!.totalSteps}',
                       );
+
+                      // Center carousel on current step after manual refresh
+                      _centerCarouselOnCurrentStep(provider.onboardingStatus!);
+
                       CustomSnackbar.showSuccess(
                         context,
                         message:
