@@ -132,11 +132,13 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
           margin: const EdgeInsets.all(
             16,
           ), // Add margin like other auth screens
-          child: Scaffold(
-            backgroundColor: Colors.white,
-      appBar: AppBar(
+          child: Container(
+            color: Colors.white, // White background to prevent splash screen showing
+            child: Scaffold(
+              backgroundColor: Colors.transparent, // Transparent to show watermark
+            appBar: AppBar(
               backgroundColor: Colors.transparent,
-        elevation: 0,
+              elevation: 0,
               automaticallyImplyLeading: false,
             ),
             body: SafeArea(
@@ -172,7 +174,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
                   return SingleChildScrollView(
                     padding: const EdgeInsets.all(AppSpacing.xl),
-              child: Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Header Section
@@ -208,15 +210,15 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                           foregroundColor: AppColors.onError,
                           height: 56,
                           child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
                               const Icon(
                                 Icons.logout,
                                 size: 20,
                                 color: AppColors.onError,
                               ),
                               const SizedBox(width: AppSpacing.s),
-                  Text(
+                              Text(
                                 'Logout',
                                 style: AppTypography.textTheme.labelLarge
                                     ?.copyWith(
@@ -236,7 +238,8 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
               ),
             ),
           ),
-        );
+        ), // Close Container with white background
+      );
       },
     );
   }
@@ -273,10 +276,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                   ),
                 ),
               ],
-                            ),
-                          ),
-                        ],
-                      ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -323,7 +326,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         const SizedBox(height: AppSpacing.l),
 
         // Title
-                      Text(
+        Text(
           'Setup Your Business',
           style: AppTypography.textTheme.displaySmall?.copyWith(
             fontWeight: FontWeight.bold,
@@ -335,7 +338,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
         // Subtitle
         Text(
-                          status.isCompleted
+          status.isCompleted
               ? 'Your account is ready to use'
               : 'Complete these steps to get started with Just Laundrette',
           style: AppTypography.textTheme.bodyLarge?.copyWith(
@@ -389,7 +392,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                       ]
                       : null, // Use default shadows for other steps
               child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.s), // Reduced from AppSpacing.m to AppSpacing.s
+                padding: const EdgeInsets.all(
+                  AppSpacing.s,
+                ), // Reduced from AppSpacing.m to AppSpacing.s
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -428,8 +433,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                                 ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.xs), // Reduced from AppSpacing.s to AppSpacing.xs
-
+                    const SizedBox(
+                      height: AppSpacing.xs,
+                    ), // Reduced from AppSpacing.s to AppSpacing.xs
                     // Step Title
                     Text(
                       step.title,
@@ -448,8 +454,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4), // Reduced spacing between title and description
-
+                    const SizedBox(
+                      height: 4,
+                    ), // Reduced spacing between title and description
                     // Step Description
                     Text(
                       step.description,
@@ -474,10 +481,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     return CardsX.elevated(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.l),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
               'Progress Overview',
               style: AppTypography.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -720,9 +727,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
               ),
             ),
             padding: const EdgeInsets.all(AppSpacing.l),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                              children: [
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 // Drag handle
                 Container(
                   width: 40,
@@ -750,10 +757,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                 const SizedBox(height: AppSpacing.l),
 
                 // Title
-                                Text(
+                Text(
                   'Logout',
                   style: AppTypography.textTheme.headlineSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.bold,
                     color: AppColors.onSurface,
                   ),
                 ),
@@ -772,13 +779,13 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                 // Buttons
                 Row(
                   children: [
-                                Expanded(
+                    Expanded(
                       child: AnimatedButton(
                         onPressed: () => Navigator.of(context).pop(),
                         backgroundColor: AppColors.surfaceVariant,
                         foregroundColor: AppColors.onSurfaceVariant,
                         height: 48,
-                                  child: Text(
+                        child: Text(
                           'Cancel',
                           style: AppTypography.textTheme.labelLarge?.copyWith(
                             color: AppColors.onSurfaceVariant,
@@ -826,7 +833,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
         // Navigate back to login screen
         Navigator.of(
-      context,
+          context,
         ).pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (e) {
