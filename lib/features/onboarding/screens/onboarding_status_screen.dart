@@ -124,9 +124,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
         return WatermarkBackgroundBuilder.bottomRight(
           icon: watermarkIcon,
-          iconColor: AppColors.primary.withOpacity(0.25), // Increased opacity
+          iconColor: AppColors.primary.withOpacity(0.3), // Increased opacity further
+          iconSizePercentage: 0.25, // Make watermark larger
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.transparent,
       appBar: AppBar(
               backgroundColor: Colors.transparent,
         elevation: 0,
@@ -625,6 +626,12 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         return FontAwesomeIcons.box;
       case 'map-pin':
         return FontAwesomeIcons.mapPin;
+      case 'store':
+        return FontAwesomeIcons.store;
+      case 'cogs':
+        return FontAwesomeIcons.gear;
+      case 'check-circle':
+        return FontAwesomeIcons.checkCircle;
       case 'settings':
         return FontAwesomeIcons.gear;
       default:
