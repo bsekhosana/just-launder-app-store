@@ -124,10 +124,12 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
         return WatermarkBackgroundBuilder.bottomRight(
           icon: watermarkIcon,
-          iconColor: AppColors.primary.withOpacity(0.3), // Increased opacity further
-          iconSizePercentage: 0.25, // Make watermark larger
+          iconColor: AppColors.primary.withOpacity(0.15), // Reduced opacity for subtle watermark
+          iconSizePercentage: 0.35, // Make watermark larger
+          iconShift: -15.0, // Add slight rotation like other auth screens
+          margin: const EdgeInsets.all(16), // Add margin like other auth screens
           child: Scaffold(
-            backgroundColor: Colors.transparent,
+            backgroundColor: Colors.white,
       appBar: AppBar(
               backgroundColor: Colors.transparent,
         elevation: 0,
