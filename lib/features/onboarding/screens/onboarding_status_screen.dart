@@ -125,121 +125,125 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         return WatermarkBackgroundBuilder.bottomRight(
           icon: watermarkIcon,
           iconColor: AppColors.primary.withOpacity(
-            0.15,
-          ), // Reduced opacity for subtle watermark
-          iconSizePercentage: 0.35, // Make watermark larger
+            0.25, // Increased opacity for better visibility
+          ),
+          iconSizePercentage: 0.4, // Increased size for better visibility
           iconShift: -15.0, // Add slight rotation like other auth screens
           margin: const EdgeInsets.all(
-            16,
-          ), // Add margin like other auth screens
+            20, // Increased margin for better positioning
+          ),
+          respectSafeArea: false, // Disable SafeArea to ensure watermark is fully visible
           child: Container(
-            color: Colors.white, // White background to prevent splash screen showing
+            color:
+                Colors
+                    .white, // White background to prevent splash screen showing
             child: Scaffold(
-              backgroundColor: Colors.transparent, // Transparent to show watermark
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              automaticallyImplyLeading: false,
-            ),
-            body: SafeArea(
-              child: Builder(
-                builder: (context) {
-                  final innerProvider = context.watch<OnboardingProvider>();
-                  if (innerProvider.isLoading &&
-                      innerProvider.onboardingStatus == null) {
-                    // Only show full screen loader on initial load
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          AppColors.primary,
+              backgroundColor:
+                  Colors.transparent, // Transparent to show watermark
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                automaticallyImplyLeading: false,
+              ),
+              body: SafeArea(
+                child: Builder(
+                  builder: (context) {
+                    final innerProvider = context.watch<OnboardingProvider>();
+                    if (innerProvider.isLoading &&
+                        innerProvider.onboardingStatus == null) {
+                      // Only show full screen loader on initial load
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.primary,
+                          ),
                         ),
-                      ),
-                    );
-                  }
+                      );
+                    }
 
-                  final status = innerProvider.onboardingStatus;
-                  if (status == null) {
-                    return Padding(
+                    final status = innerProvider.onboardingStatus;
+                    if (status == null) {
+                      return Padding(
+                        padding: const EdgeInsets.all(AppSpacing.xl),
+                        child: Center(
+                          child: Text(
+                            'No onboarding data available',
+                            style: AppTypography.textTheme.bodyLarge?.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
+                    return SingleChildScrollView(
                       padding: const EdgeInsets.all(AppSpacing.xl),
-                      child: Center(
-                        child: Text(
-                          'No onboarding data available',
-                          style: AppTypography.textTheme.bodyLarge?.copyWith(
-                            color: AppColors.onSurfaceVariant,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Header Section
+                          _buildHeader(status),
+
+                          const SizedBox(height: AppSpacing.xxl),
+
+                          // Error Section (if any)
+                          if (innerProvider.error != null) ...[
+                            _buildErrorSection(innerProvider.error!),
+                            const SizedBox(height: AppSpacing.l),
+                          ],
+
+                          // Progress Carousel Card
+                          _buildProgressCarousel(status),
+
+                          const SizedBox(height: AppSpacing.xl),
+
+                          // Timeline
+                          _buildTimeline(status),
+
+                          const SizedBox(height: AppSpacing.xl),
+
+                          // Action Buttons
+                          _buildActionButtons(status, innerProvider),
+
+                          const SizedBox(height: AppSpacing.xl),
+
+                          // Logout Button
+                          AnimatedButton(
+                            onPressed: () => _showLogoutConfirmation(context),
+                            backgroundColor: AppColors.error,
+                            foregroundColor: AppColors.onError,
+                            height: 56,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.logout,
+                                  size: 20,
+                                  color: AppColors.onError,
+                                ),
+                                const SizedBox(width: AppSpacing.s),
+                                Text(
+                                  'Logout',
+                                  style: AppTypography.textTheme.labelLarge
+                                      ?.copyWith(
+                                        color: AppColors.onError,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+
+                          const SizedBox(height: AppSpacing.xl),
+                        ],
                       ),
                     );
-                  }
-
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.all(AppSpacing.xl),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Header Section
-                        _buildHeader(status),
-
-                        const SizedBox(height: AppSpacing.xxl),
-
-                        // Error Section (if any)
-                        if (innerProvider.error != null) ...[
-                          _buildErrorSection(innerProvider.error!),
-                          const SizedBox(height: AppSpacing.l),
-                        ],
-
-                        // Progress Carousel Card
-                        _buildProgressCarousel(status),
-
-                        const SizedBox(height: AppSpacing.xl),
-
-                        // Timeline
-                        _buildTimeline(status),
-
-                        const SizedBox(height: AppSpacing.xl),
-
-                        // Action Buttons
-                        _buildActionButtons(status, innerProvider),
-
-                        const SizedBox(height: AppSpacing.xl),
-
-                        // Logout Button
-                        AnimatedButton(
-                          onPressed: () => _showLogoutConfirmation(context),
-                          backgroundColor: AppColors.error,
-                          foregroundColor: AppColors.onError,
-                          height: 56,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.logout,
-                                size: 20,
-                                color: AppColors.onError,
-                              ),
-                              const SizedBox(width: AppSpacing.s),
-                              Text(
-                                'Logout',
-                                style: AppTypography.textTheme.labelLarge
-                                    ?.copyWith(
-                                      color: AppColors.onError,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: AppSpacing.xl),
-                      ],
-                    ),
-                  );
-                },
+                  },
+                ),
               ),
             ),
-          ),
-        ), // Close Container with white background
-      );
+          ), // Close Container with white background
+        );
       },
     );
   }
@@ -358,7 +362,8 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     );
 
     return Container(
-      height: 240, // Reverted to original height
+      height: 280, // Increased height to show full shadows
+      padding: const EdgeInsets.symmetric(vertical: 20), // Add vertical padding for shadows
       child: PageView.builder(
         controller: _pageController,
         itemCount: status.steps.length,
@@ -393,8 +398,8 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                       : null, // Use default shadows for other steps
               child: Padding(
                 padding: const EdgeInsets.all(
-                  AppSpacing.s,
-                ), // Reduced from AppSpacing.m to AppSpacing.s
+                  AppSpacing.xs,
+                ), // Further reduced to make room for shadows
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
