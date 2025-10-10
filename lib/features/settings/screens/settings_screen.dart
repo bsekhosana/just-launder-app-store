@@ -552,13 +552,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Expanded(
                       child: AnimatedButton(
                         onPressed: () async {
-                          Navigator.of(context).pop();
                           await authProvider.logout();
                           if (mounted) {
                             CustomSnackbar.showSuccess(
                               context,
                               message: 'Logged out successfully',
                             );
+                            // Navigate away after showing the snackbar
+                            Navigator.of(context).pop();
                           }
                         },
                         height: 52,

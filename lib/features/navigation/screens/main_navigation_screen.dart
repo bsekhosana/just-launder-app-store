@@ -157,13 +157,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 color:
                     isSelected ? Colors.white : Colors.white.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(Radii.m),
-                border: Border.all(
-                  color:
-                      isSelected
-                          ? AppColors.primary
-                          : AppColors.outline.withOpacity(0.3),
-                  width: 1,
-                ),
                 boxShadow:
                     isSelected
                         ? [
