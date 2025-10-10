@@ -176,12 +176,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                       isSelected
                           ? AppColors.primary
                           : colorScheme.onSurfaceVariant,
-                  size: 20,
+                  size: isSelected ? 22 : 20, // Slightly larger for selected
                 ),
               ),
             ).animate().scale(
               duration: AppMotion.fast,
               curve: AppCurves.standard,
+              begin: const Offset(1.0, 1.0),
+              end: Offset(isSelected ? 1.05 : 1.0, isSelected ? 1.05 : 1.0), // Scale up selected item
             ),
             const SizedBox(height: AppSpacing.xs),
             Flexible(
