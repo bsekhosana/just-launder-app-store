@@ -133,7 +133,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
             16,
           ), // Add margin like other auth screens
           child: Scaffold(
-            backgroundColor: Colors.transparent,
+            backgroundColor: Colors.white,
       appBar: AppBar(
               backgroundColor: Colors.transparent,
         elevation: 0,
@@ -323,7 +323,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         const SizedBox(height: AppSpacing.l),
 
         // Title
-        Text(
+                      Text(
           'Setup Your Business',
           style: AppTypography.textTheme.displaySmall?.copyWith(
             fontWeight: FontWeight.bold,
@@ -334,8 +334,8 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
         const SizedBox(height: AppSpacing.s),
 
         // Subtitle
-                      Text(
-          status.isCompleted
+        Text(
+                          status.isCompleted
               ? 'Your account is ready to use'
               : 'Complete these steps to get started with Just Laundrette',
           style: AppTypography.textTheme.bodyLarge?.copyWith(
@@ -355,7 +355,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     );
 
     return Container(
-      height: 280, // Increased height to prevent cut-off
+      height: 240, // Reverted to original height
       child: PageView.builder(
         controller: _pageController,
         itemCount: status.steps.length,
@@ -368,27 +368,28 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
             margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
             child: CardX(
               variant: CardVariant.elevated,
-              shadows: isCompleted 
-                  ? [
-                      BoxShadow(
-                        color: Colors.green.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                        spreadRadius: 2,
-                      ),
-                    ]
-                  : isCurrent 
-                  ? [
-                      BoxShadow(
-                        color: Colors.blue.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                        spreadRadius: 2,
-                      ),
-                    ]
-                  : null, // Use default shadows for other steps
+              shadows:
+                  isCompleted
+                      ? [
+                        BoxShadow(
+                          color: Colors.green.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                          spreadRadius: 2,
+                        ),
+                      ]
+                      : isCurrent
+                      ? [
+                        BoxShadow(
+                          color: Colors.blue.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                          spreadRadius: 2,
+                        ),
+                      ]
+                      : null, // Use default shadows for other steps
               child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.m),
+                padding: const EdgeInsets.all(AppSpacing.s), // Reduced from AppSpacing.m to AppSpacing.s
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -401,7 +402,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                             isCompleted
                                 ? AppColors.success.withOpacity(0.1)
                                 : isCurrent
-                                ? Colors.blue.withOpacity(0.15) // Light blue background for current step
+                                ? Colors.blue.withOpacity(
+                                  0.15,
+                                ) // Light blue background for current step
                                 : AppColors.surfaceVariant,
                         shape: BoxShape.circle,
                       ),
@@ -417,13 +420,15 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                                   _getIconForStep(step.icon),
                                   color:
                                       isCurrent
-                                          ? Colors.blue.withOpacity(0.7) // Light blue for current step
+                                          ? Colors.blue.withOpacity(
+                                            0.7,
+                                          ) // Light blue for current step
                                           : AppColors.onSurfaceVariant,
                                   size: 20,
                                 ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.s),
+                    const SizedBox(height: AppSpacing.xs), // Reduced from AppSpacing.s to AppSpacing.xs
 
                     // Step Title
                     Text(
@@ -434,17 +439,19 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                             isCompleted
                                 ? AppColors.success
                                 : isCurrent
-                                ? Colors.blue.withOpacity(0.8) // Light blue for current step title
+                                ? Colors.blue.withOpacity(
+                                  0.8,
+                                ) // Light blue for current step title
                                 : AppColors.onSurface,
                       ),
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: 4), // Reduced spacing between title and description
 
                     // Step Description
-                      Text(
+                    Text(
                       step.description,
                       style: AppTypography.textTheme.bodySmall?.copyWith(
                         color: AppColors.onSurfaceVariant,
@@ -452,10 +459,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
             ),
           );
         },
