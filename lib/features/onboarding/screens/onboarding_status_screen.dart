@@ -113,7 +113,8 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
       builder: (context, provider, child) {
         // Get current step icon for watermark
         IconData watermarkIcon = FontAwesomeIcons.store; // Default
-        if (provider.onboardingStatus != null && provider.onboardingStatus!.steps.isNotEmpty) {
+        if (provider.onboardingStatus != null &&
+            provider.onboardingStatus!.steps.isNotEmpty) {
           final currentStep = provider.onboardingStatus!.steps.firstWhere(
             (step) => step.id == provider.onboardingStatus!.currentStepId,
             orElse: () => provider.onboardingStatus!.steps.first,
@@ -135,35 +136,36 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
               child: Builder(
                 builder: (context) {
                   final innerProvider = context.watch<OnboardingProvider>();
-                  if (innerProvider.isLoading && innerProvider.onboardingStatus == null) {
-                // Only show full screen loader on initial load
-                return const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      AppColors.primary,
-                    ),
-                  ),
-                );
-          }
+                  if (innerProvider.isLoading &&
+                      innerProvider.onboardingStatus == null) {
+                    // Only show full screen loader on initial load
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColors.primary,
+                        ),
+                      ),
+                    );
+                  }
 
                   final status = innerProvider.onboardingStatus;
-          if (status == null) {
-                return Padding(
-                  padding: const EdgeInsets.all(AppSpacing.xl),
-                  child: Center(
-                    child: Text(
-                      'No onboarding data available',
-                      style: AppTypography.textTheme.bodyLarge?.copyWith(
-                        color: AppColors.onSurfaceVariant,
+                  if (status == null) {
+                    return Padding(
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      child: Center(
+                        child: Text(
+                          'No onboarding data available',
+                          style: AppTypography.textTheme.bodyLarge?.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                );
-          }
+                    );
+                  }
 
                   return SingleChildScrollView(
                     padding: const EdgeInsets.all(AppSpacing.xl),
-                    child: Column(
+              child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         // Header Section
@@ -180,51 +182,52 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                         // Progress Carousel Card
                         _buildProgressCarousel(status),
 
-                    const SizedBox(height: AppSpacing.xl),
+                        const SizedBox(height: AppSpacing.xl),
 
-                    // Timeline
-                    _buildTimeline(status),
+                        // Timeline
+                        _buildTimeline(status),
 
-                    const SizedBox(height: AppSpacing.xl),
+                        const SizedBox(height: AppSpacing.xl),
 
                         // Action Buttons
                         _buildActionButtons(status, innerProvider),
 
-                    const SizedBox(height: AppSpacing.xl),
+                        const SizedBox(height: AppSpacing.xl),
 
-                    // Logout Button
-                    AnimatedButton(
-                      onPressed: () => _showLogoutConfirmation(context),
-                      backgroundColor: AppColors.surfaceVariant,
-                      foregroundColor: AppColors.onSurfaceVariant,
-                      height: 56,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.logout,
-                            size: 20,
-                            color: AppColors.onSurfaceVariant,
+                        // Logout Button
+                        AnimatedButton(
+                          onPressed: () => _showLogoutConfirmation(context),
+                          backgroundColor: AppColors.error,
+                          foregroundColor: AppColors.onError,
+                          height: 56,
+                          child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                              const Icon(
+                                Icons.logout,
+                                size: 20,
+                                color: AppColors.onError,
+                              ),
+                              const SizedBox(width: AppSpacing.s),
+                  Text(
+                                'Logout',
+                                style: AppTypography.textTheme.labelLarge
+                                    ?.copyWith(
+                                      color: AppColors.onError,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: AppSpacing.s),
-                          Text(
-                            'Logout',
-                            style: AppTypography.textTheme.labelLarge?.copyWith(
-                              color: AppColors.onSurfaceVariant,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+
+                        const SizedBox(height: AppSpacing.xl),
+                      ],
                     ),
-
-                    const SizedBox(height: AppSpacing.xl),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
+                  );
+                },
+              ),
+            ),
           ),
         );
       },
@@ -238,18 +241,11 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
       decoration: BoxDecoration(
         color: AppColors.error.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.error.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.error.withOpacity(0.3), width: 1),
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.error_outline,
-            color: AppColors.error,
-            size: 20,
-          ),
+          Icon(Icons.error_outline, color: AppColors.error, size: 20),
           const SizedBox(width: AppSpacing.s),
           Expanded(
             child: Column(
@@ -270,15 +266,16 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
+                            ),
+                          ),
+                        ],
+                      ),
     );
   }
 
   String _getHumanReadableError(String error) {
-    if (error.contains('ClientException') || error.contains('Failed to fetch')) {
+    if (error.contains('ClientException') ||
+        error.contains('Failed to fetch')) {
       return 'Unable to connect to the server. Please check your internet connection and try again.';
     } else if (error.contains('SocketException')) {
       return 'Network connection failed. Please ensure you have internet access.';
@@ -286,7 +283,8 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
       return 'Request timed out. The server is taking too long to respond.';
     } else if (error.contains('401') || error.contains('Unauthorized')) {
       return 'Your session has expired. Please log in again.';
-    } else if (error.contains('500') || error.contains('Internal server error')) {
+    } else if (error.contains('500') ||
+        error.contains('Internal server error')) {
       return 'Server error occurred. Please try again later.';
     } else {
       return 'Something went wrong. Please try again.';
@@ -313,11 +311,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
             color: AppColors.primary.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            headerIcon,
-            color: AppColors.primary,
-            size: 32,
-          ),
+          child: Icon(headerIcon, color: AppColors.primary, size: 32),
         ),
         const SizedBox(height: AppSpacing.l),
 
