@@ -139,7 +139,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             // Email not verified, redirect to verification screen
             CustomSnackbar.showSuccess(
               context,
-              message: 'Signed in successfully!',
+              message: 'Signed in successfully! Please verify your email.',
             );
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
@@ -153,7 +153,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             // Email verified but onboarding not complete
             CustomSnackbar.showSuccess(
               context,
-              message: 'Signed in successfully!',
+              message: 'Signed in successfully! Complete your onboarding.',
             );
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
