@@ -130,10 +130,14 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
           margin: const EdgeInsets.all(16),
           respectSafeArea: false, // let the overlay fill the whole viewport
           child: Container(
-            color: Colors.white, // White background to prevent splash screen showing
+            color:
+                Colors
+                    .white, // White background to prevent splash screen showing
             child: Scaffold(
-              extendBodyBehindAppBar: true, // keeps overlay visible "under" the app bar area
-              backgroundColor: Colors.transparent, // Transparent to show watermark
+              extendBodyBehindAppBar:
+                  true, // keeps overlay visible "under" the app bar area
+              backgroundColor:
+                  Colors.transparent, // Transparent to show watermark
               appBar: AppBar(
                 backgroundColor: Colors.transparent,
                 elevation: 0,
@@ -351,47 +355,57 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
   Widget _buildProgressCarousel(OnboardingStatusModel status) {
     _pageController ??= PageController(
       initialPage: status.currentStepIndex,
-      viewportFraction: 0.86,
+      viewportFraction: 0.75, // Reduced to center the active card better
     );
 
-    const double cardHeight = 210;      // actual card content height
-    const double shadowAllowance = 28;  // extra vertical space for soft shadow glow
+    const double cardHeight = 210; // actual card content height
+    const double shadowAllowance =
+        28; // extra vertical space for soft shadow glow
 
-    return SizedBox(
-      height: cardHeight + shadowAllowance, // leave room so shadows aren't cut
-      child: PageView.builder(
-        controller: _pageController,
-        clipBehavior: Clip.none,          // don't clip shadows
-        padEnds: false,
-        allowImplicitScrolling: true,
-        itemCount: status.steps.length,
+    return Center(
+      child: SizedBox(
+        width: double.infinity,
+        height: cardHeight + shadowAllowance, // leave room so shadows aren't cut
+        child: PageView.builder(
+          controller: _pageController,
+          clipBehavior: Clip.none, // don't clip shadows
+          padEnds: false,
+          allowImplicitScrolling: true,
+          itemCount: status.steps.length,
         itemBuilder: (context, index) {
           final step = status.steps[index];
           final isCompleted = status.completedSteps.contains(step.id);
           final isCurrent = step.id == status.currentStepId;
 
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s),
-            child: Align(                       // keep card centered vertically
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs), // Reduced padding for wider cards
+            child: Align(
+              // keep card centered vertically
               alignment: Alignment.center,
               child: SizedBox(
-                height: cardHeight,             // stable card height
+                height: cardHeight, // stable card height
+                width: double.infinity, // Make cards stretch to full available width
                 child: CardX(
                   variant: CardVariant.elevated,
-                  shadows: isCompleted
-                      ? [BoxShadow(
-                          color: Colors.green.withOpacity(0.28),
-                          blurRadius: 14,
-                          offset: const Offset(0, 8),
-                          spreadRadius: 2,
-                        )]
-                      : isCurrent
-                          ? [BoxShadow(
+                  shadows:
+                      isCompleted
+                          ? [
+                            BoxShadow(
+                              color: Colors.green.withOpacity(0.28),
+                              blurRadius: 14,
+                              offset: const Offset(0, 8),
+                              spreadRadius: 2,
+                            ),
+                          ]
+                          : isCurrent
+                          ? [
+                            BoxShadow(
                               color: Colors.blue.withOpacity(0.24),
                               blurRadius: 14,
                               offset: const Offset(0, 8),
                               spreadRadius: 2,
-                            )]
+                            ),
+                          ]
                           : null,
                   child: Padding(
                     // keep compact padding
@@ -408,7 +422,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                                 isCompleted
                                     ? AppColors.success.withOpacity(0.1)
                                     : isCurrent
-                                    ? Colors.blue.withOpacity(0.15) // Light blue background for current step
+                                    ? Colors.blue.withOpacity(
+                                      0.15,
+                                    ) // Light blue background for current step
                                     : AppColors.surfaceVariant,
                             shape: BoxShape.circle,
                           ),
@@ -424,13 +440,17 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                                       _getIconForStep(step.icon),
                                       color:
                                           isCurrent
-                                              ? Colors.blue.withOpacity(0.7) // Light blue for current step
+                                              ? Colors.blue.withOpacity(
+                                                0.7,
+                                              ) // Light blue for current step
                                               : AppColors.onSurfaceVariant,
                                       size: 20,
                                     ),
                           ),
                         ),
-                        const SizedBox(height: AppSpacing.xs), // Reduced from AppSpacing.s to AppSpacing.xs
+                        const SizedBox(
+                          height: AppSpacing.xs,
+                        ), // Reduced from AppSpacing.s to AppSpacing.xs
                         // Step Title
                         Text(
                           step.title,
@@ -440,14 +460,18 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                                 isCompleted
                                     ? AppColors.success
                                     : isCurrent
-                                    ? Colors.blue.withOpacity(0.8) // Light blue for current step title
+                                    ? Colors.blue.withOpacity(
+                                      0.8,
+                                    ) // Light blue for current step title
                                     : AppColors.onSurface,
                           ),
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4), // Reduced spacing between title and description
+                        const SizedBox(
+                          height: 4,
+                        ), // Reduced spacing between title and description
                         // Step Description
                         Text(
                           step.description,
@@ -466,6 +490,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
             ),
           );
         },
+      ),
       ),
     );
   }
