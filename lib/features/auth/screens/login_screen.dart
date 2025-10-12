@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   builder: (context, authProvider, child) {
                     return AnimatedAuthButton(
                       text: 'Sign In',
-                      icon: Icons.arrow_forward,
+                      icon: Icons.login,
                       onPressed: authProvider.isLoading ? null : _handleLogin,
                       isLoading: authProvider.isLoading,
                     );
