@@ -4,7 +4,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
-import '../../../design_system/spacing_utils.dart';
 import '../../../design_system/motion.dart';
 import '../../../ui/primitives/card_x.dart';
 import '../../../ui/primitives/animated_button.dart';

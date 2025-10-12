@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
-import '../../../design_system/spacing_utils.dart';
 import '../../../ui/primitives/animated_button.dart';
 import '../../../ui/primitives/card_x.dart';
 import '../providers/order_provider.dart';

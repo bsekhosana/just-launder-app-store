@@ -3,7 +3,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
-import '../../../design_system/spacing_utils.dart';
 import '../../../design_system/radii.dart';
 import '../../../design_system/motion.dart';
 import '../../../design_system/icons.dart';

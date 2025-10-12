@@ -6,7 +6,6 @@ import '../../design_system/motion.dart';
 import '../../design_system/typography.dart';
 import '../../design_system/icons.dart';
 import '../../design_system/elevations.dart';
-import '../../design_system/spacing_utils.dart';
 
 /// Enhanced chip widget with selection states and animations
 /// Provides smooth micro-interactions and visual feedback

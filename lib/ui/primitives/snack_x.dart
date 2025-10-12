@@ -7,7 +7,6 @@ import '../../design_system/motion.dart';
 import '../../design_system/typography.dart';
 import '../../design_system/icons.dart';
 import '../../design_system/elevations.dart';
-import '../../design_system/spacing_utils.dart';
 
 /// Enhanced snackbar with multiple variants and animations
 /// Provides modern feedback with smooth transitions

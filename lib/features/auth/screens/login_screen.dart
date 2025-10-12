@@ -47,11 +47,12 @@ class _LoginScreenState extends State<LoginScreen> {
       iconSizePercentage: 0.45,
       iconShift: -15.0,
       child: AnimatedAuthScreen(
-        title: 'Just Launder',
+        title: 'Welcome Back',
         subtitle: 'Manage Your Laundry Business',
         icon: Hero(
           tag: 'app_icon',
           child: AppIcon(
+            assetPath: 'assets/images/app_icon.png',
             size: 80,
             color: AppColors.primary,
             showBackground: true,

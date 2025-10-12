@@ -4,7 +4,6 @@ import '../../design_system/radii.dart';
 import '../../design_system/spacing.dart';
 import '../../design_system/motion.dart';
 import '../../design_system/elevations.dart';
-import '../../design_system/spacing_utils.dart';
 
 /// An animated button with scale, fade, and loading states
 /// Provides smooth micro-interactions and visual feedback

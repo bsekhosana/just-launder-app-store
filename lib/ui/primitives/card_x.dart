@@ -3,7 +3,6 @@ import '../../design_system/color_schemes.dart';
 import '../../design_system/radii.dart';
 import '../../design_system/spacing.dart';
 import '../../design_system/elevations.dart';
-import '../../design_system/spacing_utils.dart';
 import '../../design_system/motion.dart';
 import 'glass_surface.dart';
 

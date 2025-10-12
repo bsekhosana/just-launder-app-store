@@ -6,7 +6,6 @@ import '../../design_system/radii.dart';
 import '../../design_system/motion.dart';
 import '../../design_system/icons.dart';
 import '../../design_system/elevations.dart';
-import '../../design_system/spacing_utils.dart';
 import 'animated_button.dart';
 
 /// Modern accordion widget with smooth animations
