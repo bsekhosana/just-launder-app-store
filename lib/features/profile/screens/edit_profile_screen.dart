@@ -20,7 +20,7 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -102,14 +102,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         LogHelper.auth('OTP sent for profile changes');
 
         if (mounted) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => ReusableOtpScreen(
-                  email: tenant.email,
-              purpose: 'profile_edit',
-              onOtpVerified: _handleOtpVerified,
-              onResendOtp: _resendOtp,
-                ),
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder:
+                  (context) => ReusableOtpScreen(
+                    email: tenant.email,
+                    purpose: 'profile_edit',
+                    onOtpVerified: _handleOtpVerified,
+                    onResendOtp: _resendOtp,
+                  ),
             ),
           );
         }
@@ -147,7 +148,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final success = await authProvider.sendProfileOtp(type: 'profile_change');
-      
+
       LogHelper.auth('OTP resent for profile changes');
       return success;
     } catch (e) {
@@ -168,7 +169,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
         email: _emailController.text.trim(),
-        mobile: _mobileController.text.trim().isNotEmpty ? _mobileController.text.trim() : null,
+        mobile:
+            _mobileController.text.trim().isNotEmpty
+                ? _mobileController.text.trim()
+                : null,
         otp: otp,
       );
 
@@ -186,7 +190,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (mounted) {
           CustomSnackbar.showError(
             context,
-            message: authProvider.error ?? 'Failed to update profile. Please try again.',
+            message:
+                authProvider.error ??
+                'Failed to update profile. Please try again.',
           );
         }
       }
@@ -210,13 +216,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return WatermarkBackgroundBuilder.bottomRight(
-        icon: Icons.person,
+      icon: Icons.person,
       iconColor: AppColors.primary.withOpacity(0.15),
       iconSizePercentage: 0.35,
       iconShift: -15.0,
-        margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
       respectSafeArea: false,
-            child: Container(
+      child: Container(
         color: Colors.white,
         child: Scaffold(
           extendBodyBehindAppBar: true,
@@ -238,175 +244,177 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           body: SafeArea(
             child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                    const SizedBox(height: 40),
-                    
-                    // Header Icon
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.person,
-                        size: 40,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    Text(
-                      'Update Your Profile',
-                      style: AppTypography.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.onSurface,
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 8),
-                    
-                    Text(
-                      'Keep your information up to date',
-                      style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.onSurfaceVariant,
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 32),
-                    
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          children: [
-                TextFieldX(
-                  controller: _firstNameController,
-                  labelText: 'First Name',
-                  hintText: 'Enter your first name',
-                              prefixIcon: Icons.person,
-                  onChanged: (_) => _checkForChanges(),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                                  return 'Please enter your first name';
-                    }
-                    return null;
-                  },
-                ),
+              key: _formKey,
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
 
-                            const SizedBox(height: 16),
-
-                TextFieldX(
-                  controller: _lastNameController,
-                  labelText: 'Last Name',
-                  hintText: 'Enter your last name',
-                              prefixIcon: Icons.person,
-                  onChanged: (_) => _checkForChanges(),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                                  return 'Please enter your last name';
-                    }
-                    return null;
-                  },
-                ),
-
-                            const SizedBox(height: 16),
-
-                TextFieldX(
-                  controller: _emailController,
-                  labelText: 'Email Address',
-                  hintText: 'Enter your email address',
-                              prefixIcon: Icons.email,
-                  keyboardType: TextInputType.emailAddress,
-                  onChanged: (_) => _checkForChanges(),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                                  return 'Please enter your email address';
-                    }
-                                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                      return 'Please enter a valid email address';
-                    }
-                    return null;
-                  },
-                ),
-
-                            const SizedBox(height: 16),
-
-                TextFieldX(
-                  controller: _mobileController,
-                  labelText: 'Mobile Number',
-                  hintText: 'Enter your mobile number',
-                              prefixIcon: Icons.phone,
-                  keyboardType: TextInputType.phone,
-                  onChanged: (_) => _checkForChanges(),
-                  validator: (value) {
-                    if (value != null && value.trim().isNotEmpty) {
-                                  if (value.length < 10) {
-                        return 'Please enter a valid mobile number';
-                      }
-                    }
-                    return null;
-                  },
-                ),
-
-                            const SizedBox(height: 32),
-
-                if (_isEmailChanged || _isMobileChanged) ...[
+                  // Header Icon
                   Container(
-                                padding: const EdgeInsets.all(16),
+                    width: 80,
+                    height: 80,
                     decoration: BoxDecoration(
-                                  color: AppColors.primary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: AppColors.primary.withOpacity(0.3),
-                      ),
+                      color: AppColors.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
                     ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: AppColors.primary,
-                          size: 20,
-                        ),
-                                    const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                                        'Changing your email or mobile number requires verification',
-                            style: AppTypography.textTheme.bodySmall?.copyWith(
-                                          color: AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: Icon(
+                      Icons.person,
+                      size: 40,
+                      color: AppColors.primary,
                     ),
                   ),
-                              const SizedBox(height: 16),
-                ],
 
-                            AnimatedButton(
-                              onPressed: _isLoading ? null : _handleSaveProfile,
-                              isLoading: _isLoading,
-                              height: 56,
-                              child: Text(
-                                'Save Changes',
-                                style: AppTypography.textTheme.titleMedium?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
+                  const SizedBox(height: 24),
+
+                  Text(
+                    'Update Your Profile',
+                    style: AppTypography.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.onSurface,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    'Keep your information up to date',
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        children: [
+                          TextFieldX(
+                            controller: _firstNameController,
+                            labelText: 'First Name',
+                            hintText: 'Enter your first name',
+                            prefixIcon: Icons.person,
+                            onChanged: (_) => _checkForChanges(),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter your first name';
+                              }
+                              return null;
+                            },
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          TextFieldX(
+                            controller: _lastNameController,
+                            labelText: 'Last Name',
+                            hintText: 'Enter your last name',
+                            prefixIcon: Icons.person,
+                            onChanged: (_) => _checkForChanges(),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter your last name';
+                              }
+                              return null;
+                            },
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          TextFieldX(
+                            controller: _emailController,
+                            labelText: 'Email Address',
+                            hintText: 'Enter your email address',
+                            prefixIcon: Icons.email,
+                            keyboardType: TextInputType.emailAddress,
+                            onChanged: (_) => _checkForChanges(),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter your email address';
+                              }
+                              if (!RegExp(
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              ).hasMatch(value)) {
+                                return 'Please enter a valid email address';
+                              }
+                              return null;
+                            },
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          TextFieldX(
+                            controller: _mobileController,
+                            labelText: 'Mobile Number',
+                            hintText: 'Enter your mobile number',
+                            prefixIcon: Icons.phone,
+                            keyboardType: TextInputType.phone,
+                            onChanged: (_) => _checkForChanges(),
+                            validator: (value) {
+                              if (value != null && value.trim().isNotEmpty) {
+                                if (value.length < 10) {
+                                  return 'Please enter a valid mobile number';
+                                }
+                              }
+                              return null;
+                            },
+                          ),
+
+                          const SizedBox(height: 32),
+
+                          if (_isEmailChanged || _isMobileChanged) ...[
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppColors.primary.withOpacity(0.3),
                                 ),
                               ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    color: AppColors.primary,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      'Changing your email or mobile number requires verification',
+                                      style: AppTypography.textTheme.bodySmall
+                                          ?.copyWith(color: AppColors.primary),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+                            const SizedBox(height: 16),
                           ],
-                        ),
+
+                          AnimatedButton(
+                            onPressed: _isLoading ? null : _handleSaveProfile,
+                            isLoading: _isLoading,
+                            height: 56,
+                            child: Text(
+                              'Save Changes',
+                              style: AppTypography.textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
+          ),
         ),
       ),
     );

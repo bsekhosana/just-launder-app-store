@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../design_system/theme.dart';
-import '../widgets/animated_auth_screen.dart';
+import '../../design_system/color_schemes.dart';
+import '../../design_system/typography.dart';
+import '../../design_system/spacing.dart';
+import '../../design_system/radii.dart';
 import '../widgets/watermark_background.dart';
 import '../widgets/custom_snackbar.dart';
-import '../services/navigation_service.dart';
 import '../../ui/primitives/animated_button.dart';
 
 /// Reusable OTP verification screen for different contexts
@@ -66,19 +67,6 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
 
   String _getOtpCode() {
     return _otpControllers.map((controller) => controller.text).join();
-  }
-
-  void _onOtpChanged(int index, String value) {
-    if (value.isNotEmpty) {
-      if (index < 5) {
-        _focusNodes[index + 1].requestFocus();
-      } else {
-        _focusNodes[index].unfocus();
-        _verifyOtp();
-      }
-    } else if (value.isEmpty && index > 0) {
-      _focusNodes[index - 1].requestFocus();
-    }
   }
 
   void _fillOtpFields(String otp) {
@@ -238,53 +226,98 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WatermarkBackground(
+    return WatermarkBackgroundBuilder.bottomRight(
       icon: Icons.lock_outline,
-      position: WatermarkPosition.bottomRight,
-      iconSizePercentage: 0.4,
-      opacity: 0.05,
-      margin: const EdgeInsets.all(AppSpacing.xxl),
-      child: AnimatedAuthScreen(
-        title: _getTitle(),
-        subtitle: _getSubtitle(),
-        icon: Padding(
-          padding: const EdgeInsets.all(AppSpacing.l),
-          child: Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppColors.primaryContainer,
-              shape: BoxShape.circle,
+      iconColor: AppColors.primary.withOpacity(0.15),
+      iconSizePercentage: 0.35,
+      iconShift: -15.0,
+      margin: const EdgeInsets.all(16),
+      respectSafeArea: false,
+      child: Container(
+        color: Colors.white,
+        child: Scaffold(
+          extendBodyBehindAppBar: true,
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: AppColors.onSurface),
+              onPressed: () => Navigator.of(context).pop(),
             ),
-            child: Icon(Icons.sms, color: AppColors.primary, size: 40),
+            title: Text(
+              'Verify OTP',
+              style: AppTypography.textTheme.titleLarge?.copyWith(
+                color: AppColors.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
-        ),
-        showAppBar: true,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: AppSpacing.xxl),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 40),
 
-            // OTP input fields
-            _buildOtpInput(),
+                  // Header Icon
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.sms, color: AppColors.primary, size: 40),
+                  ),
 
-            if (_errorMessage != null) ...[
-              SizedBox(height: AppSpacing.l),
-              _buildErrorMessage(),
-            ],
+                  const SizedBox(height: 24),
 
-            SizedBox(height: AppSpacing.xl),
+                  Text(
+                    _getTitle(),
+                    textAlign: TextAlign.center,
+                    style: AppTypography.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.onSurface,
+                    ),
+                  ),
 
-            // Verify button
-            _buildVerifyButton(),
+                  const SizedBox(height: 8),
 
-            SizedBox(height: AppSpacing.l),
+                  Text(
+                    _getSubtitle(),
+                    textAlign: TextAlign.center,
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
 
-            // Resend section
-            _buildResendSection(),
+                  const SizedBox(height: 32),
 
-            SizedBox(height: AppSpacing.xl),
-          ],
+                  // OTP input fields
+                  _buildOtpInput(),
+
+                  if (_errorMessage != null) ...[
+                    const SizedBox(height: 16),
+                    _buildErrorMessage(),
+                  ],
+
+                  const SizedBox(height: 32),
+
+                  // Verify button
+                  _buildVerifyButton(),
+
+                  const SizedBox(height: 16),
+
+                  // Resend section
+                  _buildResendSection(),
+
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -312,15 +345,15 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
               filled: true,
               fillColor: AppColors.surface,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadii.m),
+                borderRadius: BorderRadius.circular(Radii.m),
                 borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadii.m),
+                borderRadius: BorderRadius.circular(Radii.m),
                 borderSide: BorderSide(color: AppColors.primary, width: 2),
               ),
               errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadii.m),
+                borderRadius: BorderRadius.circular(Radii.m),
                 borderSide: BorderSide(color: AppColors.error),
               ),
             ),
@@ -355,7 +388,7 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
       padding: const EdgeInsets.all(AppSpacing.m),
       decoration: BoxDecoration(
         color: AppColors.error.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(AppRadii.m),
+        borderRadius: BorderRadius.circular(Radii.m),
         border: Border.all(color: AppColors.error.withOpacity(0.3)),
       ),
       child: Row(
@@ -382,7 +415,7 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
       onPressed: _isLoading ? null : _verifyOtp,
       backgroundColor: AppColors.primary,
       foregroundColor: AppColors.onPrimary,
-      borderRadius: BorderRadius.circular(AppRadii.l),
+      borderRadius: BorderRadius.circular(Radii.l),
       height: 56,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -424,7 +457,7 @@ class _ReusableOtpScreenState extends State<ReusableOtpScreen> {
             isLoading: _isResending,
             backgroundColor: AppColors.surface,
             foregroundColor: AppColors.primary,
-            borderRadius: BorderRadius.circular(AppRadii.l),
+            borderRadius: BorderRadius.circular(Radii.l),
             height: 48,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

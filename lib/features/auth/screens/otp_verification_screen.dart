@@ -72,9 +72,9 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     setState(() => _resendCountdown = 60);
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) {
-        timer.cancel();
+            timer.cancel();
         return;
-      }
+          }
       if (_resendCountdown > 0) {
         setState(() => _resendCountdown--);
       } else {
@@ -139,14 +139,14 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
 
             await Future.delayed(const Duration(milliseconds: 500));
 
-            if (mounted) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder:
-                      (context) =>
-                          ResetPasswordScreen(email: widget.email, otp: otp),
-                ),
-              );
+      if (mounted) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder:
+                  (context) =>
+                      ResetPasswordScreen(email: widget.email, otp: otp),
+            ),
+          );
             }
           } else {
             // OTP is invalid or expired
@@ -189,7 +189,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
       if (widget.isPasswordReset) {
-        await authProvider.sendPasswordResetEmail(widget.email);
+      await authProvider.sendPasswordResetEmail(widget.email);
       } else {
         await authProvider.resendVerificationEmail(widget.email);
       }
@@ -356,16 +356,16 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
               SizedBox(height: AppSpacing.l),
 
               // Back to Login Link
-              Center(
+                                      Center(
                 child: AnimatedButtons.text(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Text(
+                                        child: Text(
                     'Back to Login',
                     style: AppTypography.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                          ),
                 ),
               ),
             ],

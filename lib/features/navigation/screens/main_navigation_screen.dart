@@ -9,8 +9,7 @@ import '../../../design_system/motion.dart';
 import '../../../design_system/icons.dart';
 import '../../../ui/primitives/glass_surface.dart';
 import '../../orders/screens/orders_screen.dart';
-import '../../branches/screens/branches_screen.dart';
-import '../../staff/screens/staff_screen.dart';
+import '../../management/screens/management_screen.dart';
 import '../../analytics/screens/analytics_screen.dart';
 import '../../settings/screens/settings_screen.dart';
 
@@ -29,6 +28,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   // Navigation items for bottom navigation bar
   final List<NavigationItem> _navigationItems = [
     NavigationItem(
+      icon: AppIcons.analytics,
+      activeIcon: AppIcons.analytics,
+      label: 'Dashboard',
+    ),
+    NavigationItem(
       icon: AppIcons.orders,
       activeIcon: AppIcons.orders,
       label: 'Orders',
@@ -36,17 +40,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     NavigationItem(
       icon: AppIcons.branches,
       activeIcon: AppIcons.branches,
-      label: 'Branches',
-    ),
-    NavigationItem(
-      icon: AppIcons.staff,
-      activeIcon: AppIcons.staff,
-      label: 'Staff',
-    ),
-    NavigationItem(
-      icon: AppIcons.analytics,
-      activeIcon: AppIcons.analytics,
-      label: 'Analytics',
+      label: 'Manage',
     ),
     NavigationItem(
       icon: AppIcons.settings,
@@ -81,10 +75,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           });
         },
         children: const [
-          OrdersScreen(),
-          BranchesScreen(),
-          StaffScreen(),
           AnalyticsScreen(),
+          OrdersScreen(),
+          ManagementScreen(),
           SettingsScreen(),
         ],
       ),

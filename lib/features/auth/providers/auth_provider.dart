@@ -139,18 +139,18 @@ class AuthProvider extends ChangeNotifier {
   Future<void> forceLogout() async {
     try {
       LogHelper.auth('Force logout triggered - clearing authentication state');
-      
+
       // Clear authentication state
       _isAuthenticated = false;
       _currentTenant = null;
       _pendingEmail = null;
       _pendingOTP = null;
       _clearError();
-      
+
       // Clear stored data
       await _localDataSource.clearAll();
       await TenantRemoteDataSource.clearAuthToken();
-      
+
       LogHelper.auth('Force logout completed');
       notifyListeners();
     } catch (e) {

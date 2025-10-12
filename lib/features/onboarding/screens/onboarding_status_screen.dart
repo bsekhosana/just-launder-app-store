@@ -138,9 +138,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                   true, // keeps overlay visible "under" the app bar area
               backgroundColor:
                   Colors.transparent, // Transparent to show watermark
-              appBar: AppBar(
+      appBar: AppBar(
                 backgroundColor: Colors.transparent,
-                elevation: 0,
+        elevation: 0,
                 automaticallyImplyLeading: false,
               ),
               body: SafeArea(
@@ -176,7 +176,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
                     return SingleChildScrollView(
                       padding: const EdgeInsets.all(AppSpacing.xl),
-                      child: Column(
+              child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           // Header Section
@@ -212,8 +212,8 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                             foregroundColor: AppColors.onError,
                             height: 56,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                                 const Icon(
                                   Icons.logout,
                                   size: 20,
@@ -263,7 +263,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                  Text(
                   'Connection Error',
                   style: AppTypography.textTheme.labelLarge?.copyWith(
                     color: AppColors.error,
@@ -271,7 +271,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                Text(
+                  Text(
                   _getHumanReadableError(error),
                   style: AppTypography.textTheme.bodySmall?.copyWith(
                     color: AppColors.error,
@@ -279,11 +279,11 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
+                  ),
+                ],
+              ),
+            );
+          }
 
   String _getHumanReadableError(String error) {
     if (error.contains('ClientException') ||
@@ -315,7 +315,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     }
 
     return Column(
-      children: [
+              children: [
         // Header Icon
         Container(
           padding: const EdgeInsets.all(AppSpacing.l),
@@ -415,7 +415,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                     child: Padding(
                       // keep compact padding
                       padding: const EdgeInsets.all(AppSpacing.s),
-                      child: Column(
+                  child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // Step Icon
@@ -423,7 +423,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                             width: 50,
                             height: 50,
                             decoration: BoxDecoration(
-                              color:
+                            color:
                                   isCompleted
                                       ? AppColors.success.withOpacity(0.1)
                                       : isCurrent
@@ -439,7 +439,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                                       ? const Icon(
                                         Icons.check,
                                         color: AppColors.success,
-                                        size: 24,
+                            size: 24,
                                       )
                                       : Icon(
                                         _getIconForStep(step.icon),
@@ -492,9 +492,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                     ),
                   ),
                 ),
-              ),
-            );
-          },
+            ),
+          );
+        },
         ),
       ),
     );
@@ -504,10 +504,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
     return CardsX.elevated(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.l),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
               'Progress Overview',
               style: AppTypography.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -750,9 +750,9 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
               ),
             ),
             padding: const EdgeInsets.all(AppSpacing.l),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                              children: [
                 // Drag handle
                 Container(
                   width: 40,
@@ -780,10 +780,10 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                 const SizedBox(height: AppSpacing.l),
 
                 // Title
-                Text(
+                                Text(
                   'Logout',
                   style: AppTypography.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.bold,
                     color: AppColors.onSurface,
                   ),
                 ),
@@ -802,13 +802,13 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
                 // Buttons
                 Row(
                   children: [
-                    Expanded(
+                                Expanded(
                       child: AnimatedButton(
                         onPressed: () => Navigator.of(context).pop(),
                         backgroundColor: AppColors.surfaceVariant,
                         foregroundColor: AppColors.onSurfaceVariant,
                         height: 48,
-                        child: Text(
+                                  child: Text(
                           'Cancel',
                           style: AppTypography.textTheme.labelLarge?.copyWith(
                             color: AppColors.onSurfaceVariant,
@@ -856,7 +856,7 @@ class _OnboardingStatusScreenState extends State<OnboardingStatusScreen> {
 
         // Navigate back to login screen
         Navigator.of(
-          context,
+      context,
         ).pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (e) {

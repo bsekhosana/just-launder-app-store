@@ -82,7 +82,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           'Update your business information',
                           Icons.edit,
                           () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const EditProfileScreen(),
+                            ),
                           ),
                         ),
                         _buildSettingsItem(
@@ -90,7 +92,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           'Update your account password',
                           Icons.lock,
                           () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => const ChangePasswordScreen(),
+                            ),
                           ),
                         ),
                         _buildSettingsItem(
@@ -588,7 +593,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: AppSpacing.m),
               ],
             ),
-      ),
+          ),
     );
   }
 

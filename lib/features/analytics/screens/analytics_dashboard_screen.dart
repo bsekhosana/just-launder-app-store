@@ -71,7 +71,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
         backgroundColor: colorScheme.surface.withOpacity(0.9),
         elevation: 0,
         title: Text(
-          'Analytics Dashboard',
+          'Dashboard',
           style: AppTypography.textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: FontWeight.w600,

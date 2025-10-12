@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:just_laundrette_app/design_system/icons.dart';
-import 'package:just_laundrette_app/ui/primitives/accordion_x.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../design_system/color_schemes.dart';
 import '../../../design_system/typography.dart';
 import '../../../design_system/spacing.dart';
+import '../../../design_system/radii.dart';
 import '../../../ui/primitives/animated_button.dart';
 import '../../../ui/primitives/text_field_x.dart';
 import '../../../core/widgets/watermark_background.dart';
@@ -87,6 +86,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 SizedBox(height: AppSpacing.l),
 
+                // Sign In Button
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) {
+                    return AnimatedAuthButton(
+                      text: 'Sign In',
+                      icon: Icons.arrow_forward,
+                      onPressed: authProvider.isLoading ? null : _handleLogin,
+                      isLoading: authProvider.isLoading,
+                    );
+                  },
+                ),
+
+                SizedBox(height: AppSpacing.l),
+
                 // Forgot Password Link
                 Center(
                   child: AnimatedButtons.text(
@@ -109,125 +122,65 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 SizedBox(height: AppSpacing.xl),
 
-                // Sign In Button
-                Consumer<AuthProvider>(
-                  builder: (context, authProvider, child) {
-                    return AnimatedAuthButton(
-                      text: 'Sign In',
-                      icon: Icons.arrow_forward,
-                      onPressed: authProvider.isLoading ? null : _handleLogin,
-                      isLoading: authProvider.isLoading,
-                    );
-                  },
+                // Divider
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.m,
+                      ),
+                      child: Text(
+                        'OR',
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: Divider()),
+                  ],
                 ),
 
                 SizedBox(height: AppSpacing.xl),
 
-                // Demo Accounts Accordion
-                AccordionX(
-                  title: 'Demo Accounts',
-                  icon: AppIcons.staff,
-                  content: Column(
+                // Demo Credentials Section
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.l),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceVariant.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(Radii.m),
+                    border: Border.all(
+                      color: AppColors.outline.withOpacity(0.3),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Quick Fill Buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                _emailController.text = 'tenant@example.com';
-                                _passwordController.text = 'password';
-                                CustomSnackbar.showSuccess(
-                                  context,
-                                  message: 'Tenant account filled',
-                                );
-                              },
-                              icon: const Icon(Icons.business, size: 16),
-                              label: const Text('Fill Tenant'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                foregroundColor: AppColors.onPrimary,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                _emailController.text =
-                                    'privatetenant@example.com';
-                                _passwordController.text = 'password';
-                                CustomSnackbar.showSuccess(
-                                  context,
-                                  message: 'Private tenant filled',
-                                );
-                              },
-                              icon: const Icon(Icons.person, size: 16),
-                              label: const Text('Fill Private'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                foregroundColor: AppColors.onPrimary,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'Demo Credentials',
+                        style: AppTypography.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.onSurface,
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                      DemoAccountItem(
-                        accountType: 'Tenant Account',
+                      const SizedBox(height: AppSpacing.s),
+                      Text(
+                        'Use these credentials to test the app:',
+                        style: AppTypography.textTheme.bodySmall?.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.m),
+                      _buildCredentialItem(
+                        name: 'Tenant Account',
                         email: 'tenant@example.com',
                         password: 'password',
-                        onEmailCopy: () {
-                          const email = 'tenant@example.com';
-                          Clipboard.setData(const ClipboardData(text: email));
-                          _emailController.text = email;
-                          CustomSnackbar.showSuccess(
-                            context,
-                            message: 'Email copied and pasted',
-                          );
-                        },
-                        onPasswordCopy: () {
-                          const password = 'password';
-                          Clipboard.setData(
-                            const ClipboardData(text: password),
-                          );
-                          _passwordController.text = password;
-                          CustomSnackbar.showSuccess(
-                            context,
-                            message: 'Password copied and pasted',
-                          );
-                        },
                       ),
-                      DemoAccountItem(
-                        accountType: 'Private Tenant',
+                      const SizedBox(height: AppSpacing.s),
+                      _buildCredentialItem(
+                        name: 'Private Tenant',
                         email: 'privatetenant@example.com',
                         password: 'password',
-                        onEmailCopy: () {
-                          const email = 'privatetenant@example.com';
-                          Clipboard.setData(const ClipboardData(text: email));
-                          _emailController.text = email;
-                          CustomSnackbar.showSuccess(
-                            context,
-                            message: 'Email copied and pasted',
-                          );
-                        },
-                        onPasswordCopy: () {
-                          const password = 'password';
-                          Clipboard.setData(
-                            const ClipboardData(text: password),
-                          );
-                          _passwordController.text = password;
-                          CustomSnackbar.showSuccess(
-                            context,
-                            message: 'Password copied and pasted',
-                          );
-                        },
                       ),
                     ],
                   ),
@@ -235,38 +188,97 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 SizedBox(height: AppSpacing.xl),
 
-                // Register Link
-                Center(
-                  child: AnimatedButtons.text(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const RegistrationScreen(),
-                        ),
-                      );
-                    },
-                    child: Text.rich(
-                      TextSpan(
-                        text: 'Don\'t have an account? ',
-                        style: AppTypography.textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: 'Sign Up',
-                            style: AppTypography.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                // Sign Up Link
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Don\'t have an account? ',
+                      style: AppTypography.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.onSurfaceVariant,
                       ),
                     ),
-                  ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const RegistrationScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Sign Up',
+                        style: AppTypography.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCredentialItem({
+    required String name,
+    required String email,
+    required String password,
+  }) {
+    return InkWell(
+      onTap: () {
+        _emailController.text = email;
+        _passwordController.text = password;
+        CustomSnackbar.showSuccess(
+          context,
+          message: '$name credentials filled',
+        );
+      },
+      borderRadius: BorderRadius.circular(Radii.s),
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.s),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(Radii.s),
+          border: Border.all(color: AppColors.outline.withOpacity(0.2)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.person, size: 16, color: AppColors.primary),
+            const SizedBox(width: AppSpacing.s),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: AppTypography.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    email,
+                    style: AppTypography.textTheme.bodySmall?.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.touch_app,
+              size: 16,
+              color: AppColors.primary.withOpacity(0.5),
+            ),
+          ],
         ),
       ),
     );
