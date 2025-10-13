@@ -9,11 +9,11 @@ import '../../../design_system/icons.dart';
 import '../../../ui/primitives/animated_button.dart';
 import '../../../ui/primitives/card_x.dart';
 import '../../../ui/primitives/chip_x.dart';
-import '../providers/order_provider.dart';
-import '../../../data/models/laundrette_order.dart';
-import 'order_details_screen.dart';
-import '../widgets/order_filters_widget.dart';
-import '../widgets/order_stats_widget.dart';
+import '../providers/tenant_order_provider.dart';
+import '../domain/models/tenant_order_model.dart';
+import 'enhanced_order_details_screen.dart';
+// import '../widgets/order_filters_widget.dart';
+// import '../widgets/order_stats_widget.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -25,7 +25,7 @@ class OrdersScreen extends StatefulWidget {
 class _OrdersScreenState extends State<OrdersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  OrderFilters _filters = OrderFilters();
+  // OrderFilters _filters = OrderFilters();
   bool _showFilters = false;
 
   @override
@@ -45,11 +45,12 @@ class _OrdersScreenState extends State<OrdersScreen>
   }
 
   Future<void> _loadOrders() async {
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final orderProvider = Provider.of<TenantOrderProvider>(
+      context,
+      listen: false,
+    );
     // Load orders when screen initializes
-    await orderProvider.loadOrders(
-      'laundrette_business_1',
-    ); // Mock laundrette ID
+    await orderProvider.loadOrders();
   }
 
   @override
@@ -133,52 +134,57 @@ class _OrdersScreenState extends State<OrdersScreen>
           ),
         ),
       ),
-      body: Consumer<OrderProvider>(
+      body: Consumer<TenantOrderProvider>(
         builder: (context, orderProvider, child) {
-          if (orderProvider.isLoading) {
+          if (orderProvider.isLoading && orderProvider.orders.isEmpty) {
             return Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             );
+          }
+
+          if (orderProvider.error != null && orderProvider.orders.isEmpty) {
+            return _buildErrorState(orderProvider.error!);
           }
 
           final filteredOrders = _getFilteredOrders(orderProvider.orders);
 
           return Column(
             children: [
-              if (_showFilters) ...[
-                Flexible(
-                  flex: 0,
-                  child: AnimatedContainer(
-                        duration: AppMotion.normal,
-                        curve: AppCurves.standard,
-                        constraints: const BoxConstraints(maxHeight: 300),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              OrderFiltersWidget(
-                                currentFilters: _filters,
-                                onFiltersChanged: (filters) {
-                                  setState(() {
-                                    _filters = filters;
-                                  });
-                                },
-                              ),
-                              const SizedBox(height: AppSpacing.s),
-                              OrderStatsWidget(orders: filteredOrders),
-                            ],
-                          ),
-                        ),
-                      )
-                      .animate()
-                      .fadeIn(duration: AppMotion.normal)
-                      .slideY(
-                        begin: -0.3,
-                        end: 0.0,
-                        duration: AppMotion.normal,
-                      ),
-                ),
-                const SizedBox(height: AppSpacing.s),
-              ],
+              // TODO: Update OrderFiltersWidget and OrderStatsWidget to use TenantOrderModel
+              // if (_showFilters) ...[
+              //   Flexible(
+              //     flex: 0,
+              //     child: AnimatedContainer(
+              //           duration: AppMotion.normal,
+              //           curve: AppCurves.standard,
+              //           constraints: const BoxConstraints(maxHeight: 300),
+              //           child: SingleChildScrollView(
+              //             child: Column(
+              //               children: [
+              //                 OrderFiltersWidget(
+              //                   currentFilters: _filters,
+              //                   onFiltersChanged: (filters) {
+              //                     setState(() {
+              //                       _filters = filters;
+              //                     });
+              //                   },
+              //                 ),
+              //                 const SizedBox(height: AppSpacing.s),
+              //                 OrderStatsWidget(orders: filteredOrders),
+              //               ],
+              //             ),
+              //           ),
+              //         )
+              //         .animate()
+              //         .fadeIn(duration: AppMotion.normal)
+              //         .slideY(
+              //           begin: -0.3,
+              //           end: 0.0,
+              //           duration: AppMotion.normal,
+              //         ),
+              //   ),
+              //   const SizedBox(height: AppSpacing.s),
+              // ],
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
@@ -187,28 +193,28 @@ class _OrdersScreenState extends State<OrdersScreen>
                     _buildOrdersList(
                       _getOrdersByStatus(
                         filteredOrders,
-                        LaundretteOrderStatus.pending,
+                        TenantOrderStatus.pending,
                       ),
                       'No pending orders',
                     ),
                     _buildOrdersList(
                       _getOrdersByStatus(
                         filteredOrders,
-                        LaundretteOrderStatus.approved,
+                        TenantOrderStatus.confirmed,
                       ),
                       'No approved orders',
                     ),
                     _buildOrdersList(
                       _getOrdersByStatus(
                         filteredOrders,
-                        LaundretteOrderStatus.inProgress,
+                        TenantOrderStatus.inProgress,
                       ),
                       'No orders in progress',
                     ),
                     _buildOrdersList(
                       _getOrdersByStatus(
                         filteredOrders,
-                        LaundretteOrderStatus.delivered,
+                        TenantOrderStatus.completed,
                       ),
                       'No completed orders',
                     ),
@@ -222,7 +228,7 @@ class _OrdersScreenState extends State<OrdersScreen>
     );
   }
 
-  Widget _buildOrdersList(List<LaundretteOrder> orders, String emptyMessage) {
+  Widget _buildOrdersList(List<TenantOrderModel> orders, String emptyMessage) {
     final colorScheme = Theme.of(context).colorScheme;
 
     if (orders.isEmpty) {
@@ -258,17 +264,20 @@ class _OrdersScreenState extends State<OrdersScreen>
       );
     }
 
-    return ListView.builder(
-      padding: SpacingUtils.all(AppSpacing.l),
-      itemCount: orders.length,
-      itemBuilder: (context, index) {
-        final order = orders[index];
-        return _buildOrderCard(order, index);
-      },
+    return RefreshIndicator(
+      onRefresh: _loadOrders,
+      child: ListView.builder(
+        padding: SpacingUtils.all(AppSpacing.l),
+        itemCount: orders.length,
+        itemBuilder: (context, index) {
+          final order = orders[index];
+          return _buildOrderCard(order, index);
+        },
+      ),
     );
   }
 
-  Widget _buildOrderCard(LaundretteOrder order, int index) {
+  Widget _buildOrderCard(TenantOrderModel order, int index) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return CardsX.elevated(
@@ -290,7 +299,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                       ),
                     ),
                     ChipsX.status(
-                      label: order.statusDisplayText,
+                      label: _getStatusLabel(order.status),
                       status: _getChipStatus(order.status),
                     ),
                   ],
@@ -304,7 +313,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  'Order #${order.id}',
+                  'Order #${order.orderNumber}',
                   style: AppTypography.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -312,15 +321,15 @@ class _OrdersScreenState extends State<OrdersScreen>
                 const SizedBox(height: AppSpacing.m),
                 // Price
                 Text(
-                  '£${order.total.toStringAsFixed(2)}',
+                  '£${order.totalAmount.toStringAsFixed(2)}',
                   style: AppTypography.textTheme.titleLarge?.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
 
-                // Action buttons as footer (if pending approval)
-                if (order.isPendingApproval) ...[
+                // Action buttons as footer (if pending)
+                if (order.status == TenantOrderStatus.pending) ...[
                   const SizedBox(height: AppSpacing.l),
                   Row(
                     children: [
@@ -373,34 +382,80 @@ class _OrdersScreenState extends State<OrdersScreen>
         );
   }
 
-  ChipStatus _getChipStatus(LaundretteOrderStatus status) {
+  Widget _buildErrorState(String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 64, color: AppColors.error),
+          const SizedBox(height: AppSpacing.l),
+          Text(
+            'Error loading orders',
+            style: AppTypography.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.s),
+          Text(
+            error,
+            style: AppTypography.textTheme.bodyMedium?.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.l),
+          AnimatedButtons.primary(
+            onPressed: _loadOrders,
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getStatusLabel(TenantOrderStatus status) {
     switch (status) {
-      case LaundretteOrderStatus.pending:
+      case TenantOrderStatus.pending:
+        return 'Pending';
+      case TenantOrderStatus.confirmed:
+        return 'Confirmed';
+      case TenantOrderStatus.inProgress:
+        return 'In Progress';
+      case TenantOrderStatus.readyForPickup:
+        return 'Ready';
+      case TenantOrderStatus.completed:
+        return 'Completed';
+      case TenantOrderStatus.cancelled:
+        return 'Cancelled';
+    }
+  }
+
+  ChipStatus _getChipStatus(TenantOrderStatus status) {
+    switch (status) {
+      case TenantOrderStatus.pending:
         return ChipStatus.warning;
-      case LaundretteOrderStatus.approved:
+      case TenantOrderStatus.confirmed:
         return ChipStatus.info;
-      case LaundretteOrderStatus.declined:
-        return ChipStatus.error;
-      case LaundretteOrderStatus.confirmed:
+      case TenantOrderStatus.inProgress:
         return ChipStatus.info;
-      case LaundretteOrderStatus.pickedUp:
-        return ChipStatus.info;
-      case LaundretteOrderStatus.inProgress:
-        return ChipStatus.info;
-      case LaundretteOrderStatus.ready:
+      case TenantOrderStatus.readyForPickup:
         return ChipStatus.warning;
-      case LaundretteOrderStatus.outForDelivery:
-        return ChipStatus.info;
-      case LaundretteOrderStatus.delivered:
+      case TenantOrderStatus.completed:
         return ChipStatus.success;
-      case LaundretteOrderStatus.cancelled:
+      case TenantOrderStatus.cancelled:
         return ChipStatus.neutral;
     }
   }
 
   Future<void> _approveOrder(String orderId) async {
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-    final success = await orderProvider.approveOrder(orderId);
+    final orderProvider = Provider.of<TenantOrderProvider>(
+      context,
+      listen: false,
+    );
+    final success = await orderProvider.updateOrderStatus(
+      orderId,
+      TenantOrderStatus.confirmed,
+    );
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -443,8 +498,15 @@ class _OrdersScreenState extends State<OrdersScreen>
     );
 
     if (reason != null) {
-      final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-      final success = await orderProvider.declineOrder(orderId, reason);
+      final orderProvider = Provider.of<TenantOrderProvider>(
+        context,
+        listen: false,
+      );
+      final success = await orderProvider.updateOrderStatus(
+        orderId,
+        TenantOrderStatus.cancelled,
+        notes: reason,
+      );
 
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -457,22 +519,22 @@ class _OrdersScreenState extends State<OrdersScreen>
     }
   }
 
-  void _viewOrderDetails(LaundretteOrder order) {
+  void _viewOrderDetails(TenantOrderModel order) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => OrderDetailsScreen(order: order)),
+      MaterialPageRoute(
+        builder: (context) => EnhancedOrderDetailsScreen(order: order),
+      ),
     );
   }
 
-  List<LaundretteOrder> _getFilteredOrders(List<LaundretteOrder> orders) {
-    if (!_filters.hasActiveFilters) {
-      return orders;
-    }
-    return orders.where((order) => _filters.matchesOrder(order)).toList();
+  List<TenantOrderModel> _getFilteredOrders(List<TenantOrderModel> orders) {
+    // TODO: Implement filtering when OrderFiltersWidget is updated
+    return orders;
   }
 
-  List<LaundretteOrder> _getOrdersByStatus(
-    List<LaundretteOrder> orders,
-    LaundretteOrderStatus status,
+  List<TenantOrderModel> _getOrdersByStatus(
+    List<TenantOrderModel> orders,
+    TenantOrderStatus status,
   ) {
     return orders.where((order) => order.status == status).toList();
   }
