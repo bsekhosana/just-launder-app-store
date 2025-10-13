@@ -89,13 +89,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       );
 
       if (success) {
-        if (mounted) {
+      if (mounted) {
           final tenant = authProvider.currentTenant;
           if (tenant != null) {
             // Navigate to email verification screen
             Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder:
+          MaterialPageRoute(
+            builder:
                     (context) =>
                         EmailVerificationAwaitingScreen(email: tenant.email),
               ),
@@ -116,7 +116,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         );
       }
     } finally {
-      setState(() => _isLoading = false);
+        setState(() => _isLoading = false);
     }
   }
 
@@ -155,7 +155,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 // Tenant Type Selection
                 Container(
                   padding: EdgeInsets.all(AppSpacing.m),
-                  decoration: BoxDecoration(
+                      decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
@@ -255,20 +255,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       SizedBox(height: AppSpacing.m),
 
                       // Mobile Number
-                      TextFieldsX.standard(
+                TextFieldsX.standard(
                         controller: _mobileController,
                         labelText: 'Mobile Number',
                         hintText: 'Enter your mobile number',
                         prefixIcon: AppIcons.phone,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
                             return 'Please enter your mobile number';
-                          }
+                        }
                           if (value.length < 10) {
                             return 'Please enter a valid mobile number';
-                          }
-                          return null;
-                        },
+                        }
+                        return null;
+                      },
                       ),
                     ],
                   ),
@@ -306,52 +306,52 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       ),
                       SizedBox(height: AppSpacing.m),
 
-                      // Email Field
-                      TextFieldsX.email(
-                        controller: _emailController,
-                        labelText: 'Email Address',
-                        hintText: 'Enter your email address',
+                // Email Field
+                TextFieldsX.email(
+                      controller: _emailController,
+                      labelText: 'Email Address',
+                      hintText: 'Enter your email address',
                       ),
 
                       SizedBox(height: AppSpacing.m),
 
-                      // Password Field
-                      TextFieldsX.password(
-                        controller: _passwordController,
-                        labelText: 'Password',
-                        hintText: 'Enter your password',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a password';
-                          }
-                          if (value.length < 8) {
-                            return 'Password must be at least 8 characters';
-                          }
-                          if (!RegExp(
-                            r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)',
-                          ).hasMatch(value)) {
-                            return 'Password must contain uppercase, lowercase, and number';
-                          }
-                          return null;
-                        },
+                // Password Field
+                TextFieldsX.password(
+                      controller: _passwordController,
+                      labelText: 'Password',
+                      hintText: 'Enter your password',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a password';
+                        }
+                        if (value.length < 8) {
+                          return 'Password must be at least 8 characters';
+                        }
+                        if (!RegExp(
+                          r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)',
+                        ).hasMatch(value)) {
+                          return 'Password must contain uppercase, lowercase, and number';
+                        }
+                        return null;
+                      },
                       ),
 
                       SizedBox(height: AppSpacing.m),
 
-                      // Confirm Password Field
-                      TextFieldsX.password(
-                        controller: _confirmPasswordController,
-                        labelText: 'Confirm Password',
-                        hintText: 'Confirm your password',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please confirm your password';
-                          }
-                          if (value != _passwordController.text) {
-                            return 'Passwords do not match';
-                          }
-                          return null;
-                        },
+                // Confirm Password Field
+                TextFieldsX.password(
+                      controller: _confirmPasswordController,
+                      labelText: 'Confirm Password',
+                      hintText: 'Confirm your password',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password';
+                        }
+                        if (value != _passwordController.text) {
+                          return 'Passwords do not match';
+                        }
+                        return null;
+                      },
                       ),
                     ],
                   ),
@@ -361,65 +361,65 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                 // Terms and Conditions
                 Row(
-                  children: [
-                    Checkbox(
-                      value: _agreeToTerms,
-                      onChanged: (value) {
+                      children: [
+                        Checkbox(
+                          value: _agreeToTerms,
+                          onChanged: (value) {
                         setState(() {
                           _agreeToTerms = value ?? false;
                         });
-                      },
-                      activeColor: AppColors.primary,
+                          },
+                          activeColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(Radii.s),
                       ),
-                    ),
-                    Expanded(
-                      child: Text.rich(
-                        TextSpan(
-                          text: 'I agree to the ',
+                        ),
+                        Expanded(
+                          child: Text.rich(
+                            TextSpan(
+                              text: 'I agree to the ',
                           style: AppTypography.textTheme.bodyMedium?.copyWith(
                             color:
                                 Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                              children: [
+                                TextSpan(
+                                  text: 'Terms and Conditions',
+                                  style: AppTypography.textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                                const TextSpan(text: ' and '),
+                                TextSpan(
+                                  text: 'Privacy Policy',
+                                  style: AppTypography.textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                              ],
+                            ),
                           ),
-                          children: [
-                            TextSpan(
-                              text: 'Terms and Conditions',
-                              style: AppTypography.textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                            const TextSpan(text: ' and '),
-                            TextSpan(
-                              text: 'Privacy Policy',
-                              style: AppTypography.textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                          ],
                         ),
-                      ),
-                    ),
-                  ],
+                      ],
                 ),
 
                 SizedBox(height: AppSpacing.xl),
 
                 // Create Account Button
                 AnimatedButtons.primary(
-                  onPressed: _isLoading ? null : _register,
-                  isLoading: _isLoading,
-                  child: Text(
-                    'Create Account',
-                    style: AppTypography.textTheme.labelLarge?.copyWith(
-                      color: AppColors.onPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                      onPressed: _isLoading ? null : _register,
+                      isLoading: _isLoading,
+                      child: Text(
+                        'Create Account',
+                        style: AppTypography.textTheme.labelLarge?.copyWith(
+                          color: AppColors.onPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                 ),
 
                 SizedBox(height: AppSpacing.xl),

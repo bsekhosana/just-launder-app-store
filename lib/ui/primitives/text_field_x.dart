@@ -357,6 +357,7 @@ class _TextFieldXState extends State<TextFieldX>
 class TextFieldsX {
   /// Standard text field
   static Widget standard({
+    Key? key,
     TextEditingController? controller,
     String? labelText,
     String? hintText,
@@ -381,6 +382,7 @@ class TextFieldsX {
     double? width,
   }) {
     return TextFieldX(
+      key: key,
       controller: controller,
       labelText: labelText,
       hintText: hintText,

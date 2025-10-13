@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../data/models/staff_model.dart';
+import '../data/datasources/staff_remote_data_source.dart';
+import '../../../core/utils/log_helper.dart';
 
 /// Provider for managing staff operations
 class StaffManagementProvider extends ChangeNotifier {
@@ -238,7 +240,56 @@ class StaffManagementProvider extends ChangeNotifier {
     }
   }
 
-  /// Add new staff member
+  /// Add new staff member via API
+  Future<Map<String, dynamic>> addStaffViaAPI({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String mobile,
+    required String password,
+    required String passwordConfirmation,
+    bool isActive = true,
+  }) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final remoteDataSource = StaffRemoteDataSource();
+      final response = await remoteDataSource.createStaff(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        mobile: mobile,
+        password: password,
+        passwordConfirmation: passwordConfirmation,
+        isActive: isActive,
+      );
+
+      _isLoading = false;
+      notifyListeners();
+
+      if (response['success'] == true) {
+        LogHelper.info('Staff member created successfully');
+        // Refresh staff list
+        await loadStaff('tenant_id');
+      }
+
+      return response;
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      LogHelper.error('Error adding staff via API: $e');
+      return {
+        'success': false,
+        'message': 'Failed to create staff member',
+        'error': e.toString(),
+      };
+    }
+  }
+
+  /// Add new staff member (local/mock)
   Future<bool> addStaff(StaffModel staff) async {
     try {
       // Simulate API call

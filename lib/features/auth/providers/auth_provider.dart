@@ -247,9 +247,9 @@ class AuthProvider extends ChangeNotifier {
       final response = await TenantRemoteDataSource().forgotPassword(email);
 
       if (response.success) {
-        _pendingEmail = email;
+      _pendingEmail = email;
         _setLoading(false);
-        return true;
+      return true;
       } else {
         _setError(response.error ?? 'Failed to send reset email');
         _setLoading(false);
@@ -301,16 +301,16 @@ class AuthProvider extends ChangeNotifier {
       // Mark onboarding as completed locally
       if (_currentTenant != null) {
         // Update the current tenant's onboarding status
-        _isAuthenticated = true;
-        _pendingEmail = null;
-        _pendingOTP = null;
+      _isAuthenticated = true;
+      _pendingEmail = null;
+      _pendingOTP = null;
 
         // Update local storage
         await _localDataSource.updateOnboardingStatus(true);
 
-        _isLoading = false;
-        notifyListeners();
-        return true;
+      _isLoading = false;
+      notifyListeners();
+      return true;
       } else {
         _isLoading = false;
         notifyListeners();
@@ -342,7 +342,7 @@ class AuthProvider extends ChangeNotifier {
           _currentTenant = _currentTenant!.copyWith(
             emailVerifiedAt: DateTime.now(),
           );
-          notifyListeners();
+    notifyListeners();
         }
 
         _setLoading(false);
