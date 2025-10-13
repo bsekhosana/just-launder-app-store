@@ -13,9 +13,18 @@ void main() {
 
       // Assert - Login screen elements are visible
       expect(find.text('Sign In'), findsWidgets);
-      expect(find.byKey(const ValueKey('auth.laundrette.email')), findsOneWidget);
-      expect(find.byKey(const ValueKey('auth.laundrette.password')), findsOneWidget);
-      expect(find.byKey(const ValueKey('auth.laundrette.loginBtn')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('auth.laundrette.email')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('auth.laundrette.password')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('auth.laundrette.loginBtn')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('B002: Email field accepts input', (tester) async {
@@ -45,18 +54,28 @@ void main() {
       await tester.pumpAndSettle();
 
       // Password field should exist (text might be obscured)
-      expect(find.byKey(const ValueKey('auth.laundrette.password')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('auth.laundrette.password')),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('B004: Forgot password link is tappable and navigates', (tester) async {
+    testWidgets('B004: Forgot password link is tappable and navigates', (
+      tester,
+    ) async {
       app.main();
       await tester.pumpAndSettle();
 
       // Assert login button is initially present
-      expect(find.byKey(const ValueKey('auth.laundrette.loginBtn')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('auth.laundrette.loginBtn')),
+        findsOneWidget,
+      );
 
       // Act
-      final forgotPasswordButton = find.byKey(const ValueKey('auth.laundrette.forgotPasswordLink'));
+      final forgotPasswordButton = find.byKey(
+        const ValueKey('auth.laundrette.forgotPasswordLink'),
+      );
       await tester.ensureVisible(forgotPasswordButton);
       await tester.pumpAndSettle();
       await tester.tap(forgotPasswordButton, warnIfMissed: false);
@@ -64,9 +83,13 @@ void main() {
 
       // Assert - Should have navigated away from login screen
       expect(
-        find.byKey(const ValueKey('auth.laundrette.loginBtn')).evaluate().isEmpty,
+        find
+            .byKey(const ValueKey('auth.laundrette.loginBtn'))
+            .evaluate()
+            .isEmpty,
         isTrue,
-        reason: 'Did not navigate away from login screen after tapping forgot password',
+        reason:
+            'Did not navigate away from login screen after tapping forgot password',
       );
     });
 
@@ -75,7 +98,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // Act
-      final signupButton = find.byKey(const ValueKey('auth.laundrette.signupLink'));
+      final signupButton = find.byKey(
+        const ValueKey('auth.laundrette.signupLink'),
+      );
       await tester.ensureVisible(signupButton);
       await tester.pumpAndSettle();
       await tester.tap(signupButton, warnIfMissed: false);
@@ -84,9 +109,9 @@ void main() {
       // Assert - Should navigate to signup/registration screen
       expect(
         find.textContaining('Join').evaluate().isNotEmpty ||
-        find.textContaining('Sign Up').evaluate().isNotEmpty ||
-        find.textContaining('Register').evaluate().isNotEmpty ||
-        find.text('Create Account').evaluate().isNotEmpty,
+            find.textContaining('Sign Up').evaluate().isNotEmpty ||
+            find.textContaining('Register').evaluate().isNotEmpty ||
+            find.text('Create Account').evaluate().isNotEmpty,
         isTrue,
         reason: 'Did not navigate to signup screen',
       );
@@ -108,9 +133,11 @@ void main() {
       await tester.pumpAndSettle();
 
       // Act
-      final loginButton = find.byKey(const ValueKey('auth.laundrette.loginBtn'));
+      final loginButton = find.byKey(
+        const ValueKey('auth.laundrette.loginBtn'),
+      );
       expect(loginButton, findsOneWidget);
-      
+
       // Just verify button is tappable
       await tester.tap(loginButton);
       await tester.pumpAndSettle(const Duration(seconds: 2));
@@ -134,7 +161,7 @@ void main() {
       // Assert - Demo credentials should be visible (unique to laundrette app)
       expect(
         find.textContaining('Demo').evaluate().isNotEmpty ||
-        find.textContaining('demo').evaluate().isNotEmpty,
+            find.textContaining('demo').evaluate().isNotEmpty,
         isTrue,
         reason: 'Demo credentials section not found',
       );
@@ -142,7 +169,9 @@ void main() {
   });
 
   group('Laundrette App - Form Validation Tests', () {
-    testWidgets('V001: Empty email shows validation error on submit', (tester) async {
+    testWidgets('V001: Empty email shows validation error on submit', (
+      tester,
+    ) async {
       app.main();
       await tester.pumpAndSettle();
 
@@ -151,10 +180,15 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert - Should stay on login screen (form validation prevents submission)
-      expect(find.byKey(const ValueKey('auth.laundrette.loginBtn')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('auth.laundrette.loginBtn')),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('V002: Invalid email format shows validation error', (tester) async {
+    testWidgets('V002: Invalid email format shows validation error', (
+      tester,
+    ) async {
       app.main();
       await tester.pumpAndSettle();
 
@@ -172,20 +206,30 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert - Should show validation error or stay on login screen
-      expect(find.byKey(const ValueKey('auth.laundrette.loginBtn')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('auth.laundrette.loginBtn')),
+        findsOneWidget,
+      );
     });
   });
 
   group('Laundrette App - Navigation Tests', () {
-    testWidgets('N001: Forgot password link navigates away from login', (tester) async {
+    testWidgets('N001: Forgot password link navigates away from login', (
+      tester,
+    ) async {
       app.main();
       await tester.pumpAndSettle();
 
       // Record that we're on login screen
-      expect(find.byKey(const ValueKey('auth.laundrette.loginBtn')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('auth.laundrette.loginBtn')),
+        findsOneWidget,
+      );
 
       // Navigate to forgot password
-      final forgotPasswordButton = find.byKey(const ValueKey('auth.laundrette.forgotPasswordLink'));
+      final forgotPasswordButton = find.byKey(
+        const ValueKey('auth.laundrette.forgotPasswordLink'),
+      );
       await tester.ensureVisible(forgotPasswordButton);
       await tester.pumpAndSettle();
       await tester.tap(forgotPasswordButton, warnIfMissed: false);
@@ -193,11 +237,13 @@ void main() {
 
       // Assert - Should have navigated away
       expect(
-        find.byKey(const ValueKey('auth.laundrette.loginBtn')).evaluate().isEmpty,
+        find
+            .byKey(const ValueKey('auth.laundrette.loginBtn'))
+            .evaluate()
+            .isEmpty,
         isTrue,
         reason: 'Did not navigate away from login screen',
       );
     });
   });
 }
-
