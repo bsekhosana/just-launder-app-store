@@ -43,9 +43,7 @@ class _CreateStaffAccountScreenState extends State<CreateStaffAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Staff Account'),
-      ),
+      appBar: AppBar(title: const Text('Create Staff Account')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.l),
         child: Form(
@@ -118,8 +116,9 @@ class _CreateStaffAccountScreenState extends State<CreateStaffAccountScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter email';
                   }
-                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                      .hasMatch(value)) {
+                  if (!RegExp(
+                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                  ).hasMatch(value)) {
                     return 'Please enter a valid email';
                   }
                   return null;
@@ -246,7 +245,8 @@ class _CreateStaffAccountScreenState extends State<CreateStaffAccountScreen> {
           );
           Navigator.of(context).pop(response['data']);
         } else {
-          final errorMessage = response['message'] ?? 'Failed to create staff account';
+          final errorMessage =
+              response['message'] ?? 'Failed to create staff account';
           CustomSnackbar.showError(context, message: errorMessage);
         }
       }
@@ -266,4 +266,3 @@ class _CreateStaffAccountScreenState extends State<CreateStaffAccountScreen> {
     }
   }
 }
-
