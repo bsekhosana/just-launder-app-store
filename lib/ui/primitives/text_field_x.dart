@@ -408,6 +408,7 @@ class TextFieldsX {
 
   /// Email text field with validation
   static Widget email({
+    Key? key,
     TextEditingController? controller,
     String? labelText,
     String? hintText,
@@ -422,6 +423,7 @@ class TextFieldsX {
     double? width,
   }) {
     return TextFieldX(
+      key: key,
       controller: controller,
       labelText: labelText ?? 'Email',
       hintText: hintText ?? 'Enter your email',
@@ -452,6 +454,7 @@ class TextFieldsX {
 
   /// Password text field with toggle visibility
   static Widget password({
+    Key? key,
     TextEditingController? controller,
     String? labelText,
     String? hintText,
@@ -466,6 +469,7 @@ class TextFieldsX {
     double? width,
   }) {
     return TextFieldX(
+      key: key,
       controller: controller,
       labelText: labelText ?? 'Password',
       hintText: hintText ?? 'Enter your password',

@@ -71,6 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 // Email Field
                 TextFieldsX.email(
+                  key: const ValueKey('auth.laundrette.email'),
                   controller: _emailController,
                   labelText: 'Email Address',
                   hintText: 'Enter your email address',
@@ -80,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // Password Field
                 TextFieldsX.password(
+                  key: const ValueKey('auth.laundrette.password'),
                   controller: _passwordController,
                   labelText: 'Password',
                   hintText: 'Enter your password',
@@ -91,6 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Consumer<AuthProvider>(
                   builder: (context, authProvider, child) {
                     return AnimatedAuthButton(
+                      key: const ValueKey('auth.laundrette.loginBtn'),
                       text: 'Sign In',
                       icon: Icons.login,
                       onPressed: authProvider.isLoading ? null : _handleLogin,
@@ -104,6 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Forgot Password Link
                 Center(
                   child: AnimatedButtons.text(
+                    key: const ValueKey('auth.laundrette.forgotPasswordLink'),
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -200,6 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     GestureDetector(
+                      key: const ValueKey('auth.laundrette.signupLink'),
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(

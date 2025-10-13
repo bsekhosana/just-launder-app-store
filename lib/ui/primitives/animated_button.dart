@@ -244,6 +244,7 @@ class AnimatedButtons {
 
   /// Text button with minimal styling
   static Widget text({
+    Key? key,
     required Widget child,
     VoidCallback? onPressed,
     VoidCallback? onLongPress,
@@ -255,6 +256,7 @@ class AnimatedButtons {
     String? tooltip,
   }) {
     return AnimatedButton(
+      key: key,
       onPressed: onPressed,
       onLongPress: onLongPress,
       isLoading: isLoading,
