@@ -7,30 +7,30 @@ class BranchConfigurationProvider extends ChangeNotifier {
   final BranchConfigurationRemoteDataSource _dataSource;
 
   BranchConfigurationProvider({BranchConfigurationRemoteDataSource? dataSource})
-      : _dataSource = dataSource ?? BranchConfigurationRemoteDataSource();
+    : _dataSource = dataSource ?? BranchConfigurationRemoteDataSource();
 
   // State
   BranchConfigurationModel? _configuration;
   PaymentDashboardModel? _dashboard;
   Map<String, dynamic>? _stripeConnectStatus;
-  
+
   bool _isLoading = false;
   bool _isLoadingDashboard = false;
   bool _isLoadingStripe = false;
   bool _isSaving = false;
-  
+
   String? _errorMessage;
 
   // Getters
   BranchConfigurationModel? get configuration => _configuration;
   PaymentDashboardModel? get dashboard => _dashboard;
   Map<String, dynamic>? get stripeConnectStatus => _stripeConnectStatus;
-  
+
   bool get isLoading => _isLoading;
   bool get isLoadingDashboard => _isLoadingDashboard;
   bool get isLoadingStripe => _isLoadingStripe;
   bool get isSaving => _isSaving;
-  
+
   String? get errorMessage => _errorMessage;
 
   bool get isStripeConnected =>
@@ -151,4 +151,3 @@ class BranchConfigurationProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-

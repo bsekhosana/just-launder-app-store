@@ -5,7 +5,7 @@ class BranchConfigurationRemoteDataSource {
   final ApiService _apiService;
 
   BranchConfigurationRemoteDataSource({ApiService? apiService})
-      : _apiService = apiService ?? ApiService();
+    : _apiService = apiService ?? ApiService();
 
   /// Get branch configuration
   Future<BranchConfigurationModel> getBranchConfiguration(
@@ -85,4 +85,3 @@ class BranchConfigurationRemoteDataSource {
     }
   }
 }
-

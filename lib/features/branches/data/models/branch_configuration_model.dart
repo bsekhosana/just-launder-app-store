@@ -44,19 +44,22 @@ class BranchConfigurationModel {
       acceptsCashPayments: json['accepts_cash_payments'] as bool? ?? false,
       servicePricing: Map<String, double>.from(
         (json['service_pricing'] as Map?)?.map(
-              (key, value) => MapEntry(key.toString(), (value as num).toDouble()),
+              (key, value) =>
+                  MapEntry(key.toString(), (value as num).toDouble()),
             ) ??
             {},
       ),
       bagPricing: Map<String, double>.from(
         (json['bag_pricing'] as Map?)?.map(
-              (key, value) => MapEntry(key.toString(), (value as num).toDouble()),
+              (key, value) =>
+                  MapEntry(key.toString(), (value as num).toDouble()),
             ) ??
             {},
       ),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'] as String)
-          : null,
+      updatedAt:
+          json['updated_at'] != null
+              ? DateTime.parse(json['updated_at'] as String)
+              : null,
     );
   }
 
@@ -151,7 +154,8 @@ class PaymentDashboardModel {
       paidOrders: json['paid_orders'] as int,
       pendingPaymentOrders: json['pending_payment_orders'] as int,
       refundRequests: json['refund_requests'] as int,
-      recentTransactions: (json['recent_transactions'] as List?)
+      recentTransactions:
+          (json['recent_transactions'] as List?)
               ?.map((tx) => RecentTransactionModel.fromJson(tx))
               .toList() ??
           [],
@@ -197,9 +201,8 @@ class RecentTransactionModel {
   }
 
   String get formattedAmount => '£${amount.toStringAsFixed(2)}';
-  
+
   bool get isCompleted => status == 'completed';
   bool get isPending => status == 'pending';
   bool get isFailed => status == 'failed';
 }
-
