@@ -92,4 +92,3 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
     }
   }
 }
-
