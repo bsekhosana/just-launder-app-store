@@ -27,11 +27,9 @@ import 'core/services/auth_handler_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Set up background message handler
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
