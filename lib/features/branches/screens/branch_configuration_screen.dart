@@ -78,10 +78,12 @@ class _BranchConfigurationScreenState extends State<BranchConfigurationScreen> {
     final updates = {
       'auto_approve_orders': _autoApprove,
       'enable_bundle_discount': _enableBundleDiscount,
-      'bundle_discount_percentage': double.tryParse(_bundleDiscountController.text) ?? 0.0,
+      'bundle_discount_percentage':
+          double.tryParse(_bundleDiscountController.text) ?? 0.0,
       'max_concurrent_orders': int.tryParse(_maxOrdersController.text) ?? 50,
       'supports_priority_delivery': _supportsPriority,
-      'priority_delivery_fee': double.tryParse(_priorityFeeController.text) ?? 0.0,
+      'priority_delivery_fee':
+          double.tryParse(_priorityFeeController.text) ?? 0.0,
       'accepts_online_payments': _acceptsOnline,
       'accepts_cash_payments': _acceptsCash,
     };
@@ -92,10 +94,7 @@ class _BranchConfigurationScreenState extends State<BranchConfigurationScreen> {
     );
 
     if (success && mounted) {
-      CustomSnackbar.showSuccess(
-        context,
-        'Configuration updated successfully',
-      );
+      CustomSnackbar.showSuccess(context, 'Configuration updated successfully');
     } else if (mounted) {
       CustomSnackbar.showError(
         context,
@@ -170,7 +169,8 @@ class _BranchConfigurationScreenState extends State<BranchConfigurationScreen> {
                           'Enable Bundle Discount',
                           'Offer discount when customer orders all 3 services',
                           _enableBundleDiscount,
-                          (value) => setState(() => _enableBundleDiscount = value),
+                          (value) =>
+                              setState(() => _enableBundleDiscount = value),
                         ),
                         if (_enableBundleDiscount) ...[
                           const Divider(height: AppSpacing.l),
@@ -178,7 +178,9 @@ class _BranchConfigurationScreenState extends State<BranchConfigurationScreen> {
                             'Bundle Discount Percentage',
                             'Discount percentage for bundle orders',
                             _bundleDiscountController,
-                            const TextInputType.numberWithOptions(decimal: true),
+                            const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
                             suffix: '%',
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -213,7 +215,9 @@ class _BranchConfigurationScreenState extends State<BranchConfigurationScreen> {
                             'Priority Delivery Fee',
                             'Additional fee for priority delivery',
                             _priorityFeeController,
-                            const TextInputType.numberWithOptions(decimal: true),
+                            const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
                             prefix: '£',
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -257,23 +261,24 @@ class _BranchConfigurationScreenState extends State<BranchConfigurationScreen> {
                     AnimatedButton(
                       onPressed: provider.isSaving ? null : _saveConfiguration,
                       backgroundColor: AppColors.primary,
-                      child: provider.isSaving
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
+                      child:
+                          provider.isSaving
+                              ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : const Text(
+                                'Save Configuration',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
-                            )
-                          : const Text(
-                              'Save Configuration',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
                     ),
                     const SizedBox(height: AppSpacing.l),
 
@@ -300,9 +305,8 @@ class _BranchConfigurationScreenState extends State<BranchConfigurationScreen> {
                           Expanded(
                             child: Text(
                               'Changes will take effect immediately for new orders. Existing orders will not be affected.',
-                              style: AppTypography.textTheme.bodySmall?.copyWith(
-                                color: AppColors.onSurface,
-                              ),
+                              style: AppTypography.textTheme.bodySmall
+                                  ?.copyWith(color: AppColors.onSurface),
                             ),
                           ),
                         ],
@@ -318,11 +322,7 @@ class _BranchConfigurationScreenState extends State<BranchConfigurationScreen> {
     );
   }
 
-  Widget _buildSectionCard(
-    String title,
-    IconData icon,
-    List<Widget> children,
-  ) {
+  Widget _buildSectionCard(String title, IconData icon, List<Widget> children) {
     return CardX(
       elevation: AppElevations.card,
       borderRadius: AppRadii.l,
@@ -433,4 +433,3 @@ class _BranchConfigurationScreenState extends State<BranchConfigurationScreen> {
     );
   }
 }
-

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'firebase_options.dart';
 import 'design_system/theme.dart';
+import 'core/services/fcm_service.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/profile/providers/laundrette_profile_provider.dart';
 import 'features/branches/providers/branch_provider.dart';
@@ -13,6 +17,7 @@ import 'features/analytics/providers/analytics_provider.dart';
 import 'features/settings/providers/settings_provider.dart';
 import 'features/onboarding/providers/onboarding_provider.dart';
 import 'features/connectivity/providers/connectivity_provider.dart';
+import 'features/notifications/providers/notification_provider.dart';
 import 'features/navigation/screens/main_navigation_screen.dart';
 import 'features/onboarding/screens/onboarding_status_screen.dart';
 import 'features/auth/screens/login_screen.dart';
@@ -20,7 +25,17 @@ import 'features/auth/screens/email_verification_awaiting_screen.dart';
 import 'features/auth/screens/onboarding_screen.dart';
 import 'core/services/auth_handler_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Set up background message handler
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   runApp(const JustLaundretteApp());
 }
 
@@ -47,6 +62,9 @@ class JustLaundretteApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => OnboardingProvider()),
         ChangeNotifierProvider(
           create: (_) => ConnectivityProvider()..initialize(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => NotificationProvider()..initialize(),
         ),
       ],
       child: GestureDetector(

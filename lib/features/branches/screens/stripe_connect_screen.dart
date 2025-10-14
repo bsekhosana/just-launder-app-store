@@ -37,7 +37,7 @@ class _StripeConnectScreenState extends State<StripeConnectScreen> {
       final uri = Uri.parse(url);
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
-        
+
         if (mounted) {
           CustomSnackbar.showSuccess(
             context,
@@ -46,10 +46,7 @@ class _StripeConnectScreenState extends State<StripeConnectScreen> {
         }
       } else {
         if (mounted) {
-          CustomSnackbar.showError(
-            context,
-            'Could not open Stripe Connect',
-          );
+          CustomSnackbar.showError(context, 'Could not open Stripe Connect');
         }
       }
     } else if (mounted) {
@@ -64,10 +61,7 @@ class _StripeConnectScreenState extends State<StripeConnectScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Stripe Connect'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Stripe Connect'), elevation: 0),
       body: WatermarkBackground(
         icon: FontAwesomeIcons.stripe,
         child: Consumer<BranchConfigurationProvider>(
@@ -90,17 +84,19 @@ class _StripeConnectScreenState extends State<StripeConnectScreen> {
                     elevation: AppElevations.card,
                     borderRadius: AppRadii.l,
                     padding: const EdgeInsets.all(AppSpacing.xl),
-                    backgroundColor: isConnected
-                        ? AppColors.successContainer
-                        : AppColors.warningContainer,
+                    backgroundColor:
+                        isConnected
+                            ? AppColors.successContainer
+                            : AppColors.warningContainer,
                     child: Column(
                       children: [
                         Container(
                           padding: const EdgeInsets.all(AppSpacing.l),
                           decoration: BoxDecoration(
-                            color: isConnected
-                                ? AppColors.success.withOpacity(0.1)
-                                : AppColors.warning.withOpacity(0.1),
+                            color:
+                                isConnected
+                                    ? AppColors.success.withOpacity(0.1)
+                                    : AppColors.warning.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -108,9 +104,10 @@ class _StripeConnectScreenState extends State<StripeConnectScreen> {
                                 ? FontAwesomeIcons.circleCheck
                                 : FontAwesomeIcons.triangleExclamation,
                             size: 48,
-                            color: isConnected
-                                ? AppColors.success
-                                : AppColors.warning,
+                            color:
+                                isConnected
+                                    ? AppColors.success
+                                    : AppColors.warning,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.l),
@@ -120,11 +117,12 @@ class _StripeConnectScreenState extends State<StripeConnectScreen> {
                               : 'Stripe Not Connected',
                           style: AppTypography.textTheme.headlineMedium
                               ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: isConnected
-                                ? AppColors.onSuccessContainer
-                                : AppColors.onWarningContainer,
-                          ),
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    isConnected
+                                        ? AppColors.onSuccessContainer
+                                        : AppColors.onWarningContainer,
+                              ),
                         ),
                         const SizedBox(height: AppSpacing.s),
                         Text(
@@ -132,13 +130,15 @@ class _StripeConnectScreenState extends State<StripeConnectScreen> {
                               ? 'Your account is connected and ready to receive payouts'
                               : 'Connect your Stripe account to receive direct payouts',
                           style: AppTypography.textTheme.bodyMedium?.copyWith(
-                            color: isConnected
-                                ? AppColors.onSuccessContainer
-                                : AppColors.onWarningContainer,
+                            color:
+                                isConnected
+                                    ? AppColors.onSuccessContainer
+                                    : AppColors.onWarningContainer,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        if (isConnected && provider.stripeAccountId != null) ...[
+                        if (isConnected &&
+                            provider.stripeAccountId != null) ...[
                           const SizedBox(height: AppSpacing.m),
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -153,9 +153,9 @@ class _StripeConnectScreenState extends State<StripeConnectScreen> {
                               'Account: ${provider.stripeAccountId}',
                               style: AppTypography.textTheme.bodySmall
                                   ?.copyWith(
-                                color: AppColors.onSuccessContainer,
-                                fontFamily: 'monospace',
-                              ),
+                                    color: AppColors.onSuccessContainer,
+                                    fontFamily: 'monospace',
+                                  ),
                             ),
                           ),
                         ],
@@ -183,9 +183,7 @@ class _StripeConnectScreenState extends State<StripeConnectScreen> {
                             Text(
                               'Benefits',
                               style: AppTypography.textTheme.titleMedium
-                                  ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -193,7 +191,9 @@ class _StripeConnectScreenState extends State<StripeConnectScreen> {
                         _buildBenefitItem(
                           'Instant payouts directly to your bank account',
                         ),
-                        _buildBenefitItem('No transfer fees for direct payouts'),
+                        _buildBenefitItem(
+                          'No transfer fees for direct payouts',
+                        ),
                         _buildBenefitItem('Automatic payout scheduling'),
                         _buildBenefitItem('Secure and PCI compliant'),
                         _buildBenefitItem('Real-time balance tracking'),
@@ -205,38 +205,38 @@ class _StripeConnectScreenState extends State<StripeConnectScreen> {
                   // Action button
                   if (!isConnected)
                     AnimatedButton(
-                      onPressed: provider.isLoadingStripe
-                          ? null
-                          : _setupStripeConnect,
+                      onPressed:
+                          provider.isLoadingStripe ? null : _setupStripeConnect,
                       backgroundColor: AppColors.primary,
-                      child: provider.isLoadingStripe
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  FontAwesomeIcons.stripe,
-                                  size: 20,
+                      child:
+                          provider.isLoadingStripe
+                              ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
                                   color: Colors.white,
+                                  strokeWidth: 2,
                                 ),
-                                SizedBox(width: AppSpacing.m),
-                                Text(
-                                  'Connect with Stripe',
-                                  style: TextStyle(
+                              )
+                              : const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.stripe,
+                                    size: 20,
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
                                   ),
-                                ),
-                              ],
-                            ),
+                                  SizedBox(width: AppSpacing.m),
+                                  Text(
+                                    'Connect with Stripe',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
                     )
                   else
                     AnimatedButton(
@@ -283,14 +283,10 @@ class _StripeConnectScreenState extends State<StripeConnectScreen> {
           ),
           const SizedBox(width: AppSpacing.m),
           Expanded(
-            child: Text(
-              text,
-              style: AppTypography.textTheme.bodyMedium,
-            ),
+            child: Text(text, style: AppTypography.textTheme.bodyMedium),
           ),
         ],
       ),
     );
   }
 }
-

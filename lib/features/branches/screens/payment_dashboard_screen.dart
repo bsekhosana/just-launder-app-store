@@ -122,9 +122,9 @@ class _PaymentDashboardScreenState extends State<PaymentDashboardScreen> {
                                 'Total Revenue',
                                 style: AppTypography.textTheme.titleMedium
                                     ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                               ),
                               Icon(
                                 FontAwesomeIcons.sterlingSign,
@@ -138,9 +138,9 @@ class _PaymentDashboardScreenState extends State<PaymentDashboardScreen> {
                             dashboard.formattedTotalRevenue,
                             style: AppTypography.textTheme.displayLarge
                                 ?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ],
                       ),
@@ -153,29 +153,34 @@ class _PaymentDashboardScreenState extends State<PaymentDashboardScreen> {
                       borderRadius: AppRadii.l,
                       padding: const EdgeInsets.all(AppSpacing.m),
                       child: Row(
-                        children: ['today', 'week', 'month'].map((period) {
-                          final isSelected = period == _selectedPeriod;
-                          return Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: AppSpacing.xs),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  setState(() => _selectedPeriod = period);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: isSelected
-                                      ? AppColors.primary
-                                      : Colors.transparent,
-                                  foregroundColor: isSelected
-                                      ? Colors.white
-                                      : AppColors.onSurfaceVariant,
-                                  elevation: 0,
+                        children:
+                            ['today', 'week', 'month'].map((period) {
+                              final isSelected = period == _selectedPeriod;
+                              return Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    right: AppSpacing.xs,
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      setState(() => _selectedPeriod = period);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          isSelected
+                                              ? AppColors.primary
+                                              : Colors.transparent,
+                                      foregroundColor:
+                                          isSelected
+                                              ? Colors.white
+                                              : AppColors.onSurfaceVariant,
+                                      elevation: 0,
+                                    ),
+                                    child: Text(period.toUpperCase()),
+                                  ),
                                 ),
-                                child: Text(period.toUpperCase()),
-                              ),
-                            ),
-                          );
-                        }).toList(),
+                              );
+                            }).toList(),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.l),
@@ -245,9 +250,7 @@ class _PaymentDashboardScreenState extends State<PaymentDashboardScreen> {
                               Text(
                                 'Order Status',
                                 style: AppTypography.textTheme.titleMedium
-                                    ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -298,8 +301,8 @@ class _PaymentDashboardScreenState extends State<PaymentDashboardScreen> {
                                       'Recent Transactions',
                                       style: AppTypography.textTheme.titleMedium
                                           ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -312,9 +315,9 @@ class _PaymentDashboardScreenState extends State<PaymentDashboardScreen> {
                               ],
                             ),
                             const SizedBox(height: AppSpacing.l),
-                            ...dashboard.recentTransactions.take(5).map(
-                                  (tx) => _buildTransactionItem(tx),
-                                ),
+                            ...dashboard.recentTransactions
+                                .take(5)
+                                .map((tx) => _buildTransactionItem(tx)),
                           ],
                         ),
                       ),
@@ -372,16 +375,10 @@ class _PaymentDashboardScreenState extends State<PaymentDashboardScreen> {
             Container(
               width: 8,
               height: 8,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
             const SizedBox(width: AppSpacing.m),
-            Text(
-              label,
-              style: AppTypography.textTheme.bodyMedium,
-            ),
+            Text(label, style: AppTypography.textTheme.bodyMedium),
           ],
         ),
         Text(
@@ -403,17 +400,19 @@ class _PaymentDashboardScreenState extends State<PaymentDashboardScreen> {
           Container(
             padding: const EdgeInsets.all(AppSpacing.s),
             decoration: BoxDecoration(
-              color: transaction.isCompleted
-                  ? AppColors.successContainer
-                  : AppColors.warningContainer,
+              color:
+                  transaction.isCompleted
+                      ? AppColors.successContainer
+                      : AppColors.warningContainer,
               borderRadius: BorderRadius.circular(AppRadii.s),
             ),
             child: Icon(
               FontAwesomeIcons.arrowRight,
               size: 14,
-              color: transaction.isCompleted
-                  ? AppColors.success
-                  : AppColors.warning,
+              color:
+                  transaction.isCompleted
+                      ? AppColors.success
+                      : AppColors.warning,
             ),
           ),
           const SizedBox(width: AppSpacing.m),
@@ -463,4 +462,3 @@ class _PaymentDashboardScreenState extends State<PaymentDashboardScreen> {
     }
   }
 }
-
