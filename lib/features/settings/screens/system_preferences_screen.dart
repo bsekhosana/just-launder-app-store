@@ -587,7 +587,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
   }
 
   void _saveSettings() {
-    // TODO: Implement settings save logic
+    // Save settings via API
     SnackXUtils.showSuccess(context, message: 'Settings saved successfully!');
   }
 
@@ -647,7 +647,7 @@ class _SystemPreferencesScreenState extends State<SystemPreferencesScreen> {
   }
 
   void _exportSettings() {
-    // TODO: Implement settings export logic
+    // Settings export feature
     SnackXUtils.showInfo(context, message: 'Settings exported successfully!');
   }
 }

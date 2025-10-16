@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'design_system/theme.dart';
 import 'core/services/fcm_service.dart';
+import 'core/services/site_settings_service.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/profile/providers/laundrette_profile_provider.dart';
 import 'features/branches/providers/branch_provider.dart';
@@ -33,6 +34,9 @@ void main() async {
 
   // Set up background message handler
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  // Initialize site settings
+  await SiteSettingsService().loadSettings();
 
   runApp(const JustLaundretteApp());
 }

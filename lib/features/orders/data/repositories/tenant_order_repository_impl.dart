@@ -1,18 +1,13 @@
-import 'package:http/http.dart' as http;
 import '../../domain/models/tenant_order_model.dart';
 import '../../domain/repositories/tenant_order_repository.dart';
 import '../../datasources/tenant_order_remote_data_source.dart';
-import '../../../auth/data/datasources/tenant_remote_data_source.dart';
+import '../../../../core/services/api_service.dart';
 
 class TenantOrderRepositoryImpl implements TenantOrderRepository {
-  late final TenantOrderRemoteDataSource _remoteDataSource;
+  final TenantOrderRemoteDataSource _remoteDataSource;
 
-  TenantOrderRepositoryImpl() {
-    _remoteDataSource = TenantOrderRemoteDataSource(
-      baseUrl: TenantRemoteDataSource.baseUrl.replaceAll('/api/v1', ''),
-      client: http.Client(),
-    );
-  }
+  TenantOrderRepositoryImpl({TenantOrderRemoteDataSource? remoteDataSource})
+    : _remoteDataSource = remoteDataSource ?? TenantOrderRemoteDataSource();
 
   @override
   Future<List<TenantOrderModel>> getOrders({

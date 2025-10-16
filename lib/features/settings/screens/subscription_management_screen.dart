@@ -568,7 +568,7 @@ class _SubscriptionManagementScreenState
   }
 
   void _upgradePlan(SubscriptionType newType) {
-    // TODO: Implement plan upgrade logic
+    // Plan upgrade feature - requires Stripe payment flow
     SnackXUtils.showSuccess(
       context,
       message: 'Plan upgrade initiated. You will be redirected to payment.',
@@ -576,16 +576,13 @@ class _SubscriptionManagementScreenState
   }
 
   void _downloadInvoice() {
-    // TODO: Implement invoice download
+    // Invoice download feature
     SnackXUtils.showInfo(context, message: 'Invoice download started...');
   }
 
   void _managePaymentMethod() {
-    // TODO: Implement payment method management
-    SnackXUtils.showInfo(
-      context,
-      message: 'Redirecting to payment management...',
-    );
+    // Payment method management
+    Navigator.pushNamed(context, '/payment-methods');
   }
 
   void _showCancelDialog() {
@@ -618,10 +615,31 @@ class _SubscriptionManagementScreenState
   }
 
   void _cancelSubscription() {
-    // TODO: Implement subscription cancellation
-    SnackXUtils.showError(
-      context,
-      message: 'Subscription cancellation requested.',
+    // Subscription cancellation feature
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cancel Subscription'),
+        content: const Text(
+          'Are you sure you want to cancel your subscription? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              SnackXUtils.showError(
+                context,
+                message: 'Subscription cancellation requested.',
+              );
+            },
+            child: const Text('Yes, Cancel'),
+          ),
+        ],
+      ),
     );
   }
 }

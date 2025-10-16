@@ -6,11 +6,14 @@ import '../../../design_system/spacing.dart';
 import '../../../design_system/icons.dart';
 import '../../../ui/primitives/card_x.dart';
 import '../../../ui/primitives/animated_button.dart';
+import '../../../design_system/widgets/app_action_sheet.dart';
+import '../../../core/services/site_settings_service.dart';
 import '../providers/analytics_provider.dart';
 import '../../orders/providers/order_provider.dart';
 import '../../branches/providers/branch_provider.dart';
 import '../../staff/providers/staff_provider.dart';
 import '../widgets/analytics_card_widget.dart';
+import '../widgets/analytics_tab_card.dart';
 import '../widgets/revenue_chart_widget.dart';
 import '../widgets/orders_chart_widget.dart';
 
@@ -201,8 +204,6 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildPeriodSelector(),
-              const SizedBox(height: AppSpacing.l),
               _buildKeyMetricsGrid(),
               const SizedBox(height: AppSpacing.xl),
               _buildQuickStatsRow(),
@@ -219,14 +220,14 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: SpacingUtils.all(AppSpacing.l),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildRevenueOverview(),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.l),
               _buildRevenueChart(),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.l),
               _buildRevenueByBranch(),
             ],
           ),
@@ -239,14 +240,14 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: SpacingUtils.all(AppSpacing.l),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildOrdersOverview(),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.l),
               _buildOrdersChart(),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.l),
               _buildOrdersByBranch(),
             ],
           ),
@@ -259,200 +260,18 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: SpacingUtils.all(AppSpacing.l),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildPerformanceOverview(),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.l),
               _buildStaffPerformance(),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.l),
               _buildTopServices(),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.l),
               _buildTopCustomers(),
             ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildPeriodSelector() {
-    return Consumer<AnalyticsProvider>(
-      builder: (context, analyticsProvider, child) {
-        final colorScheme = Theme.of(context).colorScheme;
-
-        return CardsX.elevated(
-          child: Padding(
-            padding: SpacingUtils.all(AppSpacing.l),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Analytics Filters',
-                  style: AppTypography.textTheme.titleMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.m),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 180,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Time Period',
-                              style: AppTypography.textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                            ),
-                            const SizedBox(height: AppSpacing.xs),
-                            DropdownButtonFormField<String>(
-                              value: analyticsProvider.selectedPeriod,
-                              isExpanded: true,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: AppColors.outline,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: AppColors.outline,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                                contentPadding: SpacingUtils.symmetric(
-                                  horizontal: AppSpacing.s,
-                                  vertical: AppSpacing.xs,
-                                ),
-                              ),
-                              items: const [
-                                DropdownMenuItem(
-                                  value: 'day',
-                                  child: Text('Today'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'week',
-                                  child: Text('This Week'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'month',
-                                  child: Text('This Month'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'year',
-                                  child: Text('This Year'),
-                                ),
-                              ],
-                              onChanged: (value) {
-                                if (value != null) {
-                                  analyticsProvider.updateSelectedPeriod(value);
-                                  // Load analytics after state update
-                                  WidgetsBinding.instance.addPostFrameCallback((
-                                    _,
-                                  ) {
-                                    _loadAnalytics();
-                                  });
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.m),
-                      SizedBox(
-                        width: 180,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Branch',
-                              style: AppTypography.textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                            ),
-                            const SizedBox(height: AppSpacing.xs),
-                            Consumer<BranchProvider>(
-                              builder: (context, branchProvider, child) {
-                                return DropdownButtonFormField<String>(
-                                  value: analyticsProvider.selectedBranchId,
-                                  isExpanded: true,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                        color: AppColors.outline,
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                        color: AppColors.outline,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      borderSide: BorderSide(
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                    contentPadding: SpacingUtils.symmetric(
-                                      horizontal: AppSpacing.s,
-                                      vertical: AppSpacing.xs,
-                                    ),
-                                  ),
-                                  items: [
-                                    const DropdownMenuItem(
-                                      value: 'all',
-                                      child: Text('All Branches'),
-                                    ),
-                                    ...branchProvider.branches.map((branch) {
-                                      return DropdownMenuItem(
-                                        value: branch.id,
-                                        child: Text(branch.name),
-                                      );
-                                    }),
-                                  ],
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      analyticsProvider.updateSelectedBranch(
-                                        value,
-                                      );
-                                      // Load analytics after state update
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback((_) {
-                                            _loadAnalytics();
-                                          });
-                                    }
-                                  },
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
           ),
         );
       },
@@ -462,6 +281,8 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   Widget _buildKeyMetricsGrid() {
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
+        final siteSettings = SiteSettingsService();
+
         return LayoutBuilder(
           builder: (context, constraints) {
             // Responsive grid based on screen width
@@ -478,8 +299,9 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
               children: [
                 AnalyticsCardWidget(
                   title: 'Total Revenue',
-                  value:
-                      '£${analyticsProvider.totalRevenue.toStringAsFixed(2)}',
+                  value: siteSettings.formatCurrency(
+                    analyticsProvider.totalRevenue,
+                  ),
                   icon: AppIcons.dollar,
                   color: AppColors.success,
                   trend: '+12.5%',
@@ -506,8 +328,9 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                 ),
                 AnalyticsCardWidget(
                   title: 'Avg Order Value',
-                  value:
-                      '£${analyticsProvider.averageOrderValue.toStringAsFixed(2)}',
+                  value: siteSettings.formatCurrency(
+                    analyticsProvider.averageOrderValue,
+                  ),
                   icon: AppIcons.trendingUp,
                   color: AppColors.accent,
                   trend: '+5.3%',
@@ -548,48 +371,28 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                       AppColors.primary,
                     ),
                   ),
-                  const SizedBox(width: AppSpacing.m),
-                  Expanded(
-                    child: _buildQuickStatCard(
-                      'Avg Delivery Time',
-                      analyticsProvider.averageDeliveryTimeFormatted,
-                      AppIcons.delivery,
-                      AppColors.secondary,
-                    ),
-                  ),
                 ],
               );
             } else {
               // Mobile layout - vertical stack
-              return Column(
+              return Row(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildQuickStatCard(
-                          'Pending Orders',
-                          analyticsProvider.pendingOrders.toString(),
-                          AppIcons.pending,
-                          AppColors.accent,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.m),
-                      Expanded(
-                        child: _buildQuickStatCard(
-                          'New Customers',
-                          analyticsProvider.newCustomers.toString(),
-                          AppIcons.personAdd,
-                          AppColors.primary,
-                        ),
-                      ),
-                    ],
+                  Expanded(
+                    child: _buildQuickStatCard(
+                      'Pending Orders',
+                      analyticsProvider.pendingOrders.toString(),
+                      AppIcons.pending,
+                      AppColors.accent,
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.m),
-                  _buildQuickStatCard(
-                    'Avg Delivery Time',
-                    analyticsProvider.averageDeliveryTimeFormatted,
-                    AppIcons.delivery,
-                    AppColors.secondary,
+                  const SizedBox(width: AppSpacing.m),
+                  Expanded(
+                    child: _buildQuickStatCard(
+                      'New Customers',
+                      analyticsProvider.newCustomers.toString(),
+                      AppIcons.personAdd,
+                      AppColors.primary,
+                    ),
                   ),
                 ],
               );
@@ -665,33 +468,30 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
               ],
             ),
             const SizedBox(height: AppSpacing.m),
-            _buildActivityItem(
-              'New order received',
-              'Order #12345',
-              '2 min ago',
-              Icons.shopping_bag,
-              AppColors.primary,
-            ),
-            _buildActivityItem(
-              'Order completed',
-              'Order #12344',
-              '15 min ago',
-              Icons.check_circle,
-              AppColors.success,
-            ),
-            _buildActivityItem(
-              'New customer registered',
-              'John Doe',
-              '1 hour ago',
-              Icons.person_add,
-              AppColors.primary,
-            ),
-            _buildActivityItem(
-              'Staff assigned',
-              'Order #12343',
-              '2 hours ago',
-              Icons.person,
-              AppColors.secondary,
+            Consumer<AnalyticsProvider>(
+              builder: (context, analyticsProvider, child) {
+                if (analyticsProvider.recentActivity.isEmpty) {
+                  return Text(
+                    'No recent activity',
+                    style: AppTypography.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                  );
+                }
+
+                return Column(
+                  children:
+                      analyticsProvider.recentActivity.take(4).map((activity) {
+                        return _buildActivityItem(
+                          activity['title'] ?? 'Activity',
+                          activity['description'] ?? '',
+                          _formatTimeAgo(activity['created_at']),
+                          _getActivityIcon(activity['type']),
+                          _getActivityColor(activity['type']),
+                        );
+                      }).toList(),
+                );
+              },
             ),
           ],
         ),
@@ -761,39 +561,30 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   Widget _buildRevenueOverview() {
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Revenue Overview',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        final siteSettings = SiteSettingsService();
+
+        return AnalyticsTabCard(
+          title: 'Revenue Overview',
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildRevenueMetric(
+                  'Total Revenue',
+                  siteSettings.formatCurrency(analyticsProvider.totalRevenue),
+                  AppColors.success,
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildRevenueMetric(
-                        'Total Revenue',
-                        '£${analyticsProvider.totalRevenue.toStringAsFixed(2)}',
-                        AppColors.success,
-                      ),
-                    ),
-                    Expanded(
-                      child: _buildRevenueMetric(
-                        'Avg Order Value',
-                        '£${analyticsProvider.averageOrderValue.toStringAsFixed(2)}',
-                        AppColors.primary,
-                      ),
-                    ),
-                  ],
+              ),
+              const SizedBox(width: AppSpacing.m),
+              Expanded(
+                child: _buildRevenueMetric(
+                  'Avg Order Value',
+                  siteSettings.formatCurrency(
+                    analyticsProvider.averageOrderValue,
+                  ),
+                  AppColors.primary,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
@@ -824,59 +615,44 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   }
 
   Widget _buildRevenueChart() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Revenue Trend',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            const RevenueChartWidget(),
-          ],
-        ),
-      ),
+    return AnalyticsTabCard(
+      title: 'Revenue Trend',
+      child: const RevenueChartWidget(),
     );
   }
 
   Widget _buildRevenueByBranch() {
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Revenue by Branch',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                ...analyticsProvider.revenueByBranch.entries.map((entry) {
+        final siteSettings = SiteSettingsService();
+
+        return AnalyticsTabCard(
+          title: 'Revenue by Branch',
+          child: Column(
+            children:
+                analyticsProvider.revenueByBranch.entries.map((entry) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.s),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(entry.key),
                         Text(
-                          '£${entry.value.toStringAsFixed(2)}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          entry.key,
+                          style: AppTypography.textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        Text(
+                          siteSettings.formatCurrency(entry.value),
+                          style: AppTypography.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.success,
+                          ),
                         ),
                       ],
                     ),
                   );
                 }).toList(),
-              ],
-            ),
           ),
         );
       },
@@ -886,53 +662,42 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   Widget _buildOrdersOverview() {
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Orders Overview',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        return AnalyticsTabCard(
+          title: 'Orders Overview',
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildOrderMetric(
+                  'Total Orders',
+                  analyticsProvider.totalOrders.toString(),
+                  AppColors.primary,
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildOrderMetric(
-                        'Total Orders',
-                        analyticsProvider.totalOrders.toString(),
-                        AppColors.primary,
-                      ),
-                    ),
-                    Expanded(
-                      child: _buildOrderMetric(
-                        'Completed',
-                        analyticsProvider.completedOrders.toString(),
-                        AppColors.success,
-                      ),
-                    ),
-                    Expanded(
-                      child: _buildOrderMetric(
-                        'Pending',
-                        analyticsProvider.pendingOrders.toString(),
-                        AppColors.accent,
-                      ),
-                    ),
-                    Expanded(
-                      child: _buildOrderMetric(
-                        'Cancelled',
-                        analyticsProvider.cancelledOrders.toString(),
-                        AppColors.error,
-                      ),
-                    ),
-                  ],
+              ),
+              const SizedBox(width: AppSpacing.s),
+              Expanded(
+                child: _buildOrderMetric(
+                  'Completed',
+                  analyticsProvider.completedOrders.toString(),
+                  AppColors.success,
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: AppSpacing.s),
+              Expanded(
+                child: _buildOrderMetric(
+                  'Pending',
+                  analyticsProvider.pendingOrders.toString(),
+                  AppColors.accent,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.s),
+              Expanded(
+                child: _buildOrderMetric(
+                  'Cancelled',
+                  analyticsProvider.cancelledOrders.toString(),
+                  AppColors.error,
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -962,59 +727,42 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   }
 
   Widget _buildOrdersChart() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Orders Trend',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            const OrdersChartWidget(),
-          ],
-        ),
-      ),
+    return AnalyticsTabCard(
+      title: 'Orders Trend',
+      child: const OrdersChartWidget(),
     );
   }
 
   Widget _buildOrdersByBranch() {
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Orders by Branch',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                ...analyticsProvider.ordersByBranch.entries.map((entry) {
+        return AnalyticsTabCard(
+          title: 'Orders by Branch',
+          child: Column(
+            children:
+                analyticsProvider.ordersByBranch.entries.map((entry) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.s),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(entry.key),
+                        Text(
+                          entry.key,
+                          style: AppTypography.textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
                         Text(
                           entry.value.toString(),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: AppTypography.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primary,
+                          ),
                         ),
                       ],
                     ),
                   );
                 }).toList(),
-              ],
-            ),
           ),
         );
       },
@@ -1024,58 +772,50 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   Widget _buildPerformanceOverview() {
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Performance Overview',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildPerformanceMetric(
-                        'Customer Satisfaction',
-                        '${analyticsProvider.customerSatisfaction.toStringAsFixed(1)}/5.0',
-                        AppColors.success,
-                      ),
+        return AnalyticsTabCard(
+          title: 'Performance Overview',
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildPerformanceMetric(
+                      'Customer Satisfaction',
+                      '${analyticsProvider.customerSatisfaction.toStringAsFixed(1)}/5.0',
+                      AppColors.success,
                     ),
-                    Expanded(
-                      child: _buildPerformanceMetric(
-                        'Staff Efficiency',
-                        '${analyticsProvider.staffEfficiency.toStringAsFixed(1)}%',
-                        AppColors.secondary,
-                      ),
+                  ),
+                  const SizedBox(width: AppSpacing.m),
+                  Expanded(
+                    child: _buildPerformanceMetric(
+                      'Staff Efficiency',
+                      '${analyticsProvider.staffEfficiency.toStringAsFixed(1)}%',
+                      AppColors.secondary,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildPerformanceMetric(
-                        'Avg Delivery Time',
-                        analyticsProvider.averageDeliveryTimeFormatted,
-                        AppColors.primary,
-                      ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.m),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildPerformanceMetric(
+                      'Avg Delivery Time',
+                      analyticsProvider.averageDeliveryTimeFormatted,
+                      AppColors.primary,
                     ),
-                    Expanded(
-                      child: _buildPerformanceMetric(
-                        'Total Deliveries',
-                        analyticsProvider.totalDeliveries.toString(),
-                        AppColors.accent,
-                      ),
+                  ),
+                  const SizedBox(width: AppSpacing.m),
+                  Expanded(
+                    child: _buildPerformanceMetric(
+                      'Total Deliveries',
+                      analyticsProvider.totalDeliveries.toString(),
+                      AppColors.accent,
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         );
       },
@@ -1109,20 +849,11 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
         final colorScheme = Theme.of(context).colorScheme;
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Staff Performance',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                ...analyticsProvider.staffPerformance.take(5).map((staff) {
+        return AnalyticsTabCard(
+          title: 'Staff Performance',
+          child: Column(
+            children:
+                analyticsProvider.staffPerformance.take(5).map((staff) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Row(
@@ -1171,8 +902,6 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                     ),
                   );
                 }).toList(),
-              ],
-            ),
           ),
         );
       },
@@ -1182,20 +911,11 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   Widget _buildTopServices() {
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Top Services',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                ...analyticsProvider.topServices.take(5).map((service) {
+        return AnalyticsTabCard(
+          title: 'Top Services',
+          child: Column(
+            children:
+                analyticsProvider.topServices.take(5).map((service) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Row(
@@ -1210,8 +930,6 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                     ),
                   );
                 }).toList(),
-              ],
-            ),
           ),
         );
       },
@@ -1222,20 +940,11 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
     return Consumer<AnalyticsProvider>(
       builder: (context, analyticsProvider, child) {
         final colorScheme = Theme.of(context).colorScheme;
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Top Customers',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                ...analyticsProvider.topCustomers.take(5).map((customer) {
+        return AnalyticsTabCard(
+          title: 'Top Customers',
+          child: Column(
+            children:
+                analyticsProvider.topCustomers.take(5).map((customer) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Row(
@@ -1277,15 +986,15 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
                           ),
                         ),
                         Text(
-                          '£${customer['totalSpent'].toStringAsFixed(2)}',
+                          SiteSettingsService().formatCurrency(
+                            customer['totalSpent']?.toDouble() ?? 0.0,
+                          ),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                   );
                 }).toList(),
-              ],
-            ),
           ),
         );
       },
@@ -1293,19 +1002,325 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
   }
 
   void _showFilters() {
-    showDialog(
+    AppActionSheet.show(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Filter Analytics'),
-            content: const Text('Filter options coming soon'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Close'),
+      title: 'Filter Analytics',
+      subtitle: 'Customize your dashboard view',
+      icon: AppIcons.filter,
+      child: _buildFilterContent(),
+      actions: [
+        AppActionSheetAction(
+          text: 'Reset',
+          onPressed: () {
+            Navigator.of(context).pop();
+            _resetFilters();
+          },
+        ),
+        AppActionSheetAction(
+          text: 'Apply',
+          isPrimary: true,
+          onPressed: () {
+            Navigator.of(context).pop();
+            _applyFilters();
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFilterContent() {
+    return Consumer<AnalyticsProvider>(
+      builder: (context, analyticsProvider, child) {
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Time Period Filter
+              _buildFilterSection(
+                'Time Period',
+                _buildTimePeriodFilter(analyticsProvider),
+              ),
+              const SizedBox(height: AppSpacing.l),
+
+              // Branch Filter
+              _buildFilterSection(
+                'Branch',
+                _buildBranchFilter(analyticsProvider),
+              ),
+              const SizedBox(height: AppSpacing.l),
+
+              // Order Status Filter
+              _buildFilterSection(
+                'Order Status',
+                _buildOrderStatusFilter(analyticsProvider),
+              ),
+              const SizedBox(height: AppSpacing.l),
+
+              // Date Range Filter
+              _buildFilterSection(
+                'Date Range',
+                _buildDateRangeFilter(analyticsProvider),
               ),
             ],
           ),
+        );
+      },
     );
+  }
+
+  Widget _buildFilterSection(String title, Widget content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: AppTypography.textTheme.titleMedium?.copyWith(
+            color: AppColors.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.s),
+        content,
+      ],
+    );
+  }
+
+  Widget _buildTimePeriodFilter(AnalyticsProvider analyticsProvider) {
+    return DropdownButtonFormField<String>(
+      value: analyticsProvider.selectedPeriod,
+      isExpanded: true,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: AppColors.outline),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: AppColors.outline),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: AppColors.primary),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s,
+          vertical: AppSpacing.xs,
+        ),
+      ),
+      items: const [
+        DropdownMenuItem(value: 'day', child: Text('Today')),
+        DropdownMenuItem(value: 'week', child: Text('This Week')),
+        DropdownMenuItem(value: 'month', child: Text('This Month')),
+        DropdownMenuItem(value: 'year', child: Text('This Year')),
+      ],
+      onChanged: (value) {
+        if (value != null) {
+          analyticsProvider.updateSelectedPeriod(value);
+        }
+      },
+    );
+  }
+
+  Widget _buildBranchFilter(AnalyticsProvider analyticsProvider) {
+    return Consumer<BranchProvider>(
+      builder: (context, branchProvider, child) {
+        return DropdownButtonFormField<String>(
+          value: analyticsProvider.selectedBranchId,
+          isExpanded: true,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.outline),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.outline),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.primary),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.s,
+              vertical: AppSpacing.xs,
+            ),
+          ),
+          items: [
+            const DropdownMenuItem(value: 'all', child: Text('All Branches')),
+            ...branchProvider.branches.map((branch) {
+              return DropdownMenuItem(
+                value: branch.id,
+                child: Text(branch.name),
+              );
+            }),
+          ],
+          onChanged: (value) {
+            if (value != null) {
+              analyticsProvider.updateSelectedBranch(value);
+            }
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildOrderStatusFilter(AnalyticsProvider analyticsProvider) {
+    return Wrap(
+      spacing: AppSpacing.s,
+      runSpacing: AppSpacing.s,
+      children:
+          ['All', 'Pending', 'In Progress', 'Completed', 'Cancelled'].map((
+            status,
+          ) {
+            final isSelected =
+                analyticsProvider.selectedOrderStatus == status.toLowerCase();
+            return FilterChip(
+              label: Text(status),
+              selected: isSelected,
+              onSelected: (selected) {
+                analyticsProvider.updateSelectedOrderStatus(
+                  selected ? status.toLowerCase() : 'all',
+                );
+              },
+              selectedColor: AppColors.primary.withOpacity(0.2),
+              checkmarkColor: AppColors.primary,
+            );
+          }).toList(),
+    );
+  }
+
+  Widget _buildDateRangeFilter(AnalyticsProvider analyticsProvider) {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () => _selectStartDate(analyticsProvider),
+            icon: Icon(AppIcons.time, size: 16),
+            label: Text(
+              analyticsProvider.startDate != null
+                  ? '${analyticsProvider.startDate!.day}/${analyticsProvider.startDate!.month}/${analyticsProvider.startDate!.year}'
+                  : 'Start Date',
+            ),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.s),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () => _selectEndDate(analyticsProvider),
+            icon: Icon(AppIcons.time, size: 16),
+            label: Text(
+              analyticsProvider.endDate != null
+                  ? '${analyticsProvider.endDate!.day}/${analyticsProvider.endDate!.month}/${analyticsProvider.endDate!.year}'
+                  : 'End Date',
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _selectStartDate(AnalyticsProvider analyticsProvider) async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: analyticsProvider.startDate ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+    if (date != null) {
+      analyticsProvider.updateStartDate(date);
+    }
+  }
+
+  Future<void> _selectEndDate(AnalyticsProvider analyticsProvider) async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: analyticsProvider.endDate ?? DateTime.now(),
+      firstDate: analyticsProvider.startDate ?? DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+    if (date != null) {
+      analyticsProvider.updateEndDate(date);
+    }
+  }
+
+  void _resetFilters() {
+    final analyticsProvider = Provider.of<AnalyticsProvider>(
+      context,
+      listen: false,
+    );
+    analyticsProvider.resetFilters();
+    _loadAnalytics();
+  }
+
+  void _applyFilters() {
+    _loadAnalytics();
+  }
+
+  String _formatTimeAgo(dynamic createdAt) {
+    if (createdAt == null) return 'Unknown time';
+
+    try {
+      DateTime dateTime;
+      if (createdAt is String) {
+        dateTime = DateTime.parse(createdAt);
+      } else if (createdAt is int) {
+        dateTime = DateTime.fromMillisecondsSinceEpoch(createdAt);
+      } else {
+        return 'Unknown time';
+      }
+
+      final now = DateTime.now();
+      final difference = now.difference(dateTime);
+
+      if (difference.inMinutes < 1) {
+        return 'Just now';
+      } else if (difference.inMinutes < 60) {
+        return '${difference.inMinutes}m ago';
+      } else if (difference.inHours < 24) {
+        return '${difference.inHours}h ago';
+      } else {
+        return '${difference.inDays}d ago';
+      }
+    } catch (e) {
+      return 'Unknown time';
+    }
+  }
+
+  IconData _getActivityIcon(String? type) {
+    switch (type) {
+      case 'order_created':
+        return Icons.shopping_bag;
+      case 'order_completed':
+        return Icons.check_circle;
+      case 'customer_registered':
+        return Icons.person_add;
+      case 'staff_assigned':
+        return Icons.assignment_ind;
+      case 'payment_received':
+        return Icons.payment;
+      case 'order_cancelled':
+        return Icons.cancel;
+      default:
+        return Icons.notifications;
+    }
+  }
+
+  Color _getActivityColor(String? type) {
+    switch (type) {
+      case 'order_created':
+        return AppColors.primary;
+      case 'order_completed':
+        return AppColors.success;
+      case 'customer_registered':
+        return AppColors.primary;
+      case 'staff_assigned':
+        return AppColors.secondary;
+      case 'payment_received':
+        return AppColors.success;
+      case 'order_cancelled':
+        return AppColors.error;
+      default:
+        return AppColors.primary;
+    }
   }
 }

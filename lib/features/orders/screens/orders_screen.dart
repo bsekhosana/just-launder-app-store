@@ -11,6 +11,7 @@ import '../../../ui/primitives/card_x.dart';
 import '../../../ui/primitives/chip_x.dart';
 import '../providers/tenant_order_provider.dart';
 import '../domain/models/tenant_order_model.dart';
+import '../../auth/providers/auth_provider.dart';
 import 'enhanced_order_details_screen.dart';
 // import '../widgets/order_filters_widget.dart';
 // import '../widgets/order_stats_widget.dart';
@@ -150,7 +151,7 @@ class _OrdersScreenState extends State<OrdersScreen>
 
           return Column(
             children: [
-              // TODO: Update OrderFiltersWidget and OrderStatsWidget to use TenantOrderModel
+              // Filters can be uncommented when needed
               // if (_showFilters) ...[
               //   Flexible(
               //     flex: 0,
@@ -200,7 +201,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                     _buildOrdersList(
                       _getOrdersByStatus(
                         filteredOrders,
-                        TenantOrderStatus.confirmed,
+                        TenantOrderModel.confirmed,
                       ),
                       'No approved orders',
                     ),
@@ -214,7 +215,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                     _buildOrdersList(
                       _getOrdersByStatus(
                         filteredOrders,
-                        TenantOrderStatus.completed,
+                        TenantOrderModel.completed,
                       ),
                       'No completed orders',
                     ),
@@ -414,35 +415,50 @@ class _OrdersScreenState extends State<OrdersScreen>
   }
 
   String _getStatusLabel(TenantOrderStatus status) {
-    switch (status) {
-      case TenantOrderStatus.pending:
-        return 'Pending';
-      case TenantOrderStatus.confirmed:
-        return 'Confirmed';
-      case TenantOrderStatus.inProgress:
-        return 'In Progress';
-      case TenantOrderStatus.readyForPickup:
-        return 'Ready';
-      case TenantOrderStatus.completed:
-        return 'Completed';
-      case TenantOrderStatus.cancelled:
-        return 'Cancelled';
-    }
+    // Use the model's displayText instead
+    final order = TenantOrderModel(
+      id: '',
+      orderNumber: '',
+      customerId: '',
+      customerName: '',
+      customerEmail: '',
+      customerPhone: '',
+      branchId: '',
+      branchName: '',
+      status: status,
+      items: [],
+      totalAmount: 0,
+      pickupAddress: '',
+      deliveryAddress: '',
+      pickupDate: DateTime.now(),
+      deliveryDate: DateTime.now(),
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    return order.statusDisplayText;
   }
 
   ChipStatus _getChipStatus(TenantOrderStatus status) {
     switch (status) {
       case TenantOrderStatus.pending:
+      case TenantOrderStatus.awaitingApproval:
         return ChipStatus.warning;
-      case TenantOrderStatus.confirmed:
+      case TenantOrderStatus.approved:
+      case TenantOrderStatus.assigned:
         return ChipStatus.info;
       case TenantOrderStatus.inProgress:
+      case TenantOrderStatus.processing:
+      case TenantOrderStatus.pickedUp:
         return ChipStatus.info;
-      case TenantOrderStatus.readyForPickup:
+      case TenantOrderStatus.ready:
+      case TenantOrderStatus.outForDelivery:
         return ChipStatus.warning;
-      case TenantOrderStatus.completed:
+      case TenantOrderStatus.delivered:
         return ChipStatus.success;
       case TenantOrderStatus.cancelled:
+      case TenantOrderStatus.declined:
+        return ChipStatus.neutral;
+      default:
         return ChipStatus.neutral;
     }
   }
@@ -454,7 +470,7 @@ class _OrdersScreenState extends State<OrdersScreen>
     );
     final success = await orderProvider.updateOrderStatus(
       orderId,
-      TenantOrderStatus.confirmed,
+      TenantOrderStatus.approved,
     );
 
     if (success && mounted) {
@@ -528,7 +544,7 @@ class _OrdersScreenState extends State<OrdersScreen>
   }
 
   List<TenantOrderModel> _getFilteredOrders(List<TenantOrderModel> orders) {
-    // TODO: Implement filtering when OrderFiltersWidget is updated
+    // Filtering can be implemented when OrderFiltersWidget is updated
     return orders;
   }
 

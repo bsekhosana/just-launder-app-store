@@ -3,6 +3,7 @@ import '../data/datasources/tenant_remote_data_source.dart';
 import '../data/datasources/tenant_local_data_source.dart';
 import '../data/models/tenant_model.dart';
 import '../../../core/utils/log_helper.dart';
+import '../../../core/services/api_service.dart';
 
 /// Authentication provider for laundrette management app
 class AuthProvider extends ChangeNotifier {
@@ -69,6 +70,7 @@ class AuthProvider extends ChangeNotifier {
         final token = await _localDataSource.getAuthToken();
         if (token != null) {
           await TenantRemoteDataSource.setAuthToken(token);
+          await ApiService().setAuthToken(token);
         }
 
         LogHelper.auth(
@@ -115,6 +117,7 @@ class AuthProvider extends ChangeNotifier {
 
         // Set authentication token for API calls
         await TenantRemoteDataSource.setAuthToken(token);
+        await ApiService().setAuthToken(token);
 
         _isLoading = false;
         notifyListeners();
@@ -150,6 +153,7 @@ class AuthProvider extends ChangeNotifier {
       // Clear stored data
       await _localDataSource.clearAll();
       await TenantRemoteDataSource.clearAuthToken();
+      await ApiService().clearAuthToken();
 
       LogHelper.auth('Force logout completed');
       notifyListeners();
@@ -220,6 +224,7 @@ class AuthProvider extends ChangeNotifier {
 
         // Set authentication token for API calls
         await TenantRemoteDataSource.setAuthToken(token);
+        await ApiService().setAuthToken(token);
 
         _isLoading = false;
         notifyListeners();
@@ -247,9 +252,9 @@ class AuthProvider extends ChangeNotifier {
       final response = await TenantRemoteDataSource().forgotPassword(email);
 
       if (response.success) {
-      _pendingEmail = email;
+        _pendingEmail = email;
         _setLoading(false);
-      return true;
+        return true;
       } else {
         _setError(response.error ?? 'Failed to send reset email');
         _setLoading(false);
@@ -301,16 +306,16 @@ class AuthProvider extends ChangeNotifier {
       // Mark onboarding as completed locally
       if (_currentTenant != null) {
         // Update the current tenant's onboarding status
-      _isAuthenticated = true;
-      _pendingEmail = null;
-      _pendingOTP = null;
+        _isAuthenticated = true;
+        _pendingEmail = null;
+        _pendingOTP = null;
 
         // Update local storage
         await _localDataSource.updateOnboardingStatus(true);
 
-      _isLoading = false;
-      notifyListeners();
-      return true;
+        _isLoading = false;
+        notifyListeners();
+        return true;
       } else {
         _isLoading = false;
         notifyListeners();
@@ -342,7 +347,7 @@ class AuthProvider extends ChangeNotifier {
           _currentTenant = _currentTenant!.copyWith(
             emailVerifiedAt: DateTime.now(),
           );
-    notifyListeners();
+          notifyListeners();
         }
 
         _setLoading(false);

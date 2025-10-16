@@ -11,6 +11,7 @@ import '../../../ui/primitives/card_x.dart';
 import '../../../ui/primitives/chip_x.dart';
 import '../providers/branch_provider.dart';
 import '../data/models/laundrette_branch.dart';
+import '../../auth/providers/auth_provider.dart';
 import 'add_edit_branch_screen.dart';
 import 'branch_details_screen.dart';
 
@@ -31,7 +32,9 @@ class _BranchesScreenState extends State<BranchesScreen> {
   Future<void> _loadBranches() async {
     final branchProvider = Provider.of<BranchProvider>(context, listen: false);
     await branchProvider.loadBranches(
-      'laundrette_business_1',
+      // Get current laundrette ID from auth provider
+      Provider.of<AuthProvider>(context, listen: false).currentLaundretteId ??
+          '',
     ); // Mock laundrette ID
   }
 

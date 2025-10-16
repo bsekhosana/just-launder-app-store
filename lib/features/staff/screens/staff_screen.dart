@@ -11,6 +11,7 @@ import '../../../ui/primitives/card_x.dart';
 import '../../../ui/primitives/chip_x.dart';
 import '../providers/staff_provider.dart';
 import '../../../data/models/staff_member.dart';
+import '../../auth/providers/auth_provider.dart';
 import 'add_edit_staff_screen.dart';
 // Driver screens removed - drivers handled by standalone app
 
@@ -34,7 +35,9 @@ class _StaffScreenState extends State<StaffScreen> {
   Future<void> _loadStaff() async {
     final staffProvider = Provider.of<StaffProvider>(context, listen: false);
     await staffProvider.loadStaff(
-      'laundrette_business_1',
+      // Get current laundrette ID from auth provider
+      Provider.of<AuthProvider>(context, listen: false).currentLaundretteId ??
+          '',
     ); // Mock laundrette ID
   }
 

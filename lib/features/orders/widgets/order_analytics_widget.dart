@@ -114,7 +114,7 @@ class OrderAnalyticsWidget extends StatelessWidget {
         _buildAnalyticsCard(
           'Revenue',
           '£${(statistics['total_revenue'] ?? 0.0).toStringAsFixed(2)}',
-          AppIcons.money,
+          AppIcons.dollar,
           AppColors.success,
         ),
         _buildAnalyticsCard(

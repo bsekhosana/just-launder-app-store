@@ -35,11 +35,11 @@ class TenantOrderProvider extends ChangeNotifier {
 
   /// Get confirmed orders
   List<TenantOrderModel> get confirmedOrders =>
-      getOrdersByStatus(TenantOrderStatus.confirmed);
+      getOrdersByStatus(TenantOrderModel.confirmed);
 
   /// Get picked up orders
   List<TenantOrderModel> get pickedUpOrders =>
-      getOrdersByStatus(TenantOrderStatus.readyForPickup);
+      getOrdersByStatus(TenantOrderModel.readyForPickup);
 
   /// Get in progress orders
   List<TenantOrderModel> get inProgressOrders =>
@@ -47,7 +47,7 @@ class TenantOrderProvider extends ChangeNotifier {
 
   /// Get ready for delivery orders (alias for readyForPickup)
   List<TenantOrderModel> get readyForDeliveryOrders =>
-      getOrdersByStatus(TenantOrderStatus.readyForPickup);
+      getOrdersByStatus(TenantOrderModel.readyForPickup);
 
   /// Get out for delivery orders (alias for inProgress)
   List<TenantOrderModel> get outForDeliveryOrders =>
@@ -55,11 +55,11 @@ class TenantOrderProvider extends ChangeNotifier {
 
   /// Get delivered orders (alias for completed)
   List<TenantOrderModel> get deliveredOrders =>
-      getOrdersByStatus(TenantOrderStatus.completed);
+      getOrdersByStatus(TenantOrderModel.completed);
 
   /// Get completed orders
   List<TenantOrderModel> get completedOrders =>
-      getOrdersByStatus(TenantOrderStatus.completed);
+      getOrdersByStatus(TenantOrderModel.completed);
 
   /// Get cancelled orders
   List<TenantOrderModel> get cancelledOrders =>
@@ -391,7 +391,7 @@ class TenantOrderProvider extends ChangeNotifier {
     for (final order in _orders) {
       totalRevenue += order.totalAmount;
 
-      if (order.status == TenantOrderStatus.completed) {
+      if (order.status == TenantOrderModel.completed) {
         completedRevenue += order.totalAmount;
       } else {
         pendingRevenue += order.totalAmount;

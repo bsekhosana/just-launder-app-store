@@ -2,17 +2,29 @@ import 'package:flutter/foundation.dart';
 import '../../../data/models/laundrette_order.dart';
 import '../../branches/data/models/laundrette_branch.dart';
 import '../../../data/models/staff_member.dart';
+import '../data/datasources/analytics_remote_data_source.dart';
+import '../data/datasources/recent_activity_remote_data_source.dart';
 
 class AnalyticsProvider with ChangeNotifier {
+  final AnalyticsRemoteDataSource _dataSource = AnalyticsRemoteDataSource();
+  final RecentActivityRemoteDataSource _activityDataSource =
+      RecentActivityRemoteDataSource();
+
   bool _isLoading = false;
   DateTime _selectedDateRange = DateTime.now();
   String _selectedBranchId = 'all';
   String _selectedPeriod = 'week'; // day, week, month, year
+  String _selectedOrderStatus = 'all';
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   bool get isLoading => _isLoading;
   DateTime get selectedDateRange => _selectedDateRange;
   String get selectedBranchId => _selectedBranchId;
   String get selectedPeriod => _selectedPeriod;
+  String get selectedOrderStatus => _selectedOrderStatus;
+  DateTime? get startDate => _startDate;
+  DateTime? get endDate => _endDate;
 
   // Analytics data
   double _totalRevenue = 0.0;
@@ -34,6 +46,7 @@ class AnalyticsProvider with ChangeNotifier {
   List<Map<String, dynamic>> _topServices = [];
   List<Map<String, dynamic>> _topCustomers = [];
   List<Map<String, dynamic>> _staffPerformance = [];
+  List<Map<String, dynamic>> _recentActivity = [];
 
   // Getters
   double get totalRevenue => _totalRevenue;
@@ -55,8 +68,9 @@ class AnalyticsProvider with ChangeNotifier {
   List<Map<String, dynamic>> get topServices => _topServices;
   List<Map<String, dynamic>> get topCustomers => _topCustomers;
   List<Map<String, dynamic>> get staffPerformance => _staffPerformance;
+  List<Map<String, dynamic>> get recentActivity => _recentActivity;
 
-  /// Load analytics data
+  /// Load analytics data from API
   Future<void> loadAnalytics({
     required List<LaundretteOrder> orders,
     required List<LaundretteBranch> branches,
@@ -66,29 +80,127 @@ class AnalyticsProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
+      // Load dashboard analytics from API
+      final dashboardData = await _dataSource.getDashboardAnalytics(
+        period: _selectedPeriod,
+        branchId: _selectedBranchId != 'all' ? _selectedBranchId : null,
+      );
 
-      // Filter orders based on selected criteria
-      final filteredOrders = _filterOrders(orders);
+      // Load additional data from API
+      final revenueByBranchData = await _dataSource.getRevenueByBranch(
+        period: _selectedPeriod,
+      );
+      final timeSeriesData = await _dataSource.getTimeSeriesData(
+        period: _selectedPeriod,
+      );
+      final topServicesData = await _dataSource.getTopServices(
+        period: _selectedPeriod,
+      );
+      final topCustomersData = await _dataSource.getTopCustomers(
+        period: _selectedPeriod,
+      );
+      final staffPerformanceData = await _dataSource.getStaffPerformance(
+        period: _selectedPeriod,
+      );
+      final recentActivityData = await _activityDataSource.getRecentActivity();
 
-      // Calculate analytics
-      _calculateOrderMetrics(filteredOrders);
-      _calculateRevenueMetrics(filteredOrders);
-      _calculateCustomerMetrics(filteredOrders);
-      _calculateDeliveryMetrics(filteredOrders);
-      _calculateBranchMetrics(filteredOrders, branches);
-      _calculateTimeSeriesData(filteredOrders);
-      _calculateTopServices(filteredOrders);
-      _calculateTopCustomers(filteredOrders);
-      _calculateStaffPerformance(filteredOrders, staff);
+      // Update analytics data from API response
+      _updateFromApiData(
+        dashboardData,
+        revenueByBranchData,
+        timeSeriesData,
+        topServicesData,
+        topCustomersData,
+        staffPerformanceData,
+        recentActivityData,
+      );
 
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      _isLoading = false;
-      notifyListeners();
+      debugPrint('Error loading analytics: $e');
+      // Fallback to local calculation if API fails
+      _loadAnalyticsFromLocalData(orders, branches, staff);
     }
+  }
+
+  /// Update analytics data from API response
+  void _updateFromApiData(
+    Map<String, dynamic> dashboardData,
+    List<Map<String, dynamic>> revenueByBranchData,
+    List<Map<String, dynamic>> timeSeriesData,
+    List<Map<String, dynamic>> topServicesData,
+    List<Map<String, dynamic>> topCustomersData,
+    List<Map<String, dynamic>> staffPerformanceData,
+    List<Map<String, dynamic>> recentActivityData,
+  ) {
+    // Update dashboard metrics
+    _totalRevenue = (dashboardData['total_revenue'] ?? 0.0).toDouble();
+    _totalOrders = dashboardData['total_orders'] ?? 0;
+    _completedOrders = dashboardData['completed_orders'] ?? 0;
+    _pendingOrders = dashboardData['pending_orders'] ?? 0;
+    _cancelledOrders = dashboardData['cancelled_orders'] ?? 0;
+    _averageOrderValue =
+        (dashboardData['average_order_value'] ?? 0.0).toDouble();
+    _customerSatisfaction =
+        (dashboardData['customer_satisfaction'] ?? 0.0).toDouble();
+    _totalCustomers = dashboardData['total_customers'] ?? 0;
+    _newCustomers = dashboardData['new_customers'] ?? 0;
+    _deliveryTime = (dashboardData['average_delivery_time'] ?? 0.0).toDouble();
+    _totalDeliveries = dashboardData['total_deliveries'] ?? 0;
+    _staffEfficiency = (dashboardData['staff_efficiency'] ?? 0.0).toDouble();
+
+    // Update revenue by branch
+    _revenueByBranch.clear();
+    for (final item in revenueByBranchData) {
+      _revenueByBranch[item['branch_name'] ?? 'Unknown'] =
+          (item['revenue'] ?? 0.0).toDouble();
+    }
+
+    // Update time series data
+    _revenueByDay.clear();
+    _ordersByDay.clear();
+    for (final item in timeSeriesData) {
+      final date = item['date'] ?? '';
+      _revenueByDay[date] = (item['revenue'] ?? 0.0).toDouble();
+      _ordersByDay[date] = item['orders'] ?? 0;
+    }
+
+    // Update top services
+    _topServices = topServicesData;
+
+    // Update top customers
+    _topCustomers = topCustomersData;
+
+    // Update staff performance
+    _staffPerformance = staffPerformanceData;
+
+    // Update recent activity
+    _recentActivity = recentActivityData;
+  }
+
+  /// Fallback to local calculation if API fails
+  void _loadAnalyticsFromLocalData(
+    List<LaundretteOrder> orders,
+    List<LaundretteBranch> branches,
+    List<StaffMember> staff,
+  ) {
+    // Filter orders based on selected criteria
+    final filteredOrders = _filterOrders(orders);
+
+    // Calculate analytics from local data
+    _calculateOrderMetrics(filteredOrders);
+    _calculateRevenueMetrics(filteredOrders);
+    _calculateCustomerMetrics(filteredOrders);
+    _calculateDeliveryMetrics(filteredOrders);
+    _calculateBranchMetrics(filteredOrders, branches);
+    _calculateTimeSeriesData(filteredOrders);
+    _calculateTopServices(filteredOrders);
+    _calculateTopCustomers(filteredOrders);
+    _calculateStaffPerformance(filteredOrders, staff);
+
+    _isLoading = false;
+    notifyListeners();
   }
 
   /// Filter orders based on selected criteria
@@ -388,5 +500,33 @@ class AnalyticsProvider with ChangeNotifier {
     } else {
       return '${minutes}m';
     }
+  }
+
+  /// Update selected order status
+  void updateSelectedOrderStatus(String status) {
+    _selectedOrderStatus = status;
+    notifyListeners();
+  }
+
+  /// Update start date
+  void updateStartDate(DateTime date) {
+    _startDate = date;
+    notifyListeners();
+  }
+
+  /// Update end date
+  void updateEndDate(DateTime date) {
+    _endDate = date;
+    notifyListeners();
+  }
+
+  /// Reset all filters
+  void resetFilters() {
+    _selectedBranchId = 'all';
+    _selectedPeriod = 'week';
+    _selectedOrderStatus = 'all';
+    _startDate = null;
+    _endDate = null;
+    notifyListeners();
   }
 }

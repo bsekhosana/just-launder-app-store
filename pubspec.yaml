@@ -49,6 +49,7 @@ dependencies:
   
   # HTTP and connectivity
   http: ^1.2.2
+  dio: ^5.7.0
   connectivity_plus: ^6.1.0
   shared_preferences: ^2.3.2
   url_launcher: ^6.3.1

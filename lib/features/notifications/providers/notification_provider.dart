@@ -22,8 +22,8 @@ class NotificationProvider extends ChangeNotifier {
   /// Initialize notification service
   Future<void> initialize() async {
     try {
-      await _apiService.initialize();
-      
+      // ApiService auto-initializes, no need to call initialize()
+
       await _fcmService.initialize(
         onMessage: _handleMessage,
         onTokenRefresh: _handleTokenRefresh,
@@ -125,4 +125,3 @@ class NotificationProvider extends ChangeNotifier {
     }
   }
 }
-

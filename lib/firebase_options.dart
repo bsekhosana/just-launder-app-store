@@ -74,6 +74,8 @@ class DefaultFirebaseOptions {
   );
 }
 
-// TODO: Run 'flutterfire configure' to generate actual Firebase configuration
-// This will create platform-specific config files and update this file
+// Firebase configuration instructions:
+// 1. Run: flutterfire configure
+// 2. Select Firebase project
+// 3. This will generate the actual configuration for all platforms
 

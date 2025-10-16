@@ -1,35 +1,43 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../../../../core/utils/log_helper.dart';
+import '../../../../core/services/api_service.dart';
 
 /// Remote data source for staff management API calls
 class StaffRemoteDataSource {
-  static const String baseUrl = 'https://justlaunder.co.uk/api/v1';
-  static String? _authToken;
+  final ApiService _apiService;
 
-  /// Set authentication token
-  static Future<void> setAuthToken(String token) async {
-    _authToken = token;
-    LogHelper.api('Staff auth token set');
+  StaffRemoteDataSource({ApiService? apiService})
+      : _apiService = apiService ?? ApiService();
+
+  /// Get all staff members for tenant
+  Future<List<Map<String, dynamic>>> getStaff({
+    int page = 1,
+    int perPage = 15,
+  }) async {
+    final response = await _apiService.get(
+      '/api/v1/tenant/staff',
+      queryParameters: {'page': page, 'per_page': perPage},
+    );
+
+    if (response.statusCode == 200 && response.data != null) {
+      final data = response.data;
+      return List<Map<String, dynamic>>.from(data['data'] as List);
+    } else {
+      throw Exception('Failed to load staff: ${response.statusCode}');
+    }
   }
 
-  /// Clear authentication token
-  static Future<void> clearAuthToken() async {
-    _authToken = null;
-    LogHelper.api('Staff auth token cleared');
-  }
+  /// Get staff member details
+  Future<Map<String, dynamic>> getStaffDetails(String staffId) async {
+    final response = await _apiService.get('/api/v1/tenant/staff/$staffId');
 
-  /// Get headers with auth token
-  static Map<String, String> _getHeaders() {
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      if (_authToken != null) 'Authorization': 'Bearer $_authToken',
-    };
+    if (response.statusCode == 200 && response.data != null) {
+      final data = response.data;
+      return data['data'] as Map<String, dynamic>;
+    } else {
+      throw Exception('Failed to load staff details: ${response.statusCode}');
+    }
   }
 
   /// Create new staff member
-  /// POST /api/v1/tenant/staff
   Future<Map<String, dynamic>> createStaff({
     required String firstName,
     required String lastName,
@@ -39,151 +47,49 @@ class StaffRemoteDataSource {
     required String passwordConfirmation,
     bool isActive = true,
   }) async {
-    try {
-      LogHelper.api('Creating staff member: $email');
+    final response = await _apiService.post(
+      '/api/v1/tenant/staff',
+      data: {
+        'first_name': firstName,
+        'last_name': lastName,
+        'email': email,
+        'mobile': mobile,
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+        'is_active': isActive,
+      },
+    );
 
-      final url = Uri.parse('$baseUrl/tenant/staff');
-      final response = await http.post(
-        url,
-        headers: _getHeaders(),
-        body: jsonEncode({
-          'first_name': firstName,
-          'last_name': lastName,
-          'email': email,
-          'mobile': mobile,
-          'password': password,
-          'password_confirmation': passwordConfirmation,
-          'is_active': isActive,
-        }),
-      );
-
-      final responseData = jsonDecode(response.body) as Map<String, dynamic>;
-      LogHelper.api('Staff creation response: ${response.statusCode}');
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        LogHelper.api('Staff created successfully');
-        return responseData;
-      } else {
-        LogHelper.error('Staff creation failed: ${response.statusCode}');
-        return responseData;
-      }
-    } catch (e) {
-      LogHelper.error('Unexpected error creating staff: $e');
-      return {
-        'success': false,
-        'message': 'Failed to create staff member',
-        'error': e.toString(),
-      };
-    }
-  }
-
-  /// Get all staff members
-  /// GET /api/v1/tenant/staff
-  Future<Map<String, dynamic>> getStaffList() async {
-    try {
-      LogHelper.api('Fetching staff list');
-
-      final url = Uri.parse('$baseUrl/tenant/staff');
-      final response = await http.get(url, headers: _getHeaders());
-
-      final responseData = jsonDecode(response.body) as Map<String, dynamic>;
-      LogHelper.api('Staff list response: ${response.statusCode}');
-
-      return responseData;
-    } catch (e) {
-      LogHelper.error('Get staff list error: $e');
-      return {
-        'success': false,
-        'message': 'Failed to fetch staff list',
-        'error': e.toString(),
-      };
-    }
-  }
-
-  /// Get staff member by ID
-  /// GET /api/v1/tenant/staff/{id}
-  Future<Map<String, dynamic>> getStaff(String staffId) async {
-    try {
-      LogHelper.api('Fetching staff: $staffId');
-
-      final url = Uri.parse('$baseUrl/tenant/staff/$staffId');
-      final response = await http.get(url, headers: _getHeaders());
-
-      final responseData = jsonDecode(response.body) as Map<String, dynamic>;
-      LogHelper.api('Staff fetch response: ${response.statusCode}');
-
-      return responseData;
-    } catch (e) {
-      LogHelper.error('Get staff error: $e');
-      return {
-        'success': false,
-        'message': 'Failed to fetch staff member',
-        'error': e.toString(),
-      };
+    if (response.statusCode == 201 && response.data != null) {
+      final data = response.data;
+      return data['data'] as Map<String, dynamic>;
+    } else {
+      throw Exception('Failed to create staff: ${response.statusCode}');
     }
   }
 
   /// Update staff member
-  /// PUT /api/v1/tenant/staff/{id}
-  Future<Map<String, dynamic>> updateStaff({
-    required String staffId,
-    required String firstName,
-    required String lastName,
-    required String email,
-    required String mobile,
-    bool? isActive,
-  }) async {
-    try {
-      LogHelper.api('Updating staff: $staffId');
+  Future<Map<String, dynamic>> updateStaff(
+    String staffId,
+    Map<String, dynamic> updates,
+  ) async {
+    final response = await _apiService.put(
+      '/api/v1/tenant/staff/$staffId',
+      data: updates,
+    );
 
-      final url = Uri.parse('$baseUrl/tenant/staff/$staffId');
-      final response = await http.put(
-        url,
-        headers: _getHeaders(),
-        body: jsonEncode({
-          'first_name': firstName,
-          'last_name': lastName,
-          'email': email,
-          'mobile': mobile,
-          if (isActive != null) 'is_active': isActive,
-        }),
-      );
-
-      final responseData = jsonDecode(response.body) as Map<String, dynamic>;
-      LogHelper.api('Staff update response: ${response.statusCode}');
-
-      return responseData;
-    } catch (e) {
-      LogHelper.error('Update staff error: $e');
-      return {
-        'success': false,
-        'message': 'Failed to update staff member',
-        'error': e.toString(),
-      };
+    if (response.statusCode == 200 && response.data != null) {
+      final data = response.data;
+      return data['data'] as Map<String, dynamic>;
+    } else {
+      throw Exception('Failed to update staff: ${response.statusCode}');
     }
   }
 
   /// Delete staff member
-  /// DELETE /api/v1/tenant/staff/{id}
-  Future<Map<String, dynamic>> deleteStaff(String staffId) async {
-    try {
-      LogHelper.api('Deleting staff: $staffId');
+  Future<bool> deleteStaff(String staffId) async {
+    final response = await _apiService.delete('/api/v1/tenant/staff/$staffId');
 
-      final url = Uri.parse('$baseUrl/tenant/staff/$staffId');
-      final response = await http.delete(url, headers: _getHeaders());
-
-      final responseData = jsonDecode(response.body) as Map<String, dynamic>;
-      LogHelper.api('Staff delete response: ${response.statusCode}');
-
-      return responseData;
-    } catch (e) {
-      LogHelper.error('Delete staff error: $e');
-      return {
-        'success': false,
-        'message': 'Failed to delete staff member',
-        'error': e.toString(),
-      };
-    }
+    return response.statusCode == 200;
   }
 }
-

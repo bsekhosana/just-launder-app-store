@@ -116,7 +116,6 @@ class AccountStatusScreen extends StatelessWidget {
               AnimatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  // TODO: Implement contact support functionality
                   _openSupportChannel();
                 },
                 child: const Text('Contact Support'),
@@ -127,7 +126,21 @@ class AccountStatusScreen extends StatelessWidget {
   }
 
   void _openSupportChannel() {
-    // TODO: Implement support channel opening (email, phone, chat)
-    // This could use url_launcher for email or phone calls
+    // Support channel - can be implemented with url_launcher
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Contact Support'),
+        content: const Text(
+          'Email: support@justlaunder.co.uk\nPhone: +44 XXX XXX XXXX',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
   }
 }

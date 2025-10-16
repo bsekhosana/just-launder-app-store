@@ -9,6 +9,7 @@ import '../../../design_system/icons.dart';
 import '../../../ui/primitives/card_x.dart';
 import '../../branches/providers/branch_provider.dart';
 import '../../staff/providers/staff_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../branches/screens/branches_screen.dart';
 import '../../staff/screens/staff_screen.dart';
 
@@ -28,12 +29,20 @@ class _ManagementScreenState extends State<ManagementScreen> {
   }
 
   Future<void> _loadData() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final branchProvider = Provider.of<BranchProvider>(context, listen: false);
     final staffProvider = Provider.of<StaffProvider>(context, listen: false);
 
+    // Get current laundrette ID from auth provider
+    final laundretteId = authProvider.currentLaundretteId;
+    if (laundretteId == null) {
+      debugPrint('No authenticated tenant found');
+      return;
+    }
+
     await Future.wait([
-      branchProvider.loadBranches('laundrette_business_1'),
-      staffProvider.loadStaff('laundrette_business_1'),
+      branchProvider.loadBranches(laundretteId),
+      staffProvider.loadStaff(laundretteId),
     ]);
   }
 

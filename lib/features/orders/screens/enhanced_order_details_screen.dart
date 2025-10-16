@@ -10,7 +10,7 @@ import '../../../ui/primitives/animated_button.dart';
 import '../../../ui/primitives/card_x.dart';
 import '../../../ui/primitives/chip_x.dart';
 import '../providers/tenant_order_provider.dart';
-import '../data/models/tenant_order_model.dart';
+import '../domain/models/tenant_order_model.dart';
 
 class EnhancedOrderDetailsScreen extends StatefulWidget {
   final TenantOrderModel order;
@@ -80,7 +80,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
         actions: [
           if (widget.order.isPendingApproval) ...[
             AnimatedButton(
-              onPressed: () => _updateOrderStatus(TenantOrderStatus.confirmed),
+              onPressed: () => _updateOrderStatus(TenantOrderStatus.approved),
               child: Text(
                 'Approve',
                 style: AppTypography.textTheme.labelMedium?.copyWith(
@@ -438,7 +438,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 if (widget.order.isPendingApproval) ...[
                   AnimatedButton(
                     onPressed:
-                        () => _updateOrderStatus(TenantOrderStatus.confirmed),
+                        () => _updateOrderStatus(TenantOrderStatus.approved),
                     backgroundColor: AppColors.success,
                     child: Text(
                       'Approve Order',
@@ -492,9 +492,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 if (widget.order.isInProgress) ...[
                   AnimatedButton(
                     onPressed:
-                        () => _updateOrderStatus(
-                          TenantOrderStatus.readyForDelivery,
-                        ),
+                        () => _updateOrderStatus(TenantOrderStatus.ready),
                     backgroundColor: AppColors.warning,
                     child: Text(
                       'Mark Ready',
@@ -538,7 +536,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 if (widget.order.isDelivered) ...[
                   AnimatedButton(
                     onPressed:
-                        () => _updateOrderStatus(TenantOrderStatus.completed),
+                        () => _updateOrderStatus(TenantOrderStatus.delivered),
                     backgroundColor: AppColors.success,
                     child: Text(
                       'Complete Order',
@@ -687,7 +685,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                 color: AppColors.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Icon(AppIcons.clock, color: AppColors.primary, size: 16),
+              child: Icon(AppIcons.time, color: AppColors.primary, size: 16),
             ),
             const SizedBox(width: AppSpacing.m),
             Expanded(
@@ -712,7 +710,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
                   ],
                   const SizedBox(height: AppSpacing.xs),
                   Text(
-                    _formatDateTime(history.statusChangedAt),
+                    _formatDateTime(history.createdAt),
                     style: AppTypography.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -781,11 +779,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
   Widget _buildTagChip(OrderTagModel tag) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return ChipsX.status(
-      label: tag.value,
-      status: _getTagChipStatus(tag.type),
-      onDelete: () => _removeTag(tag.id),
-    );
+    return ChipsX.status(label: tag.value, status: _getTagChipStatus(tag.type));
   }
 
   ChipStatus _getTagChipStatus(OrderTagType type) {
@@ -793,7 +787,7 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
       case OrderTagType.location:
         return ChipStatus.info;
       case OrderTagType.status:
-        return ChipStatus.primary;
+        return ChipStatus.info;
       case OrderTagType.priority:
         return ChipStatus.warning;
       case OrderTagType.service:
@@ -837,40 +831,50 @@ class _EnhancedOrderDetailsScreenState extends State<EnhancedOrderDetailsScreen>
   ChipStatus _getChipStatus(TenantOrderStatus status) {
     switch (status) {
       case TenantOrderStatus.pending:
+      case TenantOrderStatus.paid:
+      case TenantOrderStatus.awaitingApproval:
         return ChipStatus.warning;
-      case TenantOrderStatus.confirmed:
+      case TenantOrderStatus.approved:
+      case TenantOrderStatus.assigned:
         return ChipStatus.info;
       case TenantOrderStatus.pickedUp:
-        return ChipStatus.info;
       case TenantOrderStatus.inProgress:
+      case TenantOrderStatus.processing:
         return ChipStatus.info;
-      case TenantOrderStatus.readyForDelivery:
-        return ChipStatus.warning;
+      case TenantOrderStatus.ready:
       case TenantOrderStatus.outForDelivery:
-        return ChipStatus.info;
+        return ChipStatus.warning;
       case TenantOrderStatus.delivered:
         return ChipStatus.success;
-      case TenantOrderStatus.completed:
-        return ChipStatus.success;
       case TenantOrderStatus.cancelled:
+      case TenantOrderStatus.declined:
         return ChipStatus.error;
-      case TenantOrderStatus.onHold:
+      case TenantOrderStatus.approvalExpired:
+      case TenantOrderStatus.poorResponseTime:
+      case TenantOrderStatus.expired:
+        return ChipStatus.error;
+      case TenantOrderStatus.modified:
+      case TenantOrderStatus.extensionRequested:
         return ChipStatus.warning;
-      case TenantOrderStatus.returned:
+      case TenantOrderStatus.processingRefund:
+        return ChipStatus.warning;
+      case TenantOrderStatus.extensionApproved:
+        return ChipStatus.success;
+      case TenantOrderStatus.extensionDeclined:
         return ChipStatus.error;
     }
   }
 
   Color _getPriorityColor(OrderPriority priority) {
     switch (priority) {
+      case OrderPriority.low:
+        return AppColors.onSurfaceVariant;
       case OrderPriority.normal:
         return AppColors.onSurfaceVariant;
       case OrderPriority.high:
         return AppColors.warning;
       case OrderPriority.urgent:
         return AppColors.error;
-      case OrderPriority.express:
-        return AppColors.primary;
     }
   }
 

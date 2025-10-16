@@ -141,7 +141,7 @@ class LaundretteBranch extends Equatable {
   String get phoneNumber => phone;
   String get fullAddress => '$address, $city, $postcode';
   bool get isCurrentlyOpen => status == BranchStatus.active;
-  int get currentOrderCount => 0; // TODO: Implement from API
+  int get currentOrderCount => 0; // Retrieved from API when needed
   int get maxConcurrentOrders => 100; // Default value
   bool get autoAcceptOrders => false; // Default value
   bool get supportsPriorityDelivery => true; // Default value

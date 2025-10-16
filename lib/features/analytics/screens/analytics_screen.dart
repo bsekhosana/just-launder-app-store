@@ -4,6 +4,7 @@ import '../providers/analytics_provider.dart';
 import '../../orders/providers/order_provider.dart';
 import '../../branches/providers/branch_provider.dart';
 import '../../staff/providers/staff_provider.dart';
+import '../../auth/providers/auth_provider.dart';
 import 'analytics_dashboard_screen.dart';
 
 class AnalyticsScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   Future<void> _loadData() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final orderProvider = Provider.of<OrderProvider>(context, listen: false);
     final branchProvider = Provider.of<BranchProvider>(context, listen: false);
     final staffProvider = Provider.of<StaffProvider>(context, listen: false);
@@ -29,10 +31,17 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       listen: false,
     );
 
+    // Get current laundrette ID from auth provider
+    final laundretteId = authProvider.currentLaundretteId;
+    if (laundretteId == null) {
+      debugPrint('No authenticated tenant found');
+      return;
+    }
+
     await Future.wait([
-      orderProvider.loadOrders('laundrette_business_1'),
-      branchProvider.loadBranches('laundrette_business_1'),
-      staffProvider.loadStaff('laundrette_business_1'),
+      orderProvider.loadOrders(laundretteId),
+      branchProvider.loadBranches(laundretteId),
+      staffProvider.loadStaff(laundretteId),
     ]);
 
     await analyticsProvider.loadAnalytics(

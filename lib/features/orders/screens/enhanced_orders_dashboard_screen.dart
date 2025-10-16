@@ -10,7 +10,7 @@ import '../../../ui/primitives/animated_button.dart';
 import '../../../ui/primitives/card_x.dart';
 import '../../../ui/primitives/chip_x.dart';
 import '../providers/tenant_order_provider.dart';
-import '../data/models/tenant_order_model.dart';
+import '../domain/models/tenant_order_model.dart';
 import 'enhanced_order_details_screen.dart';
 import '../widgets/order_filters_widget.dart';
 import '../widgets/order_stats_widget.dart';
