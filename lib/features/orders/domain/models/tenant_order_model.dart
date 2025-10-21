@@ -50,13 +50,19 @@ class TenantOrderModel extends Equatable {
   final double totalAmount;
   final double subtotal;
   final double deliveryFee;
-  final String pickupAddress;
-  final String deliveryAddress;
+  // Address fields - can be either ID or full address object
+  final String? addressId; // Delivery address ID
+  final String? pickupAddressId; // Pickup address ID
+  final String pickupAddress; // Fallback string representation
+  final String deliveryAddress; // Fallback string representation
   final DateTime pickupDate;
   final DateTime deliveryDate;
   final String? notes;
   final String? specialInstructions;
-  final String? driverId;
+  // Driver fields - support both pickup and delivery drivers
+  final String? deliveryDriverId;
+  final String? pickupDriverId;
+  final String? driverId; // For backward compatibility
   final String? driverName;
   final String? driverPhone;
   final List<OrderTagModel> tags;
@@ -80,12 +86,16 @@ class TenantOrderModel extends Equatable {
     required this.totalAmount,
     this.subtotal = 0.0,
     this.deliveryFee = 0.0,
+    this.addressId,
+    this.pickupAddressId,
     required this.pickupAddress,
     required this.deliveryAddress,
     required this.pickupDate,
     required this.deliveryDate,
     this.notes,
     this.specialInstructions,
+    this.deliveryDriverId,
+    this.pickupDriverId,
     this.driverId,
     this.driverName,
     this.driverPhone,
@@ -130,8 +140,16 @@ class TenantOrderModel extends Equatable {
           (json['delivery_fee'] as num?)?.toDouble() ??
           (json['pickup_fee'] as num?)?.toDouble() ??
           0.0,
-      pickupAddress: json['pickup_address'] as String? ?? '',
-      deliveryAddress: json['delivery_address'] as String? ?? '',
+      // Handle address IDs
+      addressId: json['address_id']?.toString(),
+      pickupAddressId: json['pickup_address_id']?.toString(),
+      // Handle address objects or fallback to strings
+      pickupAddress: _extractAddress(json, 'pickup_address'),
+      deliveryAddress: _extractAddress(
+        json,
+        'delivery_address',
+        addressKey: 'address',
+      ),
       pickupDate:
           json['pickup_date'] != null
               ? DateTime.parse(json['pickup_date'] as String)
@@ -146,9 +164,18 @@ class TenantOrderModel extends Equatable {
                   : DateTime.now().add(const Duration(days: 1))),
       notes: json['notes'] as String?,
       specialInstructions: json['special_instructions'] as String?,
-      driverId: json['driver_id']?.toString(),
-      driverName: json['driver_name'] as String?,
-      driverPhone: json['driver_phone'] as String?,
+      // Handle driver IDs - support both old and new structure
+      deliveryDriverId: json['delivery_driver_id']?.toString(),
+      pickupDriverId: json['pickup_driver_id']?.toString(),
+      driverId:
+          json['driver_id']?.toString() ??
+          json['delivery_driver_id']?.toString(),
+      driverName:
+          json['driver_name'] as String? ??
+          _extractDriverName(json, 'delivery_driver'),
+      driverPhone:
+          json['driver_phone'] as String? ??
+          _extractDriverPhone(json, 'delivery_driver'),
       tags:
           (json['tags'] as List<dynamic>?)
               ?.map(
@@ -174,6 +201,54 @@ class TenantOrderModel extends Equatable {
               ? DateTime.parse(json['updated_at'] as String)
               : DateTime.now(),
     );
+  }
+
+  /// Extract address from JSON - handles both string and object formats
+  static String _extractAddress(
+    Map<String, dynamic> json,
+    String key, {
+    String? addressKey,
+  }) {
+    // Try direct string field first
+    if (json[key] is String) {
+      return json[key] as String;
+    }
+
+    // Try address object
+    final addressData = json[addressKey ?? key];
+    if (addressData is Map<String, dynamic>) {
+      // Build address string from components
+      final parts =
+          <String>[
+            addressData['house_number'] ?? '',
+            addressData['street'] ?? addressData['address_line_1'] ?? '',
+            addressData['address_line_2'] ?? '',
+            addressData['city'] ?? '',
+            addressData['postal_code'] ?? addressData['postcode'] ?? '',
+          ].where((p) => p.toString().isNotEmpty).toList();
+
+      return parts.join(', ');
+    }
+
+    return '';
+  }
+
+  /// Extract driver name from driver object
+  static String? _extractDriverName(Map<String, dynamic> json, String key) {
+    final driverData = json[key];
+    if (driverData is Map<String, dynamic>) {
+      return driverData['name'] as String?;
+    }
+    return null;
+  }
+
+  /// Extract driver phone from driver object
+  static String? _extractDriverPhone(Map<String, dynamic> json, String key) {
+    final driverData = json[key];
+    if (driverData is Map<String, dynamic>) {
+      return driverData['phone'] as String?;
+    }
+    return null;
   }
 
   static TenantOrderStatus _parseOrderStatus(dynamic status) {
