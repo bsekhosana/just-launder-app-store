@@ -376,23 +376,23 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
             } else {
               // Mobile layout - vertical stack
               return Row(
-                children: [
-                  Expanded(
-                    child: _buildQuickStatCard(
-                      'Pending Orders',
-                      analyticsProvider.pendingOrders.toString(),
-                      AppIcons.pending,
-                      AppColors.accent,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.m),
-                  Expanded(
-                    child: _buildQuickStatCard(
-                      'New Customers',
-                      analyticsProvider.newCustomers.toString(),
-                      AppIcons.personAdd,
-                      AppColors.primary,
-                    ),
+                    children: [
+                      Expanded(
+                        child: _buildQuickStatCard(
+                          'Pending Orders',
+                          analyticsProvider.pendingOrders.toString(),
+                          AppIcons.pending,
+                          AppColors.accent,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.m),
+                      Expanded(
+                        child: _buildQuickStatCard(
+                          'New Customers',
+                          analyticsProvider.newCustomers.toString(),
+                          AppIcons.personAdd,
+                          AppColors.primary,
+                        ),
                   ),
                 ],
               );
@@ -566,25 +566,25 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
         return AnalyticsTabCard(
           title: 'Revenue Overview',
           child: Row(
-            children: [
-              Expanded(
-                child: _buildRevenueMetric(
-                  'Total Revenue',
+                  children: [
+                    Expanded(
+                      child: _buildRevenueMetric(
+                        'Total Revenue',
                   siteSettings.formatCurrency(analyticsProvider.totalRevenue),
-                  AppColors.success,
-                ),
-              ),
+                        AppColors.success,
+                      ),
+                    ),
               const SizedBox(width: AppSpacing.m),
-              Expanded(
-                child: _buildRevenueMetric(
-                  'Avg Order Value',
+                    Expanded(
+                      child: _buildRevenueMetric(
+                        'Avg Order Value',
                   siteSettings.formatCurrency(
                     analyticsProvider.averageOrderValue,
                   ),
-                  AppColors.primary,
-                ),
-              ),
-            ],
+                        AppColors.primary,
+                      ),
+                    ),
+                  ],
           ),
         );
       },
@@ -628,7 +628,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
 
         return AnalyticsTabCard(
           title: 'Revenue by Branch',
-          child: Column(
+            child: Column(
             children:
                 analyticsProvider.revenueByBranch.entries.map((entry) {
                   return Padding(
@@ -665,39 +665,39 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
         return AnalyticsTabCard(
           title: 'Orders Overview',
           child: Row(
-            children: [
-              Expanded(
-                child: _buildOrderMetric(
-                  'Total Orders',
-                  analyticsProvider.totalOrders.toString(),
-                  AppColors.primary,
-                ),
-              ),
+                  children: [
+                    Expanded(
+                      child: _buildOrderMetric(
+                        'Total Orders',
+                        analyticsProvider.totalOrders.toString(),
+                        AppColors.primary,
+                      ),
+                    ),
               const SizedBox(width: AppSpacing.s),
-              Expanded(
-                child: _buildOrderMetric(
-                  'Completed',
-                  analyticsProvider.completedOrders.toString(),
-                  AppColors.success,
-                ),
-              ),
+                    Expanded(
+                      child: _buildOrderMetric(
+                        'Completed',
+                        analyticsProvider.completedOrders.toString(),
+                        AppColors.success,
+                      ),
+                    ),
               const SizedBox(width: AppSpacing.s),
-              Expanded(
-                child: _buildOrderMetric(
-                  'Pending',
-                  analyticsProvider.pendingOrders.toString(),
-                  AppColors.accent,
-                ),
-              ),
+                    Expanded(
+                      child: _buildOrderMetric(
+                        'Pending',
+                        analyticsProvider.pendingOrders.toString(),
+                        AppColors.accent,
+                      ),
+                    ),
               const SizedBox(width: AppSpacing.s),
-              Expanded(
-                child: _buildOrderMetric(
-                  'Cancelled',
-                  analyticsProvider.cancelledOrders.toString(),
-                  AppColors.error,
-                ),
-              ),
-            ],
+                    Expanded(
+                      child: _buildOrderMetric(
+                        'Cancelled',
+                        analyticsProvider.cancelledOrders.toString(),
+                        AppColors.error,
+                      ),
+                    ),
+                  ],
           ),
         );
       },
@@ -738,7 +738,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
       builder: (context, analyticsProvider, child) {
         return AnalyticsTabCard(
           title: 'Orders by Branch',
-          child: Column(
+            child: Column(
             children:
                 analyticsProvider.ordersByBranch.entries.map((entry) {
                   return Padding(
@@ -774,48 +774,48 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
       builder: (context, analyticsProvider, child) {
         return AnalyticsTabCard(
           title: 'Performance Overview',
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildPerformanceMetric(
-                      'Customer Satisfaction',
-                      '${analyticsProvider.customerSatisfaction.toStringAsFixed(1)}/5.0',
-                      AppColors.success,
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildPerformanceMetric(
+                        'Customer Satisfaction',
+                        '${analyticsProvider.customerSatisfaction.toStringAsFixed(1)}/5.0',
+                        AppColors.success,
+                      ),
                     ),
-                  ),
                   const SizedBox(width: AppSpacing.m),
-                  Expanded(
-                    child: _buildPerformanceMetric(
-                      'Staff Efficiency',
-                      '${analyticsProvider.staffEfficiency.toStringAsFixed(1)}%',
-                      AppColors.secondary,
+                    Expanded(
+                      child: _buildPerformanceMetric(
+                        'Staff Efficiency',
+                        '${analyticsProvider.staffEfficiency.toStringAsFixed(1)}%',
+                        AppColors.secondary,
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
               const SizedBox(height: AppSpacing.m),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildPerformanceMetric(
-                      'Avg Delivery Time',
-                      analyticsProvider.averageDeliveryTimeFormatted,
-                      AppColors.primary,
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildPerformanceMetric(
+                        'Avg Delivery Time',
+                        analyticsProvider.averageDeliveryTimeFormatted,
+                        AppColors.primary,
+                      ),
                     ),
-                  ),
                   const SizedBox(width: AppSpacing.m),
-                  Expanded(
-                    child: _buildPerformanceMetric(
-                      'Total Deliveries',
-                      analyticsProvider.totalDeliveries.toString(),
-                      AppColors.accent,
+                    Expanded(
+                      child: _buildPerformanceMetric(
+                        'Total Deliveries',
+                        analyticsProvider.totalDeliveries.toString(),
+                        AppColors.accent,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
           ),
         );
       },
@@ -851,7 +851,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
         final colorScheme = Theme.of(context).colorScheme;
         return AnalyticsTabCard(
           title: 'Staff Performance',
-          child: Column(
+            child: Column(
             children:
                 analyticsProvider.staffPerformance.take(5).map((staff) {
                   return Padding(
@@ -913,7 +913,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
       builder: (context, analyticsProvider, child) {
         return AnalyticsTabCard(
           title: 'Top Services',
-          child: Column(
+            child: Column(
             children:
                 analyticsProvider.topServices.take(5).map((service) {
                   return Padding(
@@ -942,7 +942,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
         final colorScheme = Theme.of(context).colorScheme;
         return AnalyticsTabCard(
           title: 'Top Customers',
-          child: Column(
+            child: Column(
             children:
                 analyticsProvider.topCustomers.take(5).map((customer) {
                   return Padding(
@@ -1008,7 +1008,7 @@ class _AnalyticsDashboardScreenState extends State<AnalyticsDashboardScreen>
       subtitle: 'Customize your dashboard view',
       icon: AppIcons.filter,
       child: _buildFilterContent(),
-      actions: [
+            actions: [
         AppActionSheetAction(
           text: 'Reset',
           onPressed: () {
