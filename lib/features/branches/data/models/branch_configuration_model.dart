@@ -2,15 +2,30 @@
 class BranchConfigurationModel {
   final String branchId;
   final bool autoApproveOrders;
+  
+  // Business rules
   final bool enableBundleDiscount;
   final double bundleDiscountPercentage;
+  final bool enableRushService;
+  final double rushServiceFeePercentage;
+  
+  // Operational settings
+  final int processingTimeHours;
+  final double? minimumOrderValue;
+  final double? maximumOrderValue;
+  final double? serviceRadiusKm;
   final int maxConcurrentOrders;
-  final bool supportsPriorityDelivery;
-  final double priorityDeliveryFee;
+  
+  // Payment settings
   final bool acceptsOnlinePayments;
   final bool acceptsCashPayments;
+  
+  // Legacy fields (deprecated)
+  final bool supportsPriorityDelivery;
+  final double priorityDeliveryFee;
   final Map<String, double> servicePricing;
   final Map<String, double> bagPricing;
+  
   final DateTime? updatedAt;
 
   const BranchConfigurationModel({
@@ -18,13 +33,19 @@ class BranchConfigurationModel {
     required this.autoApproveOrders,
     required this.enableBundleDiscount,
     required this.bundleDiscountPercentage,
+    this.enableRushService = true,
+    this.rushServiceFeePercentage = 50.0,
+    this.processingTimeHours = 24,
+    this.minimumOrderValue,
+    this.maximumOrderValue,
+    this.serviceRadiusKm,
     required this.maxConcurrentOrders,
-    required this.supportsPriorityDelivery,
-    required this.priorityDeliveryFee,
+    this.supportsPriorityDelivery = false,
+    this.priorityDeliveryFee = 0.0,
     required this.acceptsOnlinePayments,
     required this.acceptsCashPayments,
-    required this.servicePricing,
-    required this.bagPricing,
+    this.servicePricing = const {},
+    this.bagPricing = const {},
     this.updatedAt,
   });
 
@@ -32,9 +53,19 @@ class BranchConfigurationModel {
     return BranchConfigurationModel(
       branchId: json['branch_id'].toString(),
       autoApproveOrders: json['auto_approve_orders'] as bool? ?? false,
-      enableBundleDiscount: json['enable_bundle_discount'] as bool? ?? false,
+      enableBundleDiscount: json['enable_bundle_discount'] as bool? ?? true,
       bundleDiscountPercentage:
-          (json['bundle_discount_percentage'] as num?)?.toDouble() ?? 0.0,
+          (json['bundle_discount_percentage'] as num?)?.toDouble() ?? 10.0,
+      enableRushService: json['enable_rush_service'] as bool? ?? true,
+      rushServiceFeePercentage:
+          (json['rush_service_fee_percentage'] as num?)?.toDouble() ?? 50.0,
+      processingTimeHours: json['processing_time_hours'] as int? ?? 24,
+      minimumOrderValue:
+          (json['minimum_order_value'] as num?)?.toDouble(),
+      maximumOrderValue:
+          (json['maximum_order_value'] as num?)?.toDouble(),
+      serviceRadiusKm:
+          (json['service_radius_km'] as num?)?.toDouble(),
       maxConcurrentOrders: json['max_concurrent_orders'] as int? ?? 50,
       supportsPriorityDelivery:
           json['supports_priority_delivery'] as bool? ?? false,
@@ -69,13 +100,15 @@ class BranchConfigurationModel {
       'auto_approve_orders': autoApproveOrders,
       'enable_bundle_discount': enableBundleDiscount,
       'bundle_discount_percentage': bundleDiscountPercentage,
+      'enable_rush_service': enableRushService,
+      'rush_service_fee_percentage': rushServiceFeePercentage,
+      'processing_time_hours': processingTimeHours,
+      'minimum_order_value': minimumOrderValue,
+      'maximum_order_value': maximumOrderValue,
+      'service_radius_km': serviceRadiusKm,
       'max_concurrent_orders': maxConcurrentOrders,
-      'supports_priority_delivery': supportsPriorityDelivery,
-      'priority_delivery_fee': priorityDeliveryFee,
       'accepts_online_payments': acceptsOnlinePayments,
       'accepts_cash_payments': acceptsCashPayments,
-      'service_pricing': servicePricing,
-      'bag_pricing': bagPricing,
       'updated_at': updatedAt?.toIso8601String(),
     };
   }
@@ -85,13 +118,15 @@ class BranchConfigurationModel {
     bool? autoApproveOrders,
     bool? enableBundleDiscount,
     double? bundleDiscountPercentage,
+    bool? enableRushService,
+    double? rushServiceFeePercentage,
+    int? processingTimeHours,
+    double? minimumOrderValue,
+    double? maximumOrderValue,
+    double? serviceRadiusKm,
     int? maxConcurrentOrders,
-    bool? supportsPriorityDelivery,
-    double? priorityDeliveryFee,
     bool? acceptsOnlinePayments,
     bool? acceptsCashPayments,
-    Map<String, double>? servicePricing,
-    Map<String, double>? bagPricing,
     DateTime? updatedAt,
   }) {
     return BranchConfigurationModel(
@@ -100,15 +135,17 @@ class BranchConfigurationModel {
       enableBundleDiscount: enableBundleDiscount ?? this.enableBundleDiscount,
       bundleDiscountPercentage:
           bundleDiscountPercentage ?? this.bundleDiscountPercentage,
+      enableRushService: enableRushService ?? this.enableRushService,
+      rushServiceFeePercentage:
+          rushServiceFeePercentage ?? this.rushServiceFeePercentage,
+      processingTimeHours: processingTimeHours ?? this.processingTimeHours,
+      minimumOrderValue: minimumOrderValue ?? this.minimumOrderValue,
+      maximumOrderValue: maximumOrderValue ?? this.maximumOrderValue,
+      serviceRadiusKm: serviceRadiusKm ?? this.serviceRadiusKm,
       maxConcurrentOrders: maxConcurrentOrders ?? this.maxConcurrentOrders,
-      supportsPriorityDelivery:
-          supportsPriorityDelivery ?? this.supportsPriorityDelivery,
-      priorityDeliveryFee: priorityDeliveryFee ?? this.priorityDeliveryFee,
       acceptsOnlinePayments:
           acceptsOnlinePayments ?? this.acceptsOnlinePayments,
       acceptsCashPayments: acceptsCashPayments ?? this.acceptsCashPayments,
-      servicePricing: servicePricing ?? this.servicePricing,
-      bagPricing: bagPricing ?? this.bagPricing,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }

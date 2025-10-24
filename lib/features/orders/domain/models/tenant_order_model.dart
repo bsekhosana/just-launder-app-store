@@ -257,8 +257,8 @@ class TenantOrderModel extends Equatable {
     final statusStr = status.toString().toLowerCase().replaceAll('_', '');
 
     switch (statusStr) {
-      case 'pending':
-        return TenantOrderStatus.pending;
+        case 'pending':
+          return TenantOrderStatus.pending;
       case 'paid':
         return TenantOrderStatus.paid;
       case 'awaitingapproval':
@@ -274,7 +274,7 @@ class TenantOrderModel extends Equatable {
       case 'modified':
         return TenantOrderStatus.modified;
       case 'inprogress':
-        return TenantOrderStatus.inProgress;
+          return TenantOrderStatus.inProgress;
       case 'assigned':
         return TenantOrderStatus.assigned;
       case 'pickedup':
@@ -287,8 +287,8 @@ class TenantOrderModel extends Equatable {
         return TenantOrderStatus.outForDelivery;
       case 'delivered':
         return TenantOrderStatus.delivered;
-      case 'cancelled':
-        return TenantOrderStatus.cancelled;
+        case 'cancelled':
+          return TenantOrderStatus.cancelled;
       case 'processingrefund':
         return TenantOrderStatus.processingRefund;
       case 'expired':
@@ -299,10 +299,10 @@ class TenantOrderModel extends Equatable {
         return TenantOrderStatus.extensionApproved;
       case 'extensiondeclined':
         return TenantOrderStatus.extensionDeclined;
-      default:
-        return TenantOrderStatus.pending;
+        default:
+          return TenantOrderStatus.pending;
+      }
     }
-  }
 
   static OrderPriority _parsePriority(dynamic priority) {
     if (priority == null) return OrderPriority.normal;

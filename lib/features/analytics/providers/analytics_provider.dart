@@ -185,22 +185,22 @@ class AnalyticsProvider with ChangeNotifier {
     List<LaundretteBranch> branches,
     List<StaffMember> staff,
   ) {
-    // Filter orders based on selected criteria
-    final filteredOrders = _filterOrders(orders);
+      // Filter orders based on selected criteria
+      final filteredOrders = _filterOrders(orders);
 
     // Calculate analytics from local data
-    _calculateOrderMetrics(filteredOrders);
-    _calculateRevenueMetrics(filteredOrders);
-    _calculateCustomerMetrics(filteredOrders);
-    _calculateDeliveryMetrics(filteredOrders);
-    _calculateBranchMetrics(filteredOrders, branches);
-    _calculateTimeSeriesData(filteredOrders);
-    _calculateTopServices(filteredOrders);
-    _calculateTopCustomers(filteredOrders);
-    _calculateStaffPerformance(filteredOrders, staff);
+      _calculateOrderMetrics(filteredOrders);
+      _calculateRevenueMetrics(filteredOrders);
+      _calculateCustomerMetrics(filteredOrders);
+      _calculateDeliveryMetrics(filteredOrders);
+      _calculateBranchMetrics(filteredOrders, branches);
+      _calculateTimeSeriesData(filteredOrders);
+      _calculateTopServices(filteredOrders);
+      _calculateTopCustomers(filteredOrders);
+      _calculateStaffPerformance(filteredOrders, staff);
 
-    _isLoading = false;
-    notifyListeners();
+      _isLoading = false;
+      notifyListeners();
   }
 
   /// Filter orders based on selected criteria
