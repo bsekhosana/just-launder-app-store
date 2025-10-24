@@ -48,20 +48,20 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_ANDROID_API_KEY',
-    appId: 'YOUR_ANDROID_APP_ID',
-    messagingSenderId: 'YOUR_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyDWrsD0gjP6UIxJxFu5vfHV2uDAWJUiV3E',
+    appId: '1:15364239615:android:fe80327edf9003814d5cca',
+    messagingSenderId: '15364239615',
+    projectId: 'just-launder-48cc0',
+    storageBucket: 'just-launder-48cc0.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_IOS_API_KEY',
-    appId: 'YOUR_IOS_APP_ID',
-    messagingSenderId: 'YOUR_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
-    iosBundleId: 'com.justlaunder.customer',
+    apiKey: 'AIzaSyCAT96RcCBI6WAKPVmvkdzt1cSe_8AF2sc',
+    appId: '1:15364239615:ios:967f0f1776a49f4c4d5cca',
+    messagingSenderId: '15364239615',
+    projectId: 'just-launder-48cc0',
+    storageBucket: 'just-launder-48cc0.firebasestorage.app',
+    iosBundleId: 'just.launder.tenant',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -78,4 +78,3 @@ class DefaultFirebaseOptions {
 // 1. Run: flutterfire configure
 // 2. Select Firebase project
 // 3. This will generate the actual configuration for all platforms
-
